@@ -30,6 +30,10 @@ public class Component : MonoBehaviourPunCallbacks
                     player.RepairComponent(players.Length);
                     Debug.Log("component: " + componentId);
                 }
+                else
+                {
+                    Debug.Log("You need " + players.Length + " Repair Cards to repair one component!");
+                }
             }
         }
         else

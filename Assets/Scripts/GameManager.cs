@@ -97,9 +97,48 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void Turn()
     {
         //Debug.Log("Turn()");
-        //Debug.Log("1 -- time: " + time + " < numPlayers: " + PhotonNetwork.PlayerList.Length);
+        Debug.Log("1 -- time: " + time + " < numPlayers: " + PhotonNetwork.PlayerList.Length);
         if (time < PhotonNetwork.PlayerList.Length)
         {
+            players = FindObjectsOfType<PlayerScript>();
+            Button[] components = gameHUD.GetComponentsInChildren<Button>();
+
+            foreach (var player in players)
+            {
+                Debug.Log("time: " + time);
+
+                if (player.index == time)
+                {
+                    Debug.Log("agora é o turno de : " + player.nickname);
+                    player.SetYourTurn(true);
+
+                    ChangeRepairCardsView(player);
+
+                    foreach (Button component in components)
+                    {
+                        component.interactable = true;
+                    }
+                }
+                else
+                {
+                    Debug.Log("não é turno de : " + player.nickname);
+                    player.SetYourTurn(false);
+
+                    foreach (Button component in components)
+                    {
+                        if (!(component.name == "QuitGame"))
+                        {
+                            component.interactable = false;
+                        }
+
+                    }
+                }
+            }
+
+
+
+
+
             ShowRoundInfo();
 
         }
@@ -189,7 +228,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Button[] components = gameHUD.GetComponentsInChildren<Button>();
 
-        var repairCards = FindObjectsOfType<RepairCard>();
+        //var repairCards = FindObjectsOfType<RepairCard>();
         players = FindObjectsOfType<PlayerScript>();
 
         deckEvent.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
@@ -209,20 +248,20 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 Debug.Log("3 -- " + player.nickname + " tem " + player.GetNumberOfRepairsCards() + " cartas");
 
-                player.SetYourTurn(true);
+                //player.SetYourTurn(true);
 
-                foreach (var repairCard in repairCards)
-                {
-                    //if(repairCard.photonView.OwnerActorNr != player.photonView.OwnerActorNr)
-                    if (!repairCard.photonView.IsMine)
-                    {
-                        repairCard.GetComponent<MeshRenderer>().enabled = false;
-                    }
-                    else
-                    {
-                        repairCard.GetComponent<MeshRenderer>().enabled = true;
-                    }
-                }
+                //foreach (var repairCard in repairCards)
+                //{
+                //    //if(repairCard.photonView.OwnerActorNr != player.photonView.OwnerActorNr)
+                //    if (!repairCard.photonView.IsMine)
+                //    {
+                //        repairCard.GetComponent<MeshRenderer>().enabled = false;
+                //    }
+                //    else
+                //    {
+                //        repairCard.GetComponent<MeshRenderer>().enabled = true;
+                //    }
+                //}
 
                 if (player.GetNumberOfRepairsCards() == 5)
                 {
@@ -235,10 +274,10 @@ public class GameManager : MonoBehaviourPunCallbacks
                     deckRepair.tag = "Selectable";
                 }
 
-                foreach (Button component in components)
-                {
-                    component.interactable = true;
-                }
+                //foreach (Button component in components)
+                //{
+                //    component.interactable = true;
+                //}
 
                 foreach (var timeCraxComponent in timeCraxComponents)
                 {
@@ -260,14 +299,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                 //Debug.Log("4 -- ");
                 player.SetYourTurn(false);
 
-                foreach (Button component in components)
-                {
-                    if (!(component.name == "QuitGame"))
-                    {
-                        component.interactable = false;
-                    }
+                //foreach (Button component in components)
+                //{
+                //    if (!(component.name == "QuitGame"))
+                //    {
+                //        component.interactable = false;
+                //    }
 
-                }
+                //}
                 timeline.GetComponent<MeshCollider>().enabled = false;
                 deckEvent.GetComponent<MeshCollider>().enabled = false;
                 deckRepair.GetComponent<MeshCollider>().enabled = false;
@@ -328,14 +367,40 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void FinishTurn()
     {
+        Debug.Log("Finish turn, time ++");
         time++;
         deckRepair.tag = "Disabled";
         deckEvent.tag = "Disabled";
         timeline.tag = "Disabled";
+
         //photonView.RPC("Turn", RpcTarget.All);
         Turn();
         //Debug.Log("-- SetUpComponents --: ");
         SetUpComponents();
+
+    }
+
+    public void ChangeRepairCardsView(PlayerScript player)
+    {
+        var repairCards = FindObjectsOfType<RepairCard>();
+
+        Debug.Log("Player: " + player.nickname);
+
+        foreach (var card in repairCards)
+        {
+            Debug.Log("carta: " + card.photonView.ViewID + " -- player: " + player.nickname);
+            Debug.Log(" -- owner: " + card.photonView.OwnerActorNr + " -- " + player.photonView.OwnerActorNr);
+            if (card.photonView.OwnerActorNr == player.photonView.OwnerActorNr)
+            {
+                Debug.Log("set true");
+                card.GetComponent<MeshRenderer>().enabled = true;
+            }
+            else
+            {
+                Debug.Log("set false");
+                card.GetComponent<MeshRenderer>().enabled = false;
+            }
+        }
     }
 
     public void QuitGame()

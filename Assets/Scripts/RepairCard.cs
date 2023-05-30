@@ -9,29 +9,15 @@ public class RepairCard : MonoBehaviourPunCallbacks
     void Start()
     {
         players = FindObjectsOfType<PlayerScript>();
-        //if (!gameObject.CompareTag("Undestructable"))
-        //{
-        //foreach (var player in players)
-        //{
 
-        //    if (player.GetYourTurn())
-        //    {
-                DrawRepairCard();
-        //    }
-        //}
-        //}
+        DrawRepairCard();
+
     }
     public void DrawRepairCard()
     {
         gameObject.GetComponent<Animator>().enabled = true;
         gameObject.GetComponent<Animator>().SetBool("drawingRepairCard", true);
     }
-
-    //public void SetCardToPlayer()
-    //{
-    //    CheckingPlayer();
-    //}
-
 
     public void CheckingPlayer()
     {
@@ -44,7 +30,6 @@ public class RepairCard : MonoBehaviourPunCallbacks
                 ShowRepairCardOnHand(player.GetNumberOfRepairsCards());
             }
         }
-
     }
 
     public void ShowRepairCardOnHand(int numberOfRepairCards)

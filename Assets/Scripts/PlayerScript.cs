@@ -12,7 +12,8 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     public int numberRepairCards;
     public string nickname;
     public int index;
-    private bool yourTurn = false;
+    public bool yourTurn = false;
+    private List<RepairCard> cardList = new List<RepairCard>();
 
     // Start is called before the first frame update
     void Start()
@@ -59,14 +60,20 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         Debug.Log("cartas: " + cards);
         if(numberRepairCards >= cards) 
         {
-            numberRepairCards -= cards;
-            DestroyRepairCards(cards);
+            photonView.RPC("DescreaseAndDestroyCards", RpcTarget.All, cards);
         }
         else
         {
             Debug.Log("You need "+cards+" Repair Cards to repair one component!");
         }
         
+    }
+
+    [PunRPC]
+    public void DescreaseAndDestroyCards(int cards)
+    {
+        numberRepairCards -= cards;
+        DestroyRepairCards(cards);
     }
 
     public void ShowRepair()
@@ -134,8 +141,15 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
     public void DestroyRepairCards(int cardNumber)
     {
-        var cardsList = FindObjectsOfType<RepairCard>();
-        var orderedlist = cardsList.OrderByDescending(x => x.photonView.ViewID).ToList();
+        var allCards = FindObjectsOfType<RepairCard>();
+        foreach (var card in allCards)
+        {
+            if(card.photonView.OwnerActorNr == gameObject.GetPhotonView().OwnerActorNr)
+            {
+                cardList.Add(card);
+            }
+        }
+        var orderedlist = cardList.OrderByDescending(x => x.photonView.ViewID).ToList();
 
         for (var i = 0; i < cardNumber; i++)
         {
