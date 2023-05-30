@@ -20,7 +20,24 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         
         if (gameObject.CompareTag("Disabled"))
         {
-            //Debug.Log("Você já possui 5 cartas");
+            var players = FindObjectsOfType<PlayerScript>();
+            foreach (var player in players)
+            {
+                if (player.GetYourTurn())
+                {
+                    if (player.GetNumberOfRepairsCards() == 5)
+                    {
+                        Debug.Log("Você já possui 5 cartas");
+                    }
+                    else
+                    {
+                        Debug.Log("Você já realizou uma ação neste turno");
+                    }
+                }
+
+            }
+
+
         }
         else
         {
@@ -30,6 +47,15 @@ public class DeckRepair : MonoBehaviourPunCallbacks
             }
             gameObject.tag = "Disabled";
             deckEvent.tag = "Disabled";
+            var components = FindObjectsOfType<Component>();
+            foreach (var component in components)
+            {
+                if (component.malfunctions == 1)
+                {
+                    component.tag = "Disabled";
+                }
+
+            }
 
         }
 

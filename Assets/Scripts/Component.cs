@@ -13,21 +13,30 @@ public class Component : MonoBehaviourPunCallbacks
     {
         if(malfunctions > 1)
         {
-            Debug.Log("GAME OVER!!");
+            //Debug.Log("GAME OVER!!");
         }
     }
     public void OnMouseDown()
     {
-        var players = FindObjectsOfType<PlayerScript>();
-        foreach (var player in players)
+        if(gameObject.CompareTag("Selectable")) 
         {
-            Debug.Log("Vez de " + player.nickname+" : "+player.GetYourTurn()+" -- cartas: "+player.GetNumberOfRepairsCards());
-            if (player.GetYourTurn() && player.GetNumberOfRepairsCards() > players.Length)
+            var players = FindObjectsOfType<PlayerScript>();
+            foreach (var player in players)
             {
-                photonView.RPC("RemoveMalfunction", RpcTarget.All);
-                Debug.Log("component: " + componentId);
+                Debug.Log("Vez de " + player.nickname + " : " + player.GetYourTurn() + " -- cartas: " + player.GetNumberOfRepairsCards());
+                if (player.GetYourTurn() && player.GetNumberOfRepairsCards() >= players.Length)
+                {
+                    photonView.RPC("RemoveMalfunction", RpcTarget.All);
+                    player.RepairComponent(players.Length);
+                    Debug.Log("component: " + componentId);
+                }
             }
         }
+        else
+        {
+            Debug.Log("Você já realizou uma ação nesse turno");
+        }
+
     }
 
     public void AddMalfunction()

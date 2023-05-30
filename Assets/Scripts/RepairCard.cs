@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using System.Linq;
 
 public class RepairCard : MonoBehaviourPunCallbacks
 {
@@ -80,5 +81,9 @@ public class RepairCard : MonoBehaviourPunCallbacks
         }
 
         gameObject.SetActive(true);
+    }
+    public void DestroyRepairCards()
+    {
+        Destroy(gameObject);   
     }
 }

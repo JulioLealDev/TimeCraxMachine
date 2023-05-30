@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Runtime.ConstrainedExecution;
+using System.Linq;
 
 public class PlayerScript : MonoBehaviourPunCallbacks
 {
@@ -53,15 +54,17 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         otherPlayer.numberRepairCards++;
     }
 
-    public void RepairComponent()
+    public void RepairComponent(int cards)
     {
-        if(numberRepairCards >= 3) 
+        Debug.Log("cartas: " + cards);
+        if(numberRepairCards >= cards) 
         {
-            numberRepairCards -= 3;
+            numberRepairCards -= cards;
+            DestroyRepairCards(cards);
         }
         else
         {
-            Debug.Log("You need 3 Repair Cards to repair one component!");
+            Debug.Log("You need "+cards+" Repair Cards to repair one component!");
         }
         
     }
@@ -127,5 +130,19 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     public void SetYourTurn(bool isYourTurn)
     {
         yourTurn = isYourTurn;
+    }
+
+    public void DestroyRepairCards(int cardNumber)
+    {
+        var cardsList = FindObjectsOfType<RepairCard>();
+        var orderedlist = cardsList.OrderByDescending(x => x.photonView.ViewID).ToList();
+
+        for (var i = 0; i < cardNumber; i++)
+        {
+            Debug.Log("carta -> " + orderedlist[i].photonView.ViewID);
+            orderedlist[i].GetComponent<Animator>().enabled = true;
+            orderedlist[i].GetComponent<Animator>().SetBool("destroyCard", true);
+        }
+
     }
 }

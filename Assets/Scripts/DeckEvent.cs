@@ -22,14 +22,18 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     public void OnMouseDown()
     {
 
-        if (gameObject.CompareTag("Disabled"))
-        {
-            Debug.Log("Você já comprou 1 carta");
-        }
-        else
+        if (gameObject.CompareTag("Selectable"))
         {
             gameObject.tag = "Disabled";
             deckRepair.tag = "Disabled";
+            var components = FindObjectsOfType<Component>();
+            foreach (var component in components)
+            {
+                if(component.malfunctions == 1){
+                    component.tag = "Disabled";
+                }
+
+            }
             if (photonView.IsMine)
             {
                 var timeline = FindObjectOfType<Timeline>();
@@ -37,6 +41,10 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
                 EventRandom();
             }
+        }
+        else
+        {
+            Debug.Log("Você já realizaou uma ação neste turno");
         }
     }
 
