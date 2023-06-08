@@ -5,6 +5,7 @@ using Photon.Pun;
 public class DeckEvent : MonoBehaviourPunCallbacks
 {
     public DeckRepair deckRepair;
+    public GameManager gameManager;
     private List<int> eventList = new List<int>();
 
     void Start()
@@ -24,16 +25,8 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
         if (gameObject.CompareTag("Selectable"))
         {
-            gameObject.tag = "Disabled";
-            deckRepair.tag = "Disabled";
-            var components = FindObjectsOfType<Component>();
-            foreach (var component in components)
-            {
-                if(component.malfunctions == 1){
-                    component.tag = "Disabled";
-                }
-
-            }
+            gameManager.BlockActions();
+            gameManager.ActivateFinishButton(false);
             if (photonView.IsMine)
             {
                 var timeline = FindObjectOfType<Timeline>();
@@ -61,7 +54,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         var eventCards = FindObjectsOfType<EventCard>();
         foreach (var eventCard in eventCards)
         {
-            Debug.Log("slotcount: "+ eventCard.slotCount+" -- valor: " + eventList[index]);
+            //Debug.Log("slotcount: "+ eventCard.slotCount+" -- valor: " + eventList[index]);
             if (eventCard.slotCount == eventList[index])
             {
                 eventCard.DrawEventCard();

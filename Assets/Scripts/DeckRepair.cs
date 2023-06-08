@@ -4,6 +4,7 @@ using Photon.Pun;
 public class DeckRepair : MonoBehaviourPunCallbacks
 {
     public DeckEvent deckEvent;
+    public GameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,17 +46,8 @@ public class DeckRepair : MonoBehaviourPunCallbacks
             {
                 PhotonNetwork.Instantiate("repairCard", new Vector3(0.604300022f, 0.0707999989f, 0.280999988f), Quaternion.identity);
             }
-            gameObject.tag = "Disabled";
-            deckEvent.tag = "Disabled";
-            var components = FindObjectsOfType<Component>();
-            foreach (var component in components)
-            {
-                if (component.malfunctions == 1)
-                {
-                    component.tag = "Disabled";
-                }
 
-            }
+            gameManager.BlockActions();
 
         }
 

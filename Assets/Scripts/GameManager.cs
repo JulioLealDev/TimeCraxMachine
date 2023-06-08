@@ -3,8 +3,8 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System.ComponentModel;
-
+using UnityEngine.EventSystems;
+using System.Linq;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -69,18 +69,19 @@ public class GameManager : MonoBehaviourPunCallbacks
         outline.MakeObjectsSelectable();
 
         var components = gameHUD.GetComponentsInChildren<Transform>();
-        string prefix = "PlayerImage0";
-        string name;
+        int name = 0;
 
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
-            name = prefix + (i + 1);
-            foreach (var component in components)
+            name ++;
+            for (int x = 0; x < components.Length; x++)
             {
-                if (component.name == name)
+                //Debug.Log("component name:" + components[x].name+" - name: "+name.ToString());
+                if (components[x].name == name.ToString())
                 {
-                    component.gameObject.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
-                    component.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = PhotonNetwork.PlayerList[i].NickName;
+                    //Debug.Log("entrou");
+                    components[x].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = PhotonNetwork.PlayerList[i].NickName;
+                    components[x].gameObject.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
                 }
             }
         }
@@ -97,31 +98,41 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void Turn()
     {
         //Debug.Log("Turn()");
-        Debug.Log("1 -- time: " + time + " < numPlayers: " + PhotonNetwork.PlayerList.Length);
+        //Debug.Log("1 -- time: " + time + " < numPlayers: " + PhotonNetwork.PlayerList.Length);
         if (time < PhotonNetwork.PlayerList.Length)
         {
             players = FindObjectsOfType<PlayerScript>();
             Button[] components = gameHUD.GetComponentsInChildren<Button>();
+            int indexPlayer = time + 1;
 
             foreach (var player in players)
             {
-                Debug.Log("time: " + time);
+                //Debug.Log("time: " + time);
 
                 if (player.index == time)
                 {
-                    Debug.Log("agora é o turno de : " + player.nickname);
+                    //Debug.Log("agora é o turno de : " + player.nickname);
                     player.SetYourTurn(true);
 
                     ChangeRepairCardsView(player);
 
                     foreach (Button component in components)
                     {
-                        component.interactable = true;
+                        //Debug.Log("name: " + component.name + " - time+1:" + indexPlayer);
+                        if (component.name == indexPlayer.ToString())
+                        {
+                            component.interactable = false;
+                        }
+                        else
+                        {
+                            component.interactable = true;
+                        }
+
                     }
                 }
                 else
                 {
-                    Debug.Log("não é turno de : " + player.nickname);
+                    //Debug.Log("não é turno de : " + player.nickname);
                     player.SetYourTurn(false);
 
                     foreach (Button component in components)
@@ -134,10 +145,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                 }
             }
-
-
-
-
 
             ShowRoundInfo();
 
@@ -176,7 +183,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 }
                 if (info.gameObject.name == "RoundInfo")
                 {
-                    info.GetComponentInChildren<TextMeshProUGUI>().text = "Starting Round " + round + " -: " + randomId;
+                    info.GetComponentInChildren<TextMeshProUGUI>().text = "Starting Round " + round;
                 }
                 if (info.gameObject.name == "TurnInfoBackground" || info.gameObject.name == "RoundInfoBackground")
                 {
@@ -226,9 +233,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void StartTurn()
     {
-        Button[] components = gameHUD.GetComponentsInChildren<Button>();
+        //Button[] components = gameHUD.GetComponentsInChildren<Button>();
 
-        //var repairCards = FindObjectsOfType<RepairCard>();
         players = FindObjectsOfType<PlayerScript>();
 
         deckEvent.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
@@ -239,6 +245,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             component.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
         }
+        //foreach (var component in components)
+        //{
+        //    if(component.name == "FinishTurn")
+        //    {
+        //        Debug.Log("comp: " + component.name);
+        //        component.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
+        //    }
+        //}
 
         foreach (var player in players)
         {
@@ -246,7 +260,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             //Debug.Log("2 -- " + player.nickname);
             if (player.index == time)
             {
-                Debug.Log("3 -- " + player.nickname + " tem " + player.GetNumberOfRepairsCards() + " cartas");
+                //Debug.Log("3 -- " + player.nickname + " tem " + player.GetNumberOfRepairsCards() + " cartas");
 
                 //player.SetYourTurn(true);
 
@@ -265,12 +279,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 if (player.GetNumberOfRepairsCards() == 5)
                 {
-                    Debug.Log("tem 5 cartas");
+                    //Debug.Log("tem 5 cartas");
                     deckRepair.tag = "Disabled";
                 }
                 else
                 {
-                    Debug.Log("nao tem 5 cartas");
+                    //Debug.Log("nao tem 5 cartas");
                     deckRepair.tag = "Selectable";
                 }
 
@@ -327,10 +341,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void EndTurn()
     {
         //FinishTurn();
-        //Debug.Log("apertou Finish");
+        string buttonName = EventSystem.current.currentSelectedGameObject.name;
+
+        Debug.Log("apertou Finish: "+buttonName);
         //Debug.Log("Finish - time: " + time + " == " + (PhotonNetwork.PlayerList.Length - 1));
         if (time == PhotonNetwork.PlayerList.Length - 1)
         {
+            Debug.Log("Random Malfunction");
             RandomComponentNumber();
         }
         photonView.RPC("FinishTurn", RpcTarget.All);
@@ -367,7 +384,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void FinishTurn()
     {
-        Debug.Log("Finish turn, time ++");
+        //Debug.Log("Finish turn, time ++");
         time++;
         deckRepair.tag = "Disabled";
         deckEvent.tag = "Disabled";
@@ -384,20 +401,21 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         var repairCards = FindObjectsOfType<RepairCard>();
 
-        Debug.Log("Player: " + player.nickname);
+        //Debug.Log("Player: " + player.nickname);
 
         foreach (var card in repairCards)
         {
-            Debug.Log("carta: " + card.photonView.ViewID + " -- player: " + player.nickname);
-            Debug.Log(" -- owner: " + card.photonView.OwnerActorNr + " -- " + player.photonView.OwnerActorNr);
+            //Debug.Log("carta: " + card.photonView.ViewID + " -- player: " + player.nickname);
+            //Debug.Log(" -- owner: " + card.photonView.OwnerActorNr + " -- " + player.photonView.OwnerActorNr);
             if (card.photonView.OwnerActorNr == player.photonView.OwnerActorNr)
             {
-                Debug.Log("set true");
+                //Debug.Log("set true");
+                card.GetComponent<Animator>().SetBool("sending", false);
                 card.GetComponent<MeshRenderer>().enabled = true;
             }
             else
             {
-                Debug.Log("set false");
+                //Debug.Log("set false");
                 card.GetComponent<MeshRenderer>().enabled = false;
             }
         }
@@ -423,4 +441,127 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         }
     }
+
+    public void ActivateFinishButton(bool activate)
+    {
+        players = FindObjectsOfType<PlayerScript>();
+        GameObject component = GameObject.FindGameObjectWithTag("Finish");
+
+        foreach (var player in players)
+        {
+            Debug.Log("Player: " + player.nickname);
+            Debug.Log("Player turn: " + player.GetYourTurn());
+            if (player.GetYourTurn())
+            {
+                Debug.Log("button: " + component.name + " recebeu: " + activate);
+
+                component.GetComponent<Button>().interactable = activate;
+            }
+            else
+            {
+                Debug.Log("button: " + component.name + " recebeu: false");
+                component.GetComponent<Button>().interactable = false;
+            }
+        }
+    }
+
+    public void BlockActions()
+    {
+        deckRepair.tag = "Disabled";
+        deckEvent.tag = "Disabled";
+
+        var suitComponents = FindObjectsOfType<Component>();
+        foreach (var suitComponent in suitComponents)
+        {
+            if (suitComponent.malfunctions == 1)
+            {
+                suitComponent.tag = "Disabled";
+            }
+        }
+
+        Button[] components = gameHUD.GetComponentsInChildren<Button>();
+        foreach (Button component in components)
+        {
+            if (component.name != "QuitGame" && component.name != "FinishTurn")
+            {
+                component.interactable = false;
+            }
+        }
+    }
+
+    public void GiveCard()
+    {
+        string button = EventSystem.current.currentSelectedGameObject.name;
+        //Debug.Log("Nome: " + button);
+        int buttonName = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+
+        photonView.RPC("GiveRepairCard", RpcTarget.All, buttonName);
+
+    }
+
+    [PunRPC]
+    public void GiveRepairCard(int buttonName)
+    {
+
+        PlayerScript playerSending = null;
+        PlayerScript playerReceiving = null;
+
+        var players = FindObjectsOfType<PlayerScript>();
+        foreach (var player in players)
+        {
+            if (player.GetYourTurn())
+            {
+                playerSending = player;
+            }
+            else if (player.index == buttonName - 1)
+            {
+                playerReceiving = player;
+            }
+        }
+
+        if (playerSending.GetNumberOfRepairsCards() > 0 && playerReceiving.GetNumberOfRepairsCards() < 5)
+        {
+            BlockActions();
+
+            var repairCards = FindObjectsOfType<RepairCard>();
+            List<RepairCard> orderedList = new List<RepairCard>();
+            List<RepairCard> playerCards = new List<RepairCard>();
+
+            foreach (var repairCard in repairCards)
+            {
+                if (repairCard.photonView.OwnerActorNr == playerSending.photonView.OwnerActorNr)
+                {
+                    Debug.Log(" - " + repairCard.photonView.ViewID);
+                    playerCards.Add(repairCard);
+                }
+            }
+
+            orderedList = playerCards.OrderByDescending(x => x.index).ToList();
+            RepairCard lastCard = orderedList[0];
+
+            //Debug.Log("Carta que está sendo passada: " + lastCard.photonView.ViewID);
+
+            //Debug.Log("player recebendo o owner: " + PhotonNetwork.PlayerList[playerReceiving.index].NickName);
+            lastCard.photonView.TransferOwnership(PhotonNetwork.PlayerList[playerReceiving.index]);
+
+            //Debug.Log("Recebendo carta: " + playerReceiving.nickname);
+            playerReceiving.numberRepairCards++;
+
+            //Debug.Log("Dando carta: " + playerSending.nickname);
+            playerSending.numberRepairCards--;
+
+            //Debug.Log("ativando animator");
+            lastCard.GetComponent<Animator>().enabled = true;
+           // Debug.Log("ativando animação sending");
+            lastCard.GetComponent<Animator>().SetBool("sending", true);
+        }
+        else
+        {
+            //Debug.Log("Você não possui cartas!");
+        }
+
+
+
+    }
+
 }

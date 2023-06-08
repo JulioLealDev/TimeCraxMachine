@@ -11,10 +11,7 @@ public class Component : MonoBehaviourPunCallbacks
     }
     void Update()
     {
-        if(malfunctions > 1)
-        {
-            //Debug.Log("GAME OVER!!");
-        }
+
     }
     public void OnMouseDown()
     {
@@ -47,15 +44,64 @@ public class Component : MonoBehaviourPunCallbacks
     {
         //ativar animação
         //gameObject.GetComponent<MeshCollider>().enabled = true;
+
+        var parent = gameObject.transform.parent;
+        if (parent.name != "Enviroment")
+        {
+            Debug.Log("parent: " + parent.name);
+            Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
+            foreach (var opc in opcoes)
+            {
+                Debug.Log("opc: " + opc.name);
+                if (opc.GetComponent<Animator>() != null)
+                {
+                    opc.GetComponent<Animator>().SetBool("malfunction", true);
+                }
+            }
+        }
+        else
+        {
+            gameObject.GetComponent<Animator>().SetBool("malfunction", true);
+        }
+
         malfunctions++;
+
+        if (malfunctions > 1)
+        {
+            GameObject gameOver = GameObject.FindGameObjectWithTag("GameOver");
+            gameOver.transform.GetChild(0).gameObject.SetActive(true);
+            Debug.Log("name ---> " + gameOver.name);
+        }
+
     }
 
     [PunRPC]
     public void RemoveMalfunction()
     {
         //ativar animação
+        var parent = gameObject.transform.parent;
+        if (parent.name != "Enviroment")
+        {
+            Debug.Log("parent: " + parent.name);
+            Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
+            foreach (var opc in opcoes)
+            {
+                Debug.Log("opc: " + opc.name);
+                if (opc.GetComponent<Animator>() != null)
+                {
+                    opc.GetComponent<Animator>().SetBool("malfunction", false);
+                }
+            }
+        }
+        else
+        {
+            gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+        }
+
         malfunctions--;
         gameObject.GetComponent<MeshCollider>().enabled = false;
+        var gameManager = FindObjectOfType<GameManager>();
+        gameManager.BlockActions();
     }
 
 
