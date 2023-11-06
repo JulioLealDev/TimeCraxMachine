@@ -58,10 +58,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         if (returnCode == ErrorCode.GameDoesNotExist)
         {
-            //RoomOptions room = new RoomOptions { MaxPlayers = (byte)PlayerPrefs.GetInt("numberOfPlayers")};
-            //PhotonNetwork.CreateRoom("TimeCrax2", room, null);
-            //chatLog.text += "\nCriando sala TimeCrax2!";
-            //SetLobbyChildren("Log", "\nCriando sala TimeCrax2!");
 
         }
     }
@@ -108,54 +104,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
         maxPlayers.text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
     }
 
-    //public void SetLobbyChildren(string name = null, string value = "", bool interactive = false)
-    //{
-    //    lobbyScreen = GameObject.FindGameObjectWithTag("Lobby");
-    //    if (lobbyScreen != null)
-    //    {
-    //        var components = lobbyScreen.GetComponentsInChildren<Transform>();
-    //        foreach (var component in components)
-    //        {
-    //            if (component.name == "StartButton" && name == "StartButton")
-    //            {
-    //                Debug.Log("if do button, quem entrou foi ->" + component.name);
-    //                component.GetComponentInChildren<Button>().interactable = interactive;
-    //            }
-    //            else
-    //            {
-    //                if (component.name == name)
-    //                {
-    //                    Debug.Log("if dos texts, quem entrou foi ->" + component.name);
-    //                    Debug.Log("Antes do maldito if --> value: " + value + " name: " + name);
-    //                    if (value != "")
-    //                    {
-    //                        Debug.Log("if do value dif de null, quem entrou foi ->" + component.name + " com value: " + value);
-    //                        if (name == "MaxPlayers")
-    //                        {
-    //                            Debug.Log("if do maxplayers, quem entrou foi ->" + component.name);
-    //                            component.GetComponentInChildren<TextMeshProUGUI>().text = value;
-    //                        }
-    //                        else
-    //                        {
-    //                            Debug.Log("if do log e players, quem entrou foi ->" + component.name);
-    //                            component.GetComponentInChildren<TextMeshProUGUI>().text += value;
-    //                        }
-
-    //                    }
-    //                    else if (value == "" && name == "Players" || value == "" && name == "Log")
-    //                    {
-    //                        Debug.Log("if do value = null, quem entrou foi ->" + component.name + " com value: " + value);
-    //                        component.GetComponentInChildren<TextMeshProUGUI>().text = null;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("LobbyScreen não encontrado");
-    //    }
-    //}
     public void ListPlayersInRoom()
     {
         players.text = null;

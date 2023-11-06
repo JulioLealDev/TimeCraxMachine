@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8382941855667407285}
   - component: {fileID: 6031101078792027519}
   - component: {fileID: 4932378220444852679}
-  - component: {fileID: 4932378220444852678}
   m_Layer: 0
   m_Name: eventSlot3
   m_TagString: Undestructable
@@ -99,21 +98,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7386703322599504550, guid: 9d888293973725d4e8eb3c8c937fbd0e, type: 3}
---- !u!114 &4932378220444852678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5238313131938159786}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0a464bc99485be4cbf05722a56c0231, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 6
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []

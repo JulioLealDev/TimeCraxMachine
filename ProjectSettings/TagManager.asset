@@ -12,6 +12,11 @@ TagManager:
   - Lobby
   - PlayerName
   - Drew
+  - InputName
+  - GameOver
+  - Victory
+  - PlateName
+  - GameInfo
   layers:
   - Default
   - TransparentFX

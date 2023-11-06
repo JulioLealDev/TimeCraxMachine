@@ -63,6 +63,13 @@ MonoBehaviour:
   - ZoomTimeline
   - ClickSlot
   - ComponentRandom
+  - RemoveMalfunction
+  - DescreaseAndDestroyCards
+  - GiveRepairCard
+  - ClickedRightSlot
+  - ClickedWrongSlot
+  - RPCFinishButton
+  - EndButton
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

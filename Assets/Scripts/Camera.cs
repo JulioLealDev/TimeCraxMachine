@@ -55,6 +55,9 @@ public class Camera : MonoBehaviourPunCallbacks
                 childrens[i].gameObject.GetComponent<MeshCollider>().enabled = true;
             }
         }
+        GameObject inputName = GameObject.FindGameObjectWithTag("InputName");
+        //Debug.Log("name: "+inputName.name);
+        inputName.GetComponent<Canvas>().enabled = true;
     }
 
     void AwaitDistanceCamera()
@@ -66,39 +69,38 @@ public class Camera : MonoBehaviourPunCallbacks
 
     public void ZoomTimeline()
     {
-        Debug.Log("Zooom");
+        //Debug.Log("Zooom");
         gameObject.GetComponent<Animator>().SetBool("distanceZoom", false);
         gameObject.GetComponent<Animator>().SetBool("zoomTimeline", true);
-
     }
 
 
     public void DistanceTimeline()
     {
-        Debug.Log("Distance");
+        //Debug.Log("Distance");
         gameObject.GetComponent<Animator>().SetBool("zoomTimeline", false);
         gameObject.GetComponent<Animator>().SetBool("distanceZoom", true);
-        
+
+       // var gameManager = FindObjectOfType<GameManager>();
+        //gameManager.ActivateFinishButton(true);
     }
 
-    
     void AwaitZoomTimeline()
     {
         if(timeline.photonView.IsMine)
         {
-            Debug.Log("entrou");
+            //Debug.Log("entrou");
             if (CheckIfCardWasDrew())
             {
-                Debug.Log("tem drew");
+                //Debug.Log("tem drew");
                 slot.SetUpSlots(true, "Selectable");
             }
             else
             {
-                Debug.Log("nao tem drew");
+                //Debug.Log("nao tem drew");
                 timeline.ActiveTimeline(true);
             }
         }
-
     }
 
 

@@ -51,10 +51,12 @@ public class OutlineAction : MonoBehaviour
             highlight = raycastHit.transform;
             if (highlight.CompareTag("Selectable"))
             {
+                //Debug.Log("Selectable");
 
                 if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
                 {
                     highlight.gameObject.GetComponent<OutlineComponent>().enabled = true;
+                    //Debug.Log("raycast hitting: " +gameObject.name);
 
                     for (int i = 0; i < opcoes.Length; i++)
                     {

@@ -18,8 +18,12 @@ public class Timeline : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
-        ActiveTimeline(false);
-        photonView.RPC("ClickTimeline", RpcTarget.All);
+        if (gameObject.CompareTag("Selectable"))
+        {
+            ActiveTimeline(false);
+            photonView.RPC("ClickTimeline", RpcTarget.All);
+        }
+
     }
 
     [PunRPC]

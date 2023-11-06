@@ -18,7 +18,7 @@ public class QuitGame : MonoBehaviour
     void AwaitRedButtonAnimation()
     {
         cam.gameObject.GetComponent<Animator>().SetBool("enterMenu", false);
-        cam.gameObject.GetComponent<Animator>().SetBool("enterMatch", true);
+        cam.gameObject.GetComponent<Animator>().SetBool("quitGame", true);
         animator.SetBool("quitGame", false);
 
         Invoke("AfterClickQuitButton", 2.9f);

@@ -48,6 +48,8 @@ MonoBehaviour:
   numberRepairCards: 0
   nickname: 
   index: 0
+  yourTurn: 0
+  numberRepairCardsText: 
 --- !u!114 &-8254398148774460658
 MonoBehaviour:
   m_ObjectHideFlags: 0
