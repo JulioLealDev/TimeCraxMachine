@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using System.Linq;
+using System;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GameObject inputName;
     public GameObject suitTop;
     public GameObject gameHUD;
+    public GameObject hud;
+    public GameObject endButton;
     private int[] playersList;
     private int round = 1;
     private int roundCompare = 1;
@@ -64,24 +67,45 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ShowHUD()
     {
-        gameHUD.SetActive(true);
+
+        hud.SetActive(true);
         var outline = FindObjectOfType<OutlineAction>();
         outline.MakeObjectsSelectable();
 
-        var components = gameHUD.GetComponentsInChildren<Transform>();
-        int name = 0;
+        var components = hud.GetComponentsInChildren<Transform>();
+
+        string plateName = "plateName0";
+        string namePlayer = "namePlayer0";
+        string repairCardSymbol = "repairCardSymbol0";
+        string numberRepairCards = "numberRepairCards0";
 
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
-            name ++;
+            int name = i + 1;
             for (int x = 0; x < components.Length; x++)
             {
-                //Debug.Log("component name:" + components[x].name+" - name: "+name.ToString());
-                if (components[x].name == name.ToString())
+                //Debug.Log("component name:" + components[x].name+" - name: "+ plateName+name.ToString());
+                if (components[x].name == plateName + name.ToString())
                 {
-                    //Debug.Log("entrou");
-                    components[x].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = PhotonNetwork.PlayerList[i].NickName;
+                    components[x].gameObject.GetComponent<MeshRenderer>().enabled = true;
+                }
+                else if(components[x].name == "FinishTurn" || components[x].name == "QuitGame")
+                {
                     components[x].gameObject.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
+                }
+                else if (components[x].name == namePlayer + name.ToString())
+                {
+                    TextMeshProUGUI textName = components[x].gameObject.GetComponentInChildren<TextMeshProUGUI>();
+                    textName.text = PhotonNetwork.PlayerList[i].NickName;
+                    textName.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
+                }
+                else if (components[x].name == repairCardSymbol + name.ToString())
+                {
+                    components[x].GetComponent<SpriteRenderer>().enabled = true;
+                }
+                else if (components[x].name == numberRepairCards + name.ToString())
+                {
+                    components[x].GetComponent<TextMeshProUGUI>().text = "0";
                 }
             }
         }
@@ -241,41 +265,27 @@ public class GameManager : MonoBehaviourPunCallbacks
         deckRepair.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
         timeline.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
         gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
-        foreach (var component in timeCraxComponents)
+        endButton.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
+
+
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        {
+            string plateName = "plateName0" + (i + 1);
+            var findObject = GameObject.Find(plateName);
+
+            findObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
+        }
+
+            foreach (var component in timeCraxComponents)
         {
             component.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
         }
-        //foreach (var component in components)
-        //{
-        //    if(component.name == "FinishTurn")
-        //    {
-        //        Debug.Log("comp: " + component.name);
-        //        component.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
-        //    }
-        //}
 
         foreach (var player in players)
         {
 
-            //Debug.Log("2 -- " + player.nickname);
             if (player.index == time)
             {
-                //Debug.Log("3 -- " + player.nickname + " tem " + player.GetNumberOfRepairsCards() + " cartas");
-
-                //player.SetYourTurn(true);
-
-                //foreach (var repairCard in repairCards)
-                //{
-                //    //if(repairCard.photonView.OwnerActorNr != player.photonView.OwnerActorNr)
-                //    if (!repairCard.photonView.IsMine)
-                //    {
-                //        repairCard.GetComponent<MeshRenderer>().enabled = false;
-                //    }
-                //    else
-                //    {
-                //        repairCard.GetComponent<MeshRenderer>().enabled = true;
-                //    }
-                //}
 
                 if (player.GetNumberOfRepairsCards() == 5)
                 {
@@ -288,11 +298,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                     deckRepair.tag = "Selectable";
                 }
 
-                //foreach (Button component in components)
-                //{
-                //    component.interactable = true;
-                //}
-
                 foreach (var timeCraxComponent in timeCraxComponents)
                 {
                     if (timeCraxComponent.malfunctions == 1)
@@ -301,11 +306,28 @@ public class GameManager : MonoBehaviourPunCallbacks
                     }
                 }
 
+                endButton.GetComponent<MeshCollider>().enabled = true;
+
                 timeline.GetComponent<MeshCollider>().enabled = true;
                 deckEvent.GetComponent<MeshCollider>().enabled = true;
                 deckRepair.GetComponent<MeshCollider>().enabled = true;
                 deckEvent.tag = "Selectable";
                 timeline.tag = "Selectable";
+
+
+                for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+                {
+                    string name = "plateName0" + (i + 1);
+                    var plate = GameObject.Find(name);
+
+                    plate.GetComponent<MeshCollider>().enabled = true;
+                    plate.tag = "Selectable";
+                }
+
+                string plateName = "plateName0" + (time + 1);
+                var findObject = GameObject.Find(plateName);
+
+                findObject.GetComponent<MeshCollider>().enabled = false;
 
             }
             else
@@ -321,9 +343,20 @@ public class GameManager : MonoBehaviourPunCallbacks
                 //    }
 
                 //}
+                endButton.GetComponent<MeshCollider>().enabled = false;
+
                 timeline.GetComponent<MeshCollider>().enabled = false;
                 deckEvent.GetComponent<MeshCollider>().enabled = false;
                 deckRepair.GetComponent<MeshCollider>().enabled = false;
+
+                for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+                {
+                    string name = "plateName0" + (i + 1);
+                    var plate = GameObject.Find(name);
+
+                    plate.GetComponent<MeshCollider>().enabled = false;
+                    //plate.tag = "Selectable";
+                }
             }
         }
     }
@@ -331,7 +364,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void RandomComponentNumber()
     {
         //Debug.Log("7 --");
-        randomId = Random.Range(1, componentList.Count);
+        randomId = UnityEngine.Random.Range(1, componentList.Count);
         //Debug.Log("result: " + randomId);
         photonView.RPC("ComponentRandom", RpcTarget.All, randomId);
         //ComponentRandom(randomId);
@@ -341,16 +374,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void EndTurn()
     {
         //FinishTurn();
-        string buttonName = EventSystem.current.currentSelectedGameObject.name;
+        //string buttonName = EventSystem.current.currentSelectedGameObject.name;
 
-        Debug.Log("apertou Finish: "+buttonName);
+        //Debug.Log("apertou Finish: "+buttonName);
         //Debug.Log("Finish - time: " + time + " == " + (PhotonNetwork.PlayerList.Length - 1));
         if (time == PhotonNetwork.PlayerList.Length - 1)
         {
             Debug.Log("Random Malfunction");
             RandomComponentNumber();
         }
+
         photonView.RPC("FinishTurn", RpcTarget.All);
+
     }
 
     public void SetUpComponents()
@@ -390,10 +425,23 @@ public class GameManager : MonoBehaviourPunCallbacks
         deckEvent.tag = "Disabled";
         timeline.tag = "Disabled";
 
+
+        //for(int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        //{
+        //    string plateName = "plateName0" + (i + 1);
+        //    var findObject = GameObject.Find(plateName);
+
+        //   findObject.GetComponent<MeshCollider>().enabled = true;
+        //}
+
+
         //photonView.RPC("Turn", RpcTarget.All);
+
         Turn();
-        //Debug.Log("-- SetUpComponents --: ");
+
         SetUpComponents();
+
+        
 
     }
 
@@ -442,33 +490,47 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void ActivateFinishButton(bool activate)
+    public void ActivateEnd()
     {
-        players = FindObjectsOfType<PlayerScript>();
-        GameObject component = GameObject.FindGameObjectWithTag("Finish");
 
         foreach (var player in players)
         {
-            Debug.Log("Player: " + player.nickname);
-            Debug.Log("Player turn: " + player.GetYourTurn());
-            if (player.GetYourTurn())
-            {
-                Debug.Log("button: " + component.name + " recebeu: " + activate);
 
-                component.GetComponent<Button>().interactable = activate;
+            if (player.index == time)
+            {
+                Debug.Log("player " + player.nickname + " está na vez");
+                endButton.GetComponent<MeshCollider>().enabled = true;
             }
             else
             {
-                Debug.Log("button: " + component.name + " recebeu: false");
-                component.GetComponent<Button>().interactable = false;
+                Debug.Log("player " + player.nickname + " NÃO está na vez");
+                endButton.GetComponent<MeshCollider>().enabled = false;
             }
         }
+
     }
+
+    public void ActivateFinishButton(bool activate)
+    {
+
+        endButton.GetComponent<MeshCollider>().enabled = activate;
+
+    }
+
 
     public void BlockActions()
     {
         deckRepair.tag = "Disabled";
         deckEvent.tag = "Disabled";
+
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        {
+            string plateName = "plateName0" + (i + 1);
+            var findObject = GameObject.Find(plateName);
+
+            //findObject.GetComponent<MeshCollider>().enabled = false;
+            findObject.tag = "Disabled";
+        }
 
         var suitComponents = FindObjectsOfType<Component>();
         foreach (var suitComponent in suitComponents)
@@ -479,28 +541,57 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        Button[] components = gameHUD.GetComponentsInChildren<Button>();
-        foreach (Button component in components)
-        {
-            if (component.name != "QuitGame" && component.name != "FinishTurn")
-            {
-                component.interactable = false;
-            }
-        }
+        //Button[] components = gameHUD.GetComponentsInChildren<Button>();
+        //foreach (Button component in components)
+        //{
+        //    if (component.name != "QuitGame" && component.name != "FinishTurn")
+        //    {
+        //        component.interactable = false;
+        //    }
+        //}
     }
 
-    public void GiveCard()
+    public void DeactivateAll()
     {
-        string button = EventSystem.current.currentSelectedGameObject.name;
-        //Debug.Log("Nome: " + button);
-        int buttonName = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+        Debug.Log("Desativando platenames");
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        {
+            string plateName = "plateName0" + (i + 1);
+            var findObject = GameObject.Find(plateName);
 
-        photonView.RPC("GiveRepairCard", RpcTarget.All, buttonName);
+
+            findObject.GetComponent<MeshCollider>().enabled = false;
+        }
+
+        Debug.Log("Desativando components");
+        var suitComponents = FindObjectsOfType<Component>();
+        foreach (var suitComponent in suitComponents)
+        {
+            if (suitComponent.malfunctions == 1)
+            {
+                suitComponent.GetComponent<MeshCollider>().enabled = false;
+            }
+        }
+
+        Debug.Log("Desativando decks");
+        deckEvent.GetComponent<MeshCollider>().enabled = false;
+        deckRepair.GetComponent<MeshCollider>().enabled = false;
+        timeline.GetComponent<MeshCollider>().enabled = false;
+        endButton.GetComponent<MeshCollider>().enabled = false;
+    }
+
+    public void GiveCard(int numberPlayer)
+    {
+        //string button = EventSystem.current.currentSelectedGameObject.name;
+        //Debug.Log("Nome: " + button);
+        //int buttonName = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+
+        photonView.RPC("GiveRepairCard", RpcTarget.All, numberPlayer);
 
     }
 
     [PunRPC]
-    public void GiveRepairCard(int buttonName)
+    public void GiveRepairCard(int numberPlayer)
     {
 
         PlayerScript playerSending = null;
@@ -513,11 +604,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 playerSending = player;
             }
-            else if (player.index == buttonName - 1)
+            else if (player.index == numberPlayer - 1)
             {
                 playerReceiving = player;
             }
         }
+
 
         if (playerSending.GetNumberOfRepairsCards() > 0 && playerReceiving.GetNumberOfRepairsCards() < 5)
         {
@@ -547,8 +639,29 @@ public class GameManager : MonoBehaviourPunCallbacks
             //Debug.Log("Recebendo carta: " + playerReceiving.nickname);
             playerReceiving.numberRepairCards++;
 
+            string numberRepairCardsReceiver = "numberRepairCards0" + numberPlayer;
+            var findReceiverNumberCards = GameObject.Find(numberRepairCardsReceiver);
+            Debug.Log("receiver: " + findReceiverNumberCards.name);
+
+            //int numberOfCardsReceiver = int.Parse(findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text);
+            //numberOfCardsReceiver++;
+
+            findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberRepairCards.ToString();
+
             //Debug.Log("Dando carta: " + playerSending.nickname);
             playerSending.numberRepairCards--;
+
+            string numberRepairCardsSender = "numberRepairCards0" + (time + 1);
+            var findSenderNumberCards = GameObject.Find(numberRepairCardsSender); 
+            Debug.Log("sender: " + findSenderNumberCards.name);
+            Debug.Log("time + 1: " + (time + 1));
+
+            //int numberOfCardsSender = int.Parse(findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text);
+            //Debug.Log("antes -- number of cards sender: " + numberOfCardsSender);
+            //numberOfCardsSender--;
+            //Debug.Log("depois -- number of cards sender: " + numberOfCardsSender);
+
+            findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberRepairCards.ToString();
 
             //Debug.Log("ativando animator");
             lastCard.GetComponent<Animator>().enabled = true;
@@ -559,8 +672,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             //Debug.Log("Você não possui cartas!");
         }
-
-
 
     }
 

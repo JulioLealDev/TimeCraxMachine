@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-
+    
 public class DeckEvent : MonoBehaviourPunCallbacks
 {
     public DeckRepair deckRepair;
     public GameManager gameManager;
+    public Canvas gameInfo;
     private List<int> eventList = new List<int>();
 
     void Start()
@@ -37,8 +38,40 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         }
         else
         {
+            Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+            gameInfo.gameObject.SetActive(true);
+
+            foreach (var info in infos)
+            {
+                if (info.gameObject.name == "ActionInfoBackground")
+                {
+                    info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
+                }
+            }
+
             Debug.Log("Você já realizaou uma ação neste turno");
+
+            Invoke("HideActionInfo", 1.5f);
         }
+    }
+    public void HideActionInfo()
+    {
+        //Debug.Log("HideRoundInfo()");
+        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+        foreach (var info in infos)
+        {
+            if (info.gameObject.name == "ActionInfoBackground"  )
+            {
+                info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
+            }
+        }
+        Invoke("DisableGameInfo", 0.5f);
+    }
+
+    public void DisableGameInfo()
+    {
+        //Debug.Log("DisableGameInfo()");
+        gameInfo.gameObject.SetActive(false);
     }
 
     public void EventRandom()

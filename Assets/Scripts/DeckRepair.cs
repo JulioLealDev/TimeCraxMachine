@@ -5,6 +5,7 @@ public class DeckRepair : MonoBehaviourPunCallbacks
 {
     public DeckEvent deckEvent;
     public GameManager gameManager;
+    public Canvas gameInfo;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +34,19 @@ public class DeckRepair : MonoBehaviourPunCallbacks
                     else
                     {
                         Debug.Log("Você já realizou uma ação neste turno");
+
+                        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+                        gameInfo.gameObject.SetActive(true);
+
+                        foreach (var info in infos)
+                        {
+                            if (info.gameObject.name == "ActionInfoBackground")
+                            {
+                                info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
+                            }
+                        }
+
+                        Invoke("HideActionInfo", 1.5f);
                     }
                 }
 
@@ -51,6 +65,24 @@ public class DeckRepair : MonoBehaviourPunCallbacks
 
         }
 
+    }
+
+    public void HideActionInfo()
+    {
+        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+        foreach (var info in infos)
+        {
+            if (info.gameObject.name == "ActionInfoBackground")
+            {
+                info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
+            }
+        }
+        Invoke("DisableGameInfo", 0.5f);
+    }
+
+    public void DisableGameInfo()
+    {
+        gameInfo.gameObject.SetActive(false);
     }
 
 

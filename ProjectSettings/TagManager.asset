@@ -15,6 +15,8 @@ TagManager:
   - InputName
   - GameOver
   - Victory
+  - PlateName
+  - GameInfo
   layers:
   - Default
   - TransparentFX

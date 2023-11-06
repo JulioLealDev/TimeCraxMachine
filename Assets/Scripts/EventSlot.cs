@@ -157,10 +157,17 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (slotsFilled == 7)
         {
-            GameObject victory = GameObject.FindGameObjectWithTag("Victory");
-            victory.transform.GetChild(0).gameObject.SetActive(true);
-            //Debug.Log("name ---> " + victory.name);
-
+            Invoke("Victory", 3f);
         }
+    }
+
+    public void Victory()
+    {
+        var gameManager = FindObjectOfType<GameManager>();
+        gameManager.DeactivateAll();
+
+        GameObject victory = GameObject.FindGameObjectWithTag("Victory");
+        victory.transform.GetChild(0).gameObject.SetActive(true);
+        //Debug.Log("name ---> " + victory.name);
     }
 }

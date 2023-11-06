@@ -80,8 +80,9 @@ public class Camera : MonoBehaviourPunCallbacks
         //Debug.Log("Distance");
         gameObject.GetComponent<Animator>().SetBool("zoomTimeline", false);
         gameObject.GetComponent<Animator>().SetBool("distanceZoom", true);
-        var gameManager = FindObjectOfType<GameManager>();
-        gameManager.ActivateFinishButton(true);
+
+       // var gameManager = FindObjectOfType<GameManager>();
+        //gameManager.ActivateFinishButton(true);
     }
 
     void AwaitZoomTimeline()

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using System;
 
 public class EventCard : MonoBehaviourPunCallbacks
 {
@@ -52,6 +53,13 @@ public class EventCard : MonoBehaviourPunCallbacks
         gameObject.GetComponent<Animator>().SetBool("wrongSlot", false);
         gameObject.GetComponent<Animator>().SetBool("drawingEventCard", false);
         gameObject.GetComponent<Animator>().SetInteger("slotClicked", 0);
+    }
+
+    public void ActivateEndButton()
+    {
+
+        var gameManager = FindObjectOfType<GameManager>();
+        gameManager.ActivateEnd();
     }
 
 }
