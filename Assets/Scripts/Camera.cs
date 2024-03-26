@@ -26,12 +26,12 @@ public class Camera : MonoBehaviourPunCallbacks
             var menu = FindObjectOfType<Menu>();
             if (PhotonNetwork.CountOfRooms > 0)
             {
-                menu.DisableRoulette();
+                //menu.DisableRoulette();
                 //Debug.Log("Sala criada: " + PhotonNetwork.CountOfRooms);
             }
             else
             {
-                menu.EnableRoulette();
+                //menu.EnableRoulette();
                 //Debug.Log("Não há Sala criada: " + PhotonNetwork.CountOfRooms);
             }
         }

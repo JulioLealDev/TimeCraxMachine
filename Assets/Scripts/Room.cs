@@ -1,0 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Room : MonoBehaviour
+{
+    public TextMeshProUGUI buttonName;
+
+    public void JoinRoom()
+    {
+        GameObject.Find("GameConnection").GetComponent<GameConnection>().JoinRoomInList(buttonName.text);
+    }
+}

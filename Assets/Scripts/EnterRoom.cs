@@ -5,7 +5,7 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class StartGame : MonoBehaviour
+public class EnterRoom : MonoBehaviour
 {
     public Animator animator;
     public Camera cam;
@@ -14,6 +14,7 @@ public class StartGame : MonoBehaviour
     public TextMeshPro warning;
     public GameConnection gameConnection;
     public Canvas lobby;
+    public GameObject blueButton;
 
     void Start()
     {
@@ -35,22 +36,24 @@ public class StartGame : MonoBehaviour
             warning.gameObject.SetActive(true);
             warning.gameObject.GetComponent<Animator>().SetBool("nameIsEmpty", true);
             gameObject.GetComponent<MeshCollider>().enabled = false;
+            blueButton.gameObject.GetComponent<MeshCollider>().enabled = false;
             Invoke("AfterClickStart", 1.5f);
         }
         else
         {
-            if (gameConnection.gameObject.activeInHierarchy)
-            {
-                var connection = FindObjectOfType<GameConnection>();
-                connection.Start();
-            }
-            else
-            {
-                gameConnection.gameObject.SetActive(true);
-            }
+            //if (gameConnection.gameObject.activeInHierarchy)
+            //{
+            var connection = FindObjectOfType<GameConnection>();
+            connection.Lobby();
+            //}
+            //else
+            //{
+            //    gameConnection.gameObject.SetActive(true);
+            //}
             var menu = FindObjectOfType<Menu>();
             menu.DisableMenu();
-            
+            nameDisplay.gameObject.SetActive(false);
+
         }
 
     }
@@ -60,21 +63,23 @@ public class StartGame : MonoBehaviour
         warning.gameObject.SetActive(false);
         warning.gameObject.GetComponent<Animator>().SetBool("nameIsEmpty", false);
         gameObject.GetComponent<MeshCollider>().enabled = true;
+        blueButton.gameObject.GetComponent<MeshCollider>().enabled = true;
+
     }
 
-    public void ValidateNickname()
-    {
+    //public void ValidateNickname()
+    //{
 
-        if (nameDisplay.text.Contains(" ") || nameDisplay.text.Contains("-") || nameDisplay.text.Contains("´"))
-        {
-            nameDisplay.text = nameDisplay.text.Remove(nameDisplay.text.Length - 1);
-            PlayerPrefs.SetString("nickname", nameDisplay.text);
-        }
-        else
-        {
-            PlayerPrefs.SetString("nickname", nameDisplay.text);
-        }
-    }
+    //    if (nameDisplay.text.Contains(" ") || nameDisplay.text.Contains("-") || nameDisplay.text.Contains("´"))
+    //    {
+    //        nameDisplay.text = nameDisplay.text.Remove(nameDisplay.text.Length - 1);
+    //        PlayerPrefs.SetString("nickname", nameDisplay.text);
+    //    }
+    //    else
+    //    {
+    //        PlayerPrefs.SetString("nickname", nameDisplay.text);
+    //    }
+    //}
 
     void AwaitGreenButtonAnimation()
     {
