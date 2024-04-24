@@ -8,9 +8,11 @@ public class QuitGame : MonoBehaviour
     public Animator animator;
     public Camera cam;
     public InputField nameDisplay;
+    public SoundEffects soundEffects;
 
     private void OnMouseDown()
     {
+        soundEffects.PressButtonSound();
         animator.SetBool("quitGame", true);
         nameDisplay.text = " ";
     }

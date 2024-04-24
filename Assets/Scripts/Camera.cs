@@ -50,7 +50,7 @@ public class Camera : MonoBehaviourPunCallbacks
         Transform[] childrens = suitTop.GetComponentsInChildren<Transform>();
         for (int i = 0; i < childrens.Length; i++)
         {
-            if (childrens[i].CompareTag("Selectable") || childrens[i].CompareTag("Roulette") )
+            if (childrens[i].CompareTag("Selectable") )
             {
                 childrens[i].gameObject.GetComponent<MeshCollider>().enabled = true;
             }
@@ -81,8 +81,21 @@ public class Camera : MonoBehaviourPunCallbacks
         gameObject.GetComponent<Animator>().SetBool("zoomTimeline", false);
         gameObject.GetComponent<Animator>().SetBool("distanceZoom", true);
 
-       // var gameManager = FindObjectOfType<GameManager>();
-        //gameManager.ActivateFinishButton(true);
+        Invoke("ActivateEndButton", 1.5f);
+    }
+
+    public void ActivateEndButton()
+    {
+        //GameOver gameOver = FindObjectOfType<GameOver>();
+        //if (!gameOver.gameIsOver)
+        //{
+        //    var gameManager = FindObjectOfType<GameManager>();
+        //    gameManager.ActivateEnd();
+        //}
+
+        var gameManager = FindObjectOfType<GameManager>();
+        gameManager.ActivateEnd();
+
     }
 
     void AwaitZoomTimeline()

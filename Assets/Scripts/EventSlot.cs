@@ -6,11 +6,17 @@ public class EventSlot : MonoBehaviourPunCallbacks
 {
     public int slotNumber;
     public int randomNumber;
+    private GameManager gameManager;
+    public SoundEffects soundEffects;
+    private BackgroundMusic backgroundMusic;
+    private Victory victory;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        gameManager = FindObjectOfType<GameManager>();
+        victory = FindObjectOfType<Victory>();
+        backgroundMusic = FindObjectOfType<BackgroundMusic>();
     }
 
     // Update is called once per frame
@@ -21,6 +27,9 @@ public class EventSlot : MonoBehaviourPunCallbacks
     public void OnMouseDown()
     {
         var eventCards = FindObjectsOfType<EventCard>();
+
+        photonView.RPC("ClickSlotSound", RpcTarget.All, 1);
+
         foreach (var card in eventCards)
         {
             if (card.CompareTag("Drew"))
@@ -30,13 +39,15 @@ public class EventSlot : MonoBehaviourPunCallbacks
                 if (slotNumber == card.slotCount)
                 {
                     //Debug.Log("É igual!");
+                    photonView.RPC("ClickSlotSound", RpcTarget.All, 2);
+
                     photonView.RPC("ClickedRightSlot", RpcTarget.All, card.slotCount);
                 }
                 else
                 {
                     //Debug.Log("Noé igual!");
-                    var gameManager = FindObjectOfType<GameManager>();
-                    gameManager.RandomComponentNumber();
+                    photonView.RPC("ClickSlotSound", RpcTarget.All, 3);
+                    Invoke("RandomComponent", 5f);
 
                     photonView.RPC("ClickedWrongSlot", RpcTarget.All, card.slotCount);
 
@@ -46,8 +57,44 @@ public class EventSlot : MonoBehaviourPunCallbacks
             //photonView.RPC("ClickSlot", RpcTarget.All);
         }
 
-            
+
     }
+
+    [PunRPC]
+    public void ClickSlotSound(int idSound)
+    {
+        if(idSound == 1)
+        {
+            soundEffects.PlayClickSlotSound();
+        }
+        else if(idSound == 2)
+        {
+            Invoke("PlayRightSound", 3.3f);
+        }
+        else if(idSound == 3) 
+        {
+            Invoke("PlayWrongSound", 3.3f);
+        }
+
+    }
+
+    [PunRPC]
+    public void PlayRightSound()
+    {
+        soundEffects.PlayRightSlotSound();
+    }
+
+    [PunRPC]
+    public void PlayWrongSound()
+    {
+        soundEffects.PlayWrongSlotSound();
+    }
+
+    public void RandomComponent()
+    {
+        gameManager.RandomComponentNumber();
+    }
+
     [PunRPC]
     public void ClickedWrongSlot(int slotCount)
     {
@@ -157,17 +204,26 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (slotsFilled == 7)
         {
-            Invoke("Victory", 3f);
+            //GameOver gameOver = FindObjectOfType<GameOver>();
+            //gameOver.gameIsOver = true;
+
+            gameManager.DeactivateAll();
+            gameManager.ResetAllComponents();
+            Invoke("Victory", 4.5f);
         }
     }
 
     public void Victory()
     {
-        var gameManager = FindObjectOfType<GameManager>();
-        gameManager.DeactivateAll();
-
-        GameObject victory = GameObject.FindGameObjectWithTag("Victory");
         victory.transform.GetChild(0).gameObject.SetActive(true);
-        //Debug.Log("name ---> " + victory.name);
+        backgroundMusic.PlayVictorySound();
+        //Invoke("ReturningToMenu", 2f);
     }
+
+    //public void ReturningToMenu()
+    //{
+    //    victory.transform.GetChild(0).gameObject.SetActive(false);
+    //    var gameManager = FindObjectOfType<GameManager>();
+    //    gameManager.QuitGame();
+    //}
 }

@@ -5,11 +5,13 @@ using Photon.Realtime;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.Linq;
 
 public class GameConnection : MonoBehaviourPunCallbacks
 {
 
-    List<RoomInfo> Rooms = new List<RoomInfo>();
+    List<RoomInfo> rooms = new List<RoomInfo>();
+    List<RoomInfo> closedRooms = new List<RoomInfo>();
 
     private int sufix = 0;
     //public TMPro.TextMeshProUGUI roomListScroll;
@@ -30,7 +32,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
     public InputField nameDisplay;
 
 
-
     public void EnterServerAndLobby() 
     { 
         PhotonNetwork.ConnectUsingSettings();
@@ -38,6 +39,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void ConnectingInServerAndLobby()
     {
+        //Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         sufix++;
         string name = "Players"+sufix.ToString();
         PhotonNetwork.LocalPlayer.NickName = name;
@@ -49,6 +51,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.InLobby == false)
         {
+            Debug.Log("Entrando no Lobby");
             PhotonNetwork.JoinLobby();
         }
     }
@@ -62,11 +65,11 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void Lobby()
     {
-        Debug.Log("Entrou no Lobby");
+        Debug.Log("Entrou no LobbyScreen");
         PhotonNetwork.LocalPlayer.NickName = PlayerPrefs.GetString("nickname");
         lobbyBackgroundScreen.SetActive(true);
         lobbyScreen.SetActive(true);
-        roomList.GetComponent<RoomList>().GetRoomsList(Rooms);
+        roomList.GetComponent<RoomList>().GetRoomsList(rooms);
         //ListRooms();
 
     }
@@ -81,7 +84,8 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void CreatedRoom(string nameRoom, int maxPlayers, string difficulty, string theme, string password)
     {
-        Debug.Log("Entrou no Sala Criada");
+        //Debug.Log("password: " + password + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(password));
+        Debug.Log("Entrou na Sala Criada");
         RoomOptions options = new RoomOptions { MaxPlayers = (byte)maxPlayers, EmptyRoomTtl = 0, PlayerTtl = 0 };
         options.CustomRoomPropertiesForLobby = new string[3] { "dif", "the", "pass" };
         options.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
@@ -89,6 +93,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
         options.CustomRoomProperties.Add("the", theme);
         options.CustomRoomProperties.Add("pass", password);
         PhotonNetwork.CreateRoom( nameRoom, options, null);
+        //Debug.Log("options.pass: " + options.CustomRoomProperties["pass"] + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(options.CustomRoomProperties["pass"].ToString()));
     }
     
     public void ReturnigToMenu()
@@ -122,22 +127,34 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        Debug.Log("Client saiu da sala");
         chatLog.text += "\n" + otherPlayer.NickName + " saiu na sala";
         ListPlayersInRoom();
-        CheckIfIsMaster();
+        //CheckIfIsMaster();
+        //DisconectAndReconect();
     }
 
     public override void OnLeftRoom()
     {
-        Debug.Log("Saiu da Sala");
+        //Rooms.Clear();
+        Debug.Log("Master saiu da Sala");
         ListPlayersInRoom();
         chatLog.text = null;
+        //DisconectAndReconect();
+    }
+
+    public void DisconectAndReconect()
+    {
+        Debug.Log("Disconecting and Reconecting");
+        PhotonNetwork.Disconnect();
+        PhotonNetwork.ConnectUsingSettings();
     }
 
     public void CheckIfIsMaster()
     {
         if (PhotonNetwork.IsMasterClient)
         {
+            PhotonNetwork.CurrentRoom.IsOpen = true;
             buttonStart.interactable = true;
         }
         else
@@ -166,7 +183,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
         //    lobby.SetActive(true);
         //}
 
-        //CheckIfIsMaster();
+        CheckIfIsMaster();
 
         roomNameTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Name;
         maxPlayersTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
@@ -200,13 +217,51 @@ public class GameConnection : MonoBehaviourPunCallbacks
         
     }
 
+    public bool CheckPassword(string nameRoom, string password)
+    {
+        Debug.Log("Entrou no CheckPassword");
+
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            Debug.Log("RoomName: "+ rooms[i].Name.ToUpper()+" ----- nameRoom: "+ nameRoom.ToUpper());
+            if (rooms[i].Name.ToUpper() == nameRoom.ToUpper())
+            {
+                string passwordRoom = rooms[i].CustomProperties["pass"].ToString();
+
+                Debug.Log("Comparando senhas: ---- senha01: " + passwordRoom.ToUpper() + " senha02: " + password.ToUpper());
+                if ( passwordRoom.ToUpper() == password.ToUpper())
+                {
+                    return true;
+                }
+                else
+                {
+                    //passwordCorrect = false;
+                    Debug.Log("Password Errado 01");
+                }
+            }
+
+        }
+
+        return false;
+    }
+
     public bool CheckRoomName(string nameRoom)
     {
 
         bool alreadyExist = false;
-        for (int i = 0; i < Rooms.Count; i++)
+
+        for (int i = 0; i < rooms.Count; i++)
         {
-            if (Rooms[i].Name.ToUpper() == nameRoom.ToUpper())
+            if (rooms[i].Name.ToUpper() == nameRoom.ToUpper())
+            {
+                alreadyExist = true;
+            }
+
+        }
+
+        for (int i = 0; i < closedRooms.Count; i++)
+        {
+            if (closedRooms[i].Name.ToUpper() == nameRoom.ToUpper())
             {
                 alreadyExist = true;
             }
@@ -220,55 +275,34 @@ public class GameConnection : MonoBehaviourPunCallbacks
         Debug.Log("Atualizando salas");
         Debug.Log("Numero de salas criadas: "+roomList.Count);
 
-        Rooms.Clear();
+        rooms.Clear();
+        closedRooms.Clear();
+        //Rooms = Rooms.Distinct().ToList();
 
         for (int i = 0; i < roomList.Count; i++)
         {
             Debug.Log(" - " + roomList[i].Name);
-            if (roomList[i].PlayerCount == 0 || roomList[i].PlayerCount == roomList[i].MaxPlayers) 
+            if (roomList[i].PlayerCount == 0 || !roomList[i].IsOpen) 
             {
-                Debug.Log("Cheia ou vazia");
+                Debug.Log("Sala vazia ou fechada");
                 roomList[i].RemovedFromList = true;
+                closedRooms.Add(roomList[i]);
             }
             else
             {
-                Debug.Log("adicionando lasa na lista");
+                Debug.Log("adicionando sala aberta na lista");
                 roomList[i].RemovedFromList = false;
-                Rooms.Add(roomList[i]);
+                rooms.Add(roomList[i]);
             }
 
         }
-
-
-
-        //for (int i = 0; i < roomList.Count; i++)
-        //{
-
-            //    Rooms.Add(roomList[i]);
-            //    roomListScroll.text += " " + roomList[i].Name + "\n";
-            //    Debug.Log("Sala " + roomList[i].Name + " adicionada a lista ");
-            //}
+        Debug.Log("Salas ABERTAS armazenadas na lista flexivel:");
+        Debug.Log("Tamanho da lista: "+rooms.Count);
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            Debug.Log("Sala: " + rooms[i].Name+" no index: "+ i);
+        }
 
     }
-
-    //public void ListRooms()
-    //{
-    //    roomListScroll.text = null;
-
-    //    if (PhotonNetwork.CountOfRooms > 0)
-    //    {
-
-    //        foreach (var room in Rooms)
-    //        {
-    //            roomListScroll.text += " " + room.Name + "\n";
-    //            Debug.Log("Sala" + room.Name + " adicionada a lista ");
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Não há Salas criadas!");
-    //    }
-
-    //}
 
 }

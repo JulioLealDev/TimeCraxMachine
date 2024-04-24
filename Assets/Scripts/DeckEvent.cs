@@ -4,21 +4,17 @@ using Photon.Pun;
     
 public class DeckEvent : MonoBehaviourPunCallbacks
 {
-    public DeckRepair deckRepair;
+    //public DeckRepair deckRepair;
     public GameManager gameManager;
     public Canvas gameInfo;
     private List<int> eventList = new List<int>();
+    private int[] numbers = { 1, 2, 3, 4, 5, 6, 7 };
+    public SoundEffects soundEffects;
 
     void Start()
     {
-        int[] numbers = { 1, 2, 3, 4, 5, 6, 7 };
+        eventList.Clear();
         eventList.AddRange(numbers);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void OnMouseDown()
@@ -26,6 +22,8 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
         if (gameObject.CompareTag("Selectable"))
         {
+            photonView.RPC("ClickDraw", RpcTarget.All, 1);
+
             gameManager.BlockActions();
             gameManager.ActivateFinishButton(false);
             if (photonView.IsMine)
@@ -38,6 +36,8 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         }
         else
         {
+            photonView.RPC("ClickDraw", RpcTarget.All, 2);
+
             Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
             gameInfo.gameObject.SetActive(true);
 
@@ -52,6 +52,19 @@ public class DeckEvent : MonoBehaviourPunCallbacks
             Debug.Log("Você já realizaou uma ação neste turno");
 
             Invoke("HideActionInfo", 1.5f);
+        }
+    }
+
+    [PunRPC]
+    public void ClickDraw(int idSound)
+    {
+        if(idSound == 1)
+        {
+            soundEffects.PlayDrawCardSound();
+        }
+        else if(idSound == 2)
+        {
+            soundEffects.TagSound();
         }
     }
     public void HideActionInfo()
@@ -76,7 +89,13 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
     public void EventRandom()
     {
-        int index = Random.Range(0, eventList.Count - 1);
+        foreach (var number in eventList)
+        {
+            Debug.Log(number);
+        }
+
+        Debug.Log("max range (index): " + (eventList.Count));
+        int index = Random.Range(0, eventList.Count);
         Debug.Log("result: " + index);
 
         DrawEventCard(index);
@@ -98,13 +117,49 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     }
     public void RemoveIndex(int value)
     {
-        for(int i = 0; i < eventList.Count - 1; i++)
+
+        Debug.Log(" eventList.Count: " + eventList.Count);
+        for (int i = 0; i < eventList.Count; i++)
         {
+            Debug.Log("eventList[i]: "+ eventList[i]+ " ---- valor :" + value);
             if (eventList[i] == value)
             {
+                Debug.Log("Removendo valor :" + value);
                 eventList.RemoveAt(i);
             }
         }
+
+
+        foreach (var number in eventList)
+        {
+            Debug.Log("-- "+number);
+        }
+    }
+
+    public void ResetAllEventCards()
+    {
+        eventList.Clear();
+        eventList.AddRange(numbers);
+
+        var eventCards = FindObjectsOfType<EventCard>();
+
+        foreach (var eventCard in eventCards)
+        {
+            if(eventCard.GetComponent<MeshRenderer>().enabled)
+            {
+                eventCard.GetComponent<MeshRenderer>().enabled = false;
+                eventCard.GetComponent<Animator>().SetBool("wrongSlot", true);
+            }
+
+        }
+
+        //foreach (var eventCard in eventCards)
+        //{
+        //    eventCard.GetComponent<Animator>().SetBool("drawingEventCard", false);
+        //    eventCard.GetComponent<Animator>().SetBool("wrongSlot", false);
+        //    eventCard.GetComponent<Animator>().SetInteger("slotClicked", 0);
+        //}
+
 
     }
 

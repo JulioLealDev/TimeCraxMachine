@@ -15,6 +15,7 @@ public class EnterRoom : MonoBehaviour
     public GameConnection gameConnection;
     public Canvas lobby;
     public GameObject blueButton;
+    public SoundEffects soundEffects;
 
     void Start()
     {
@@ -28,6 +29,8 @@ public class EnterRoom : MonoBehaviour
 
     public void OnMouseDown()
     {
+        soundEffects.PressButtonSound();
+
         PlayerPrefs.SetString("nickname", nameDisplay.text);
         var nickname =  PlayerPrefs.GetString("nickname");
 

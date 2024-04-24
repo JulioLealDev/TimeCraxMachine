@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.XR;
+using TMPro;
 
 public class RoomList : MonoBehaviourPunCallbacks
 {
@@ -23,12 +24,39 @@ public class RoomList : MonoBehaviourPunCallbacks
         {
             GameObject roomAlreadyExist = GameObject.Find(roomList[i].Name);
             Debug.Log("Nome do objeto encontrado: "+roomAlreadyExist?.name);
+            Debug.Log("Nome do objeto a ser criado: " + roomList[i].Name +" que está no index: "+i);
 
             if (!roomAlreadyExist)
             {
                 GameObject Room = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity, GameObject.Find("Content").transform);
                 Room.name = roomList[i].Name;
-                Room.GetComponent<Room>().buttonName.text = roomList[i].Name;
+                string locked = roomList[i].CustomProperties["pass"].ToString();
+                Debug.Log("locked value: "+locked);
+                Debug.Log("isnullorwhite: "+string.IsNullOrWhiteSpace(locked));
+                foreach (Transform child in Room.GetComponentsInChildren<Transform>())
+                {
+                    if(child.name == "NameRoomText")
+                    {
+                        child.GetComponent<TMP_Text>().text = roomList[i].Name;
+                    }
+                    else if(child.name == "PlayersText")
+                    {
+                        child.GetComponent<TMP_Text>().text = roomList[i].PlayerCount.ToString()+ "/"+ roomList[i].MaxPlayers.ToString();
+                    }
+                    else if (child.name == "ThemeText")
+                    {
+                        child.GetComponent<TMP_Text>().text = roomList[i].CustomProperties["the"].ToString();
+                    }
+                    else if (child.name == "DifficultyText")
+                    {
+                        child.GetComponent<TMP_Text>().text = roomList[i].CustomProperties["dif"].ToString();
+                    }
+                    else if (child.name == "LockedText")
+                    {
+                        child.GetComponent<TMP_Text>().text = string.IsNullOrWhiteSpace(locked) ? "No" : "Yes";
+                    }
+                }
+
                 Debug.Log("criando objeto com nome de: " + roomList[i].Name);
             }
             else

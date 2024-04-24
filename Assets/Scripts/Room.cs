@@ -1,15 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Room : MonoBehaviour
 {
     public TextMeshProUGUI buttonName;
+    public TextMeshProUGUI isLocked;
 
     public void JoinRoom()
     {
-        GameObject.Find("GameConnection").GetComponent<GameConnection>().JoinRoomInList(buttonName.text);
+
+        PasswordScreen passwordScreen = FindObjectOfType<PasswordScreen>(true);
+        LobbyOptions lobbyOptions = FindObjectOfType<LobbyOptions>(true);
+
+        if (isLocked.text == "Yes")
+        {
+            passwordScreen.gameObject.SetActive(true);
+            passwordScreen.ActivateBackground(true);
+            passwordScreen.SetRoomName(gameObject.name);
+            lobbyOptions.ActivateButtons(false);
+        }   
+        else
+        {
+            GameObject.Find("GameConnection").GetComponent<GameConnection>().JoinRoomInList(gameObject.name);
+
+        }
     }
+
+    
 }

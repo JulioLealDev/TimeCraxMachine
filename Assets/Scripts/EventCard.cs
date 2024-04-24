@@ -13,12 +13,6 @@ public class EventCard : MonoBehaviourPunCallbacks
         camera = FindObjectOfType<Camera>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void DrawEventCard()
     {
         photonView.RPC("DrawingEventCard", RpcTarget.All);
@@ -57,7 +51,7 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     public void ActivateEndButton()
     {
-
+        Debug.Log("ActivateEndButton");
         var gameManager = FindObjectOfType<GameManager>();
         gameManager.ActivateEnd();
     }

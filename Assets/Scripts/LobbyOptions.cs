@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class LobbyOptions : MonoBehaviourPunCallbacks
 {
     public GameObject lobbyBackgroundScreen;
+    //public GameObject lobbyBackgroundScreen02;
     public GameConnection gameConnection;
     public GameObject roomNameInput;
     public GameObject maxPlayersDropdown;
@@ -16,7 +17,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     public GameObject passwordInput;
     public GameObject passwordLabel;    
     public Canvas loading;
-    public GameObject gameManager;
+    public GameManager gameManager;
     public GameObject createRoom;
     public GameObject roomScreen;
     public GameObject lobbyScreen;
@@ -26,21 +27,31 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     public GameObject roomNameWarning;
     public GameObject passwordWarning;
     public GameObject alreadyExistNameWarning;
+    public BackgroundMusic backgroundMusic;
+    public SoundEffects soundEffects;
+    //public GameObject passwordScreen;
 
     bool privateRoom = false;
 
     public void ClickStart()
     {
+        soundEffects.PressHudButtonSound();
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+
         photonView.RPC("StartMatch", RpcTarget.All);
+
     }
 
     [PunRPC]
     public void StartMatch()
     {
+        backgroundMusic.PlayGameSound();
         PlayerPrefs.SetString("gameStarted", "true");
         PhotonNetwork.CurrentRoom.IsOpen = false;
-        gameObject.SetActive(false);
-        gameManager.SetActive(true);
+        roomScreen.SetActive(false);
+        lobbyBackgroundScreen.SetActive(false);
+        //gameManager.SetActive(true);
+        gameManager.StartNewGame();
     }
     public void EnablePassword()
     {
@@ -67,6 +78,8 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
     public void AllVerifyed()
     {
+        soundEffects.PressHudButtonSound();
+
         string roomName = roomNameInput.GetComponent<TMP_InputField>().text;
         string maxPlayers = maxPlayersDropdown.GetComponent<TextMeshProUGUI>().text;
         string difficulty = difficultyDropdown.GetComponent<TextMeshProUGUI>().text;
@@ -79,6 +92,8 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     }
     public void CancelCreateRoom()
     {
+        soundEffects.PressHudButtonSound();
+
         Debug.Log("CancelCreateRoom clicked");
         createRoom.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
@@ -90,6 +105,8 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
     public void CancelRoomScreen()
     {
+        soundEffects.PressHudButtonSound();
+
         Debug.Log("CancelRoomScreen clicked");
         roomScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
@@ -98,7 +115,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         //if (PhotonNetwork.LocalPlayer.IsMasterClient)
         //{
         //    Debug.Log("É o master");
-           PhotonNetwork.LeaveRoom(true);
+           PhotonNetwork.LeaveRoom(false);
         //}
 
         var menu = FindObjectOfType<Menu>();
@@ -106,10 +123,62 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         nameDisplay.gameObject.SetActive(true);
     }
 
+    public void RefreshLobbyScreen()
+    {
+        Debug.Log("Refreshing clicked");
+        soundEffects.PressHudButtonSound();
+
+        DestroyRooms();
+
+        Debug.Log("Disconecting and Reconecting");
+        RefreshConection();
+
+        Invoke("ListRooms", 0.5f);
+
+    }
+
+    public void ListRooms()
+    {
+        gameConnection.Lobby();
+    }
+
+    public void RefreshConection()
+    {
+        PhotonNetwork.Disconnect();
+        PhotonNetwork.ConnectUsingSettings();
+    }
+
     public void BackLobbyScreen()
     {
+        Debug.Log("BackLobbyScreen clicked");
+        soundEffects.PressHudButtonSound();
 
-        foreach (Transform room in roomListContent.GetComponentsInChildren<Transform>())
+        DestroyRooms();
+
+        lobbyScreen.SetActive(false);
+        lobbyBackgroundScreen.SetActive(false);
+
+        var menu = FindObjectOfType<Menu>();
+        menu.EnableMenu();
+        nameDisplay.gameObject.SetActive(true);
+
+        Debug.Log("Disconecting and Reconecting");
+        RefreshConection();
+
+    }
+
+    public void ActivateButtons(bool activate)
+    {
+        Button[] buttons = lobbyScreen.GetComponentsInChildren<Button>();
+        foreach (Button button in buttons)
+        {
+            button.interactable = activate;
+        }
+    }
+
+    public void DestroyRooms()
+    {
+        foreach (Room room in roomListContent.GetComponentsInChildren<Room>())
         {
             if (!room.CompareTag("Undestructable"))
             {
@@ -119,15 +188,6 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
             }
 
         }
-
-        Debug.Log("BackLobbyScreen clicked");
-        lobbyScreen.SetActive(false);
-        lobbyBackgroundScreen.SetActive(false);
-
-        var menu = FindObjectOfType<Menu>();
-        menu.EnableMenu();
-        nameDisplay.gameObject.SetActive(true);
-
     }
 
     public void Verifications()
@@ -137,7 +197,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         string privateRoom = privateDropdown.GetComponent <TextMeshProUGUI > ().text;
 
         bool alreadyExist = gameConnection.CheckRoomName(roomName);
-
+        
         if (string.IsNullOrEmpty(roomName))
         {
             roomNameWarning.SetActive(true);

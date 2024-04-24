@@ -70,6 +70,18 @@ MonoBehaviour:
   - ClickedWrongSlot
   - RPCFinishButton
   - EndButton
+  - RandomAnimator
+  - Roulettecomponent
+  - ClickSlotSound
+  - PlayRightSound
+  - PlayWrongSound
+  - ClickDraw
+  - ClickFinish
+  - RemovePlateName
+  - UpdatePlayersIndex
+  - RemovePlayersPlatenames
+  - ChangePlateNameMaterial
+  - ShowLeftPlayerInfo
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -9,6 +9,7 @@ public class CreateRoom : MonoBehaviour
     public InputField nameDisplay;
     public GameConnection gameConnection;
     public GameObject greenButton;
+    public SoundEffects soundEffects;
 
     void Start()
     {
@@ -24,6 +25,8 @@ public class CreateRoom : MonoBehaviour
 
     public void OnMouseDown()
     {
+        soundEffects.PressButtonSound();
+
         PlayerPrefs.SetString("nickname", nameDisplay.text);
         var nickname = PlayerPrefs.GetString("nickname");
 

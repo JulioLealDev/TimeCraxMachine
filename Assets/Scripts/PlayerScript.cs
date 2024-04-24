@@ -10,8 +10,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     public int numberRepairCards;
     public string nickname;
     public int index;
+    public int plateNameIndex;
     public bool yourTurn = false;
     public string numberRepairCardsText;
+    public int actorNumber;
 
 
     // Start is called before the first frame update
@@ -25,16 +27,23 @@ public class PlayerScript : MonoBehaviourPunCallbacks
             {
                 nickname = PhotonNetwork.PlayerList[i].NickName;
                 index = i;
+                plateNameIndex = i;
+                actorNumber = PhotonNetwork.PlayerList[i].ActorNumber;
             }
         }
 
         numberRepairCardsText = "numberRepairCards0" + (index + 1);
 }
-
-    // Update is called once per frame
-    void Update()
+    public void UpdateIndex()
     {
-        
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        {
+            if (PhotonNetwork.PlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            {
+                //nickname = PhotonNetwork.PlayerList[i].NickName;
+                index = i;
+            }
+        }
     }
 
     public void DrawEventCard()

@@ -7,14 +7,63 @@ public class Component : MonoBehaviourPunCallbacks
     public int componentId;
     public int malfunctions = 0;
     public GameObject gameInfo;
+    public SoundEffects soundEffects;
+    public GameOver gameOver;
+    private Transform sparks;
+    private Transform smoke;
+    private Transform componentWithAnimator;
     void Start()
     {
+        soundEffects = FindObjectOfType<SoundEffects>();
+        gameOver = FindObjectOfType<GameOver>();
+
+        var parent = gameObject.transform.parent;
+        if (parent.name != "Enviroment")
+        {
+            //Debug.Log("parent: " + parent.name);
+            Transform[] opcoes = parent.GetComponentsInChildren<Transform>(true);
+            foreach (var opc in opcoes)
+            {
+                //Debug.Log("opc: " + opc.name);
+                if (opc.GetComponent<Animator>() != null)
+                {
+                    componentWithAnimator = opc;
+                }
+                else if (opc.CompareTag("Sparks"))
+                {
+                    //Debug.Log("sparks: " + opc.name);
+                    sparks = opc;
+                }
+                else if (opc.CompareTag("Smoke"))
+                {
+                    smoke = opc;
+                }
+            }
+        }
+        else
+        {
+            componentWithAnimator = gameObject.GetComponent<Transform>();
+
+            Transform[] childs = gameObject.GetComponentsInChildren<Transform>(true);
+            foreach(var child in childs)
+            {
+                //Debug.Log("child: " + child.name);
+                if (child.CompareTag("Sparks"))
+                {
+                    //Debug.Log("sparks: " + child.name);
+                    sparks = child;
+                }
+                else if (child.CompareTag("Smoke"))
+                {
+                    smoke = child;
+                }
+            }
+            
+
+        }
 
     }
-    void Update()
-    {
 
-    }
     public void OnMouseDown()
     {
 
@@ -127,7 +176,7 @@ public class Component : MonoBehaviourPunCallbacks
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("ComponentInfoBackground", 0.5f);
+        Invoke("DisableGameInfo", 0.5f);
     }
 
     public void DisableGameInfo()
@@ -137,69 +186,117 @@ public class Component : MonoBehaviourPunCallbacks
 
     public void AddMalfunction()
     {
-        //ativar animação
-        //gameObject.GetComponent<MeshCollider>().enabled = true;
-
-        var parent = gameObject.transform.parent;
-        if (parent.name != "Enviroment")
-        {
-            //Debug.Log("parent: " + parent.name);
-            Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
-            foreach (var opc in opcoes)
-            {
-                //Debug.Log("opc: " + opc.name);
-                if (opc.GetComponent<Animator>() != null)
-                {
-                    opc.GetComponent<Animator>().SetBool("malfunction", true);
-                }
-            }
-        }
-        else
-        {
-            gameObject.GetComponent<Animator>().SetBool("malfunction", true);
-        }
-
         malfunctions++;
 
         if (malfunctions > 1)
         {
+            soundEffects.PlayFinalComponentExplosionSound();
+            sparks.gameObject.SetActive(true);
+            smoke.gameObject.SetActive(true);
+
+            //gameOver.gameIsOver = true;
+
             Invoke("EndGame", 3f);
+
+        }
+        else
+        {
+
+            componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
+            sparks.gameObject.SetActive(true);
+            soundEffects.PlayComponentExplosionSound();
+
+            //var parent = gameObject.transform.parent;
+            //if (parent.name != "Enviroment")
+            //{
+            //    //Debug.Log("parent: " + parent.name);
+            //    Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
+            //    foreach (var opc in opcoes)
+            //    {
+            //        //Debug.Log("opc: " + opc.name);
+            //        if (opc.GetComponent<Animator>() != null)
+            //        {
+            //            opc.GetComponent<Animator>().SetBool("malfunction", true);
+
+            //            //ParticleSystem effect = opc.GetComponentInChildren<ParticleSystem>(true);
+            //            sparks.gameObject.SetActive(true);
+            //            soundEffects.PlayComponentExplosionSound();
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    gameObject.GetComponent<Animator>().SetBool("malfunction", true);
+
+            //    //ParticleSystem effect = gameObject.GetComponentInChildren<ParticleSystem>(true);
+            //    sparks.gameObject.SetActive(true);
+            //    soundEffects.PlayComponentExplosionSound();
+            //}
         }
 
     }
 
     public void EndGame()
     {
-        var gameManager = FindObjectOfType<GameManager>();
-        gameManager.DeactivateAll();
+        BackgroundMusic backgroundMusic = FindObjectOfType<BackgroundMusic>();
+        GameManager gameManager = FindObjectOfType<GameManager>();
 
-        GameObject gameOver = GameObject.FindGameObjectWithTag("GameOver");
+        gameManager.DeactivateAll();
+        gameManager.ResetAllComponents();
+
+        backgroundMusic.PlayGameOverSound();
         gameOver.transform.GetChild(0).gameObject.SetActive(true);
         Debug.Log("name ---> " + gameOver.name);
+
+
+        //Invoke("ReturningToMenu", 2f);
+
     }
+
+    //public void ReturningToMenu()
+    //{
+    //    gameOver.transform.GetChild(0).gameObject.SetActive(false);
+    //    var gameManager = FindObjectOfType<GameManager>();
+    //    gameManager.QuitGame();
+    //}
 
     [PunRPC]
     public void RemoveMalfunction()
     {
-        //ativar animação
-        var parent = gameObject.transform.parent;
-        if (parent.name != "Enviroment")
-        {
-            //Debug.Log("parent: " + parent.name);
-            Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
-            foreach (var opc in opcoes)
-            {
-               // Debug.Log("opc: " + opc.name);
-                if (opc.GetComponent<Animator>() != null)
-                {
-                    opc.GetComponent<Animator>().SetBool("malfunction", false);
-                }
-            }
-        }
-        else
-        {
-            gameObject.GetComponent<Animator>().SetBool("malfunction", false);
-        }
+        ////ativar animação
+        //var parent = gameObject.transform.parent;
+        //if (parent.name != "Enviroment")
+        //{
+        //    //Debug.Log("parent: " + parent.name);
+        //    Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
+        //    foreach (var opc in opcoes)
+        //    {
+        //       // Debug.Log("opc: " + opc.name);
+        //        if (opc.GetComponent<Animator>() != null)
+        //        {
+        //            opc.GetComponent<Animator>().SetBool("malfunction", false);
+
+        //            soundEffects.PlayComponentRepairSound();
+
+        //            //ParticleSystem effect = opc.GetComponentInChildren<ParticleSystem>(true);
+        //            sparks.gameObject.SetActive(false);
+
+        //        }
+        //    }
+        //}
+        //else
+        //{
+        //    gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+
+        //    soundEffects.PlayComponentRepairSound();
+
+        //    //ParticleSystem effect = gameObject.GetComponentInChildren<ParticleSystem>(true);
+        //    sparks.gameObject.SetActive(false);
+        //}
+
+        componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+        sparks.gameObject.SetActive(false);
+        soundEffects.PlayComponentRepairSound();
 
         malfunctions--;
         gameObject.GetComponent<MeshCollider>().enabled = false;

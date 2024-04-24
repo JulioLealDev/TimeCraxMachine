@@ -4,10 +4,12 @@ using Photon.Pun;
 public class Timeline : MonoBehaviourPunCallbacks
 {
     private bool zoom;
+    private FinishTurn endButton;
     // Start is called before the first frame update
     void Start()
     {
         zoom = false;
+        endButton = FindObjectOfType<FinishTurn>(true);
     }
 
     // Update is called once per frame
@@ -20,6 +22,8 @@ public class Timeline : MonoBehaviourPunCallbacks
     {
         if (gameObject.CompareTag("Selectable"))
         {
+
+            endButton.GetComponent<MeshCollider>().enabled = zoom;
             ActiveTimeline(false);
             photonView.RPC("ClickTimeline", RpcTarget.All);
         }

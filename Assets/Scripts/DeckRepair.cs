@@ -6,22 +6,15 @@ public class DeckRepair : MonoBehaviourPunCallbacks
     public DeckEvent deckEvent;
     public GameManager gameManager;
     public Canvas gameInfo;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-    // Update is called once per frame
-    void Update()
-    {
-       
-    }
+    public SoundEffects soundEffects;
 
     public void OnMouseDown()
     {
         
         if (gameObject.CompareTag("Disabled"))
         {
+            photonView.RPC("ClickDraw", RpcTarget.All, 1);
+
             var players = FindObjectsOfType<PlayerScript>();
             foreach (var player in players)
             {
@@ -58,6 +51,8 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         {
             if (photonView.IsMine)
             {
+                photonView.RPC("ClickDraw", RpcTarget.All, 2);
+
                 PhotonNetwork.Instantiate("repairCard", new Vector3(0.604300022f, 0.0707999989f, 0.280999988f), Quaternion.identity);
             }
 
@@ -65,6 +60,19 @@ public class DeckRepair : MonoBehaviourPunCallbacks
 
         }
 
+    }
+
+    [PunRPC]
+    public void ClickDraw(int idSound)
+    {
+        if(idSound == 1)
+        {
+            soundEffects.TagSound();
+        }
+        else if (idSound == 2)
+        {
+            soundEffects.PlayDrawCardSound();
+        }
     }
 
     public void HideActionInfo()
