@@ -34,13 +34,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int time;
     private bool gameIsOn = false;
     private List<int> componentList = new List<int>();
-    Transform[] componentsWithAnimator = new Transform[15];
+    Transform[] componentsWithAnimator = new Transform[20];
     public SoundEffects soundEffects;
     public BackgroundMusic backgroundMusic;
     private PlayerScript[] orderedPlayers;
     public Material plateNameMaterial;
     public Material plateNameMaterial2;
     public GameObject playerLeftBackground;
+    public RandomMaterial randomMaterial;
 
 
 
@@ -184,8 +185,19 @@ public class GameManager : MonoBehaviourPunCallbacks
         //}
     }
 
+    //[PunRPC]
+    public void GetRandomEventCards(string theme)
+    {
+        randomMaterial.GetRandomMaterial(theme);
+
+    }
+
     public void StartNewGame()
     {
+        string theme = PhotonNetwork.CurrentRoom.CustomProperties["the"].ToString();
+
+        Debug.Log("-------------  THEME: " + theme);
+
         int index = 0;
         gameIsOn = true;
         //gameOver.gameIsOver = false;
@@ -200,6 +212,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (components[i].CompareTag("Component"))
             {
                 //Lista de todos os componentes com a tag Componet (Ou seja, possui Animator)
+                components[i].GetComponent<Animator>().enabled = true;
                 componentsWithAnimator[index] = components[i];
                 index++;
             }
@@ -229,12 +242,15 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
+            //photonView.RPC("GetRandomEventCards", RpcTarget.All, theme);
+            randomMaterial.GetRandomMaterial(theme);
             Invoke("StartGame", 6f);
         }
     }
 
     public void StartGame()
     {
+
         Debug.Log("StartGame()");
         photonView.RPC("ShowHUD", RpcTarget.All);
         //ShowHUD();
@@ -1049,11 +1065,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         foreach (var component in componentsWithAnimator)
         {
 
-            //Debug.Log("opcName: " + component.name);
+            Debug.Log("opcName: " + component.name);
             component.GetComponent<Animator>().SetBool("malfunction", false);
+            component.GetComponent<Animator>().enabled = false;
 
-            ParticleSystem effect = component.GetComponentInChildren<ParticleSystem>(true);
-            effect.gameObject.SetActive(false);
+            ParticleSystem[] effects = component.GetComponentsInChildren<ParticleSystem>(true);
+
+            foreach (var effect in effects)
+            {
+                effect.gameObject.SetActive(false);
+            }
+
         }
 
         //Transform[] opcoes = enviroment.GetComponentsInChildren<Transform>();

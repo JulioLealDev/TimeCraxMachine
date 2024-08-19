@@ -7,36 +7,40 @@ public class Component : MonoBehaviourPunCallbacks
     public int componentId;
     public int malfunctions = 0;
     public GameObject gameInfo;
-    public SoundEffects soundEffects;
-    public GameOver gameOver;
+    private SoundEffects soundEffects;
+    private GameOver gameOver;
     private Transform sparks;
     private Transform smoke;
-    private Transform componentWithAnimator;
+    private Transform componentWithAnimator = null;
+    private Transform[] childrenWithanimator = new Transform[4] {null,null,null,null};
+    private int count;
     void Start()
     {
         soundEffects = FindObjectOfType<SoundEffects>();
         gameOver = FindObjectOfType<GameOver>();
+        count = 0;
 
         var parent = gameObject.transform.parent;
         if (parent.name != "Enviroment")
         {
             //Debug.Log("parent: " + parent.name);
             Transform[] opcoes = parent.GetComponentsInChildren<Transform>(true);
-            foreach (var opc in opcoes)
+            for (int i = 0; i < opcoes.Length; i++) 
             {
                 //Debug.Log("opc: " + opc.name);
-                if (opc.GetComponent<Animator>() != null)
+                if (opcoes[i].GetComponent<Animator>() != null)
                 {
-                    componentWithAnimator = opc;
+                    childrenWithanimator[count] = opcoes[i];
+                    count++;
                 }
-                else if (opc.CompareTag("Sparks"))
+                else if (opcoes[i].CompareTag("Sparks"))
                 {
                     //Debug.Log("sparks: " + opc.name);
-                    sparks = opc;
+                    sparks = opcoes[i];
                 }
-                else if (opc.CompareTag("Smoke"))
+                else if (opcoes[i].CompareTag("Smoke"))
                 {
-                    smoke = opc;
+                    smoke = opcoes[i];
                 }
             }
         }
@@ -191,7 +195,7 @@ public class Component : MonoBehaviourPunCallbacks
         if (malfunctions > 1)
         {
             soundEffects.PlayFinalComponentExplosionSound();
-            sparks.gameObject.SetActive(true);
+            //sparks.gameObject.SetActive(true);
             smoke.gameObject.SetActive(true);
 
             //gameOver.gameIsOver = true;
@@ -201,8 +205,22 @@ public class Component : MonoBehaviourPunCallbacks
         }
         else
         {
+            if (componentWithAnimator != null)
+            {
+                componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
+            }
+            else
+            {
+                foreach (var child in childrenWithanimator)
+                {
+                    if(child != null)
+                    {
+                        child.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
+                    }
+                }
+                
+            }
 
-            componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
             sparks.gameObject.SetActive(true);
             soundEffects.PlayComponentExplosionSound();
 
@@ -294,7 +312,23 @@ public class Component : MonoBehaviourPunCallbacks
         //    sparks.gameObject.SetActive(false);
         //}
 
-        componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+        if (componentWithAnimator != null)
+        {
+            componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+        }
+        else
+        {
+            foreach (var child in childrenWithanimator)
+            {
+                if (child != null)
+                {
+                    child.gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+                }
+            }
+
+        }
+
+
         sparks.gameObject.SetActive(false);
         soundEffects.PlayComponentRepairSound();
 

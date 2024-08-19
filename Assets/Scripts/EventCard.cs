@@ -6,6 +6,7 @@ public class EventCard : MonoBehaviourPunCallbacks
 {
     public Camera camera;
     public int slotCount;
+    public int slotYear;
 
     // Start is called before the first frame update
     void Start()

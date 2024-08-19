@@ -21,6 +21,7 @@ TagManager:
   - Sparks
   - Smoke
   - NamePlayerTag
+  - WorldHistoryMaterials
   layers:
   - Default
   - TransparentFX

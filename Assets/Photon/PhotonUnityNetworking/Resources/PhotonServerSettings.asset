@@ -82,6 +82,11 @@ MonoBehaviour:
   - RemovePlayersPlatenames
   - ChangePlateNameMaterial
   - ShowLeftPlayerInfo
+  - GetRandomEventCards
+  - SetSlotCounts
+  - SetTimelineYears
+  - SetValues
+  - SetAllValues
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
