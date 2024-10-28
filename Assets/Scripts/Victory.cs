@@ -7,6 +7,7 @@ public class Victory : MonoBehaviour
     public SoundEffects soundEffects;
     public GameManager gameManager;
     public GameObject victoryImage;
+
     public void BackToMenu()
     {
         victoryImage.SetActive(false);

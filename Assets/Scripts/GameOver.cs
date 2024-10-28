@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameOver : MonoBehaviour
 {
     public bool exitGame = false;
+    public bool gameIsOver = false;
     public GameObject gameOverImage;
     public SoundEffects soundEffects;
     public GameManager gameManager;

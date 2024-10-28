@@ -1,6 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
+using System;
 
 public class Component : MonoBehaviourPunCallbacks
 {
@@ -194,17 +195,19 @@ public class Component : MonoBehaviourPunCallbacks
 
         if (malfunctions > 1)
         {
+            Debug.Log("----> EndGame");
             soundEffects.PlayFinalComponentExplosionSound();
             //sparks.gameObject.SetActive(true);
             smoke.gameObject.SetActive(true);
 
-            //gameOver.gameIsOver = true;
+            gameOver.gameIsOver = true;
 
             Invoke("EndGame", 3f);
 
         }
         else
         {
+            Debug.Log("----> NOT EndGame");
             if (componentWithAnimator != null)
             {
                 componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
@@ -261,9 +264,11 @@ public class Component : MonoBehaviourPunCallbacks
 
         gameManager.DeactivateAll();
         gameManager.ResetAllComponents();
+        gameManager.ResetAllPlatenames();
 
         backgroundMusic.PlayGameOverSound();
         gameOver.transform.GetChild(0).gameObject.SetActive(true);
+        gameManager.hud.SetActive(false);
         Debug.Log("name ---> " + gameOver.name);
 
 

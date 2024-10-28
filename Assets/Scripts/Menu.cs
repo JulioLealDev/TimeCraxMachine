@@ -31,7 +31,7 @@ public class Menu : MonoBehaviour
         GameOver gameOver = FindObjectOfType<GameOver>();
 
         Debug.Log("Entrou no AwaitCloseSuit");
-        hudGame.SetActive(false);
+        //hudGame.SetActive(false);
         camera.GetComponent<Animator>().SetBool("enterMatch", false);
 
         Debug.Log("exit? : "+gameOver.exitGame);

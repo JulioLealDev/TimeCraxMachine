@@ -4,6 +4,7 @@ public class QuitInGaming : MonoBehaviour
 {
     public Animator animator;
     public SoundEffects soundEffects;
+    public GameManager gameManager;
 
     private void OnMouseDown()
     {
@@ -13,15 +14,26 @@ public class QuitInGaming : MonoBehaviour
 
         animator.SetBool("quitGame", true);
         //chamar um texto pedindo confirmação
-        Invoke("QuitGame", 0.7f);
+        Invoke("QuitGame", 1f);
 
     }
 
     public void QuitGame()
     {
         animator.SetBool("quitGame", false);
-        var gameManager = FindObjectOfType<GameManager>();
+
+        Invoke("CloseHUD", 2f);
+
         gameManager.BackToMenu();
-        
+
+    }
+
+    public void CloseHUD()
+    {
+        gameManager.hud.SetActive(false);
+
+        gameManager.DeactivateAll();
+        gameManager.ResetAllComponents();
+        gameManager.ResetAllPlatenames();
     }
 }

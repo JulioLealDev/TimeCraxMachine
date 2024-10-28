@@ -209,13 +209,15 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
-            Invoke("Victory", 4.5f);
+            gameManager.ResetAllPlatenames();
+            Invoke("Victory", 5.5f);
         }
     }
 
     public void Victory()
     {
         victory.transform.GetChild(0).gameObject.SetActive(true);
+        gameManager.hud.SetActive(false);
         backgroundMusic.PlayVictorySound();
         //Invoke("ReturningToMenu", 2f);
     }
