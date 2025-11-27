@@ -10,6 +10,8 @@ public class Camera : MonoBehaviourPunCallbacks
     private Timeline timeline;
     private EventSlot slot;
 
+    public bool fullScreen = true;  // Whether the game should be in fullscreen mode
+
     private void Awake()
     {
         PlayerPrefs.SetString("gameStarted", "false");
@@ -40,7 +42,15 @@ public class Camera : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        animator.SetBool("enterMenu", true);
+
+    // Calculate the target height based on the screen width and 16:9 aspect ratio
+    int targetHeight = Screen.width * 9 / 16;
+
+    // Set the game's resolution to match the target width and height
+    Screen.SetResolution(Screen.width, targetHeight, fullScreen);
+
+
+    animator.SetBool("enterMenu", true);
     }
 
     void AwaitZoomAnimation()
