@@ -1,20 +1,21 @@
 using UnityEngine;
+using TimeCrax.Core;
 
 public class QuitInGaming : MonoBehaviour
 {
-    public Animator animator;
-    public SoundEffects soundEffects;
-    public GameManager gameManager;
+    [SerializeField] private Animator animator;
+    [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private GameManager gameManager;
 
     private void OnMouseDown()
     {
-        Debug.Log("1 -- Clicou no Quit");
+        DebugHelper.Log("1 -- Clicou no Quit");
 
         soundEffects.PressButtonSound();
 
         animator.SetBool("quitGame", true);
-        //chamar um texto pedindo confirmação
-        Invoke("QuitGame", 1f);
+        //chamar um texto pedindo confirmaï¿½ï¿½o
+        this.DelayedCall(1f, QuitGame);
 
     }
 
@@ -22,7 +23,7 @@ public class QuitInGaming : MonoBehaviour
     {
         animator.SetBool("quitGame", false);
 
-        Invoke("CloseHUD", 2f);
+        this.DelayedCall(2f, CloseHUD);
 
         gameManager.BackToMenu();
 

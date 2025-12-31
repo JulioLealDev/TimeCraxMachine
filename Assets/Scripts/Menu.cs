@@ -1,25 +1,24 @@
 using UnityEngine;
 using TMPro;
+using TimeCrax.Core;
 
 public class Menu : MonoBehaviour
 {
-    //public GameObject roulette;
-    //public TextMeshPro warningRoomCreated;
-    public Camera camera;
-    public GameObject hudGame;
-    public GameObject inputName;
-    public GameObject inputNameText;
-    public BackgroundMusic backgroundMusic;
+    [SerializeField] private CameraController cameraController;
+    [SerializeField] private GameObject hudGame;
+    [SerializeField] private GameObject inputName;
+    [SerializeField] private GameObject inputNameText;
+    [SerializeField] private BackgroundMusic backgroundMusic;
 
     public void AwaitOpenSuit()
     {
-        Debug.Log("Entrou no AwaitOpenSuit");
+        DebugHelper.Log("Entrou no AwaitOpenSuit");
         Transform[] suitTop = gameObject.GetComponentsInChildren<Transform>();
         for (int i = 0; i < suitTop.Length; i++)
         {
             if (suitTop[i].CompareTag("Selectable"))
             {
-                Debug.Log("Retirando Mesh dos objeto: " + suitTop[i].name);
+                DebugHelper.Log("Retirando Mesh dos objeto: " + suitTop[i].name);
                 suitTop[i].GetComponent<MeshCollider>().enabled = false;
             }
         }
@@ -28,18 +27,18 @@ public class Menu : MonoBehaviour
 
     public void AwaitCloseSuit()
     {
-        GameOver gameOver = FindObjectOfType<GameOver>();
+        GameOver gameOver = FindFirstObjectByType<GameOver>();
 
-        Debug.Log("Entrou no AwaitCloseSuit");
+        DebugHelper.Log("Entrou no AwaitCloseSuit");
         //hudGame.SetActive(false);
-        camera.GetComponent<Animator>().SetBool("enterMatch", false);
+        cameraController.GetComponent<Animator>().SetBool("enterMatch", false);
 
-        Debug.Log("exit? : "+gameOver.exitGame);
+        DebugHelper.Log("exit? : "+gameOver.exitGame);
         if (gameOver.exitGame)
         {
-            Debug.Log("Saindo do jogo");
+            DebugHelper.Log("Saindo do jogo");
 
-            Invoke("QuitGame", 2f);
+            this.DelayedCall(2f, QuitGame);
         }
         else
         {
@@ -55,7 +54,7 @@ public class Menu : MonoBehaviour
                     }
                     else
                     {
-                        //Debug.Log("Ativando Mesh dos objeto: " + suitTop[i].name);
+                        //DebugHelper.Log("Ativando Mesh dos objeto: " + suitTop[i].name);
                         suitTop[i].tag = "Selectable";
                         suitTop[i].GetComponent<MeshCollider>().enabled = true;
 
@@ -67,7 +66,7 @@ public class Menu : MonoBehaviour
 
                 }
             }
-            Invoke("ActivateInputName", 3.7f);
+            this.DelayedCall(3.7f, ActivateInputName);
         }
 
 
@@ -81,17 +80,17 @@ public class Menu : MonoBehaviour
 
     public void DistanceTimelineWhenQuit()
     {
-        if (camera.GetComponent<Animator>().GetBool("zoomTimeline"))
+        if (cameraController.GetComponent<Animator>().GetBool("zoomTimeline"))
         {
-            camera.GetComponent<Animator>().SetBool("zoomTimeline", false);
-            camera.GetComponent<Animator>().SetBool("distanceZoom", true);
+            cameraController.GetComponent<Animator>().SetBool("zoomTimeline", false);
+            cameraController.GetComponent<Animator>().SetBool("distanceZoom", true);
         }
 
     }
 
     public void ActivateInputName()
     {
-        Debug.Log("ativando input");
+        DebugHelper.Log("ativando input");
         inputName.gameObject.SetActive(true);
         inputNameText.gameObject.SetActive(true);
     } 

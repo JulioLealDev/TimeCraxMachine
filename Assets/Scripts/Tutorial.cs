@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using TimeCrax.Core;
 
 public class Tutorial : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Tutorial : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log("Clicou no tutorial");
+        DebugHelper.Log("Clicou no tutorial");
         soundEffects.TurnPageSound(1);
 
 

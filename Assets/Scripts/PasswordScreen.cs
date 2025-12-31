@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TimeCrax.Core;
 
 public class PasswordScreen : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class PasswordScreen : MonoBehaviour
 
     public void EnterPasswordButton()
     {
-        Debug.Log("EnterPasswordButton");
+        DebugHelper.Log("EnterPasswordButton");
         bool correctPass = gameConnection.CheckPassword(roomName, passwordInput.GetComponent<TMP_InputField>().text);
 
         if (correctPass)
@@ -44,11 +45,11 @@ public class PasswordScreen : MonoBehaviour
         }
         else
         {
-            Debug.Log("Password Incorreto");
+            DebugHelper.Log("Password Incorreto");
             passwordInput.GetComponent<TMP_InputField>().text = " ";
             warning.gameObject.SetActive(true);
             warning.gameObject.GetComponent<Animator>().SetBool("wrongPassword", true);
-            Invoke("WrongPassword", 1.5f);
+            this.DelayedCall(1.5f, WrongPassword);
         }
     }
 

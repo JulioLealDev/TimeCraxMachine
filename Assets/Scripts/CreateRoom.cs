@@ -1,34 +1,28 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using TimeCrax.Core;
 
 public class CreateRoom : MonoBehaviour
 {
-
-    public TextMeshPro warning;
-    public InputField nameDisplay;
-    public GameConnection gameConnection;
-    public GameObject greenButton;
-    public SoundEffects soundEffects;
+    [SerializeField] private TextMeshPro warning;
+    [SerializeField] private InputField nameDisplay;
+    [SerializeField] private GameConnection gameConnection;
+    [SerializeField] private GameObject greenButton;
+    [SerializeField] private SoundEffects soundEffects;
 
     void Start()
     {
-        PlayerPrefs.SetString("nickname", null);
-        nameDisplay.text = PlayerPrefs.GetString("nickname");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        SessionData.Nickname = string.Empty;
+        nameDisplay.text = SessionData.Nickname;
     }
 
     public void OnMouseDown()
     {
         soundEffects.PressButtonSound();
 
-        PlayerPrefs.SetString("nickname", nameDisplay.text);
-        var nickname = PlayerPrefs.GetString("nickname");
+        SessionData.Nickname = nameDisplay.text;
+        var nickname = SessionData.Nickname;
 
         if (nickname == null || nickname.Equals(""))
         {
@@ -36,20 +30,20 @@ public class CreateRoom : MonoBehaviour
             warning.gameObject.GetComponent<Animator>().SetBool("nameIsEmpty", true);
             gameObject.GetComponent<MeshCollider>().enabled = false;
             greenButton.gameObject.GetComponent<MeshCollider>().enabled = false;
-            Invoke("AfterClickStart", 1.5f);
+            this.DelayedCall(1.5f, AfterClickStart);
         }
         else
         {
             //if (gameConnection.gameObject.activeInHierarchy)
             //{
-            var connection = FindObjectOfType<GameConnection>();
+            var connection = FindFirstObjectByType<GameConnection>();
             connection.CreateRoom();
             //}
             //else
             //{
             //    gameConnection.gameObject.SetActive(true);
             //}
-            var menu = FindObjectOfType<Menu>();
+            var menu = FindFirstObjectByType<Menu>();
             menu.DisableMenu();
             nameDisplay.gameObject.SetActive(false);
 

@@ -3,6 +3,7 @@ using Photon.Pun;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using TimeCrax.Core;
 
 public class LobbyOptions : MonoBehaviourPunCallbacks
 {
@@ -46,7 +47,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     public void StartMatch()
     {
         backgroundMusic.PlayGameSound();
-        PlayerPrefs.SetString("gameStarted", "true");
+        SessionData.GameStarted = true;
         PhotonNetwork.CurrentRoom.IsOpen = false;
         roomScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
@@ -58,13 +59,13 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         privateRoom = !privateRoom;
         if(!privateRoom)
         {
-            Debug.Log("Não privada");
+            DebugHelper.Log("Nï¿½o privada");
             passwordInput.GetComponent<TMP_InputField>().text = " ";
             passwordLabel.GetComponent<TextMeshProUGUI>().color = Color.gray;
         }
         else
         {
-            Debug.Log("Privada");
+            DebugHelper.Log("Privada");
             passwordLabel.GetComponent<TextMeshProUGUI>().color = Color.white;
         }
         passwordInput.GetComponent<TMP_InputField>().readOnly = !privateRoom;
@@ -94,11 +95,11 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     {
         soundEffects.PressHudButtonSound();
 
-        Debug.Log("CancelCreateRoom clicked");
+        DebugHelper.Log("CancelCreateRoom clicked");
         createRoom.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
 
-        var menu = FindObjectOfType<Menu>();
+        var menu = FindFirstObjectByType<Menu>();
         menu.EnableMenu();
         nameDisplay.gameObject.SetActive(true);
     }
@@ -107,33 +108,33 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     {
         soundEffects.PressHudButtonSound();
 
-        Debug.Log("CancelRoomScreen clicked");
+        DebugHelper.Log("CancelRoomScreen clicked");
         roomScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
 
 
         //if (PhotonNetwork.LocalPlayer.IsMasterClient)
         //{
-        //    Debug.Log("É o master");
+        //    DebugHelper.Log("ï¿½ o master");
            PhotonNetwork.LeaveRoom(false);
         //}
 
-        var menu = FindObjectOfType<Menu>();
+        var menu = FindFirstObjectByType<Menu>();
         menu.EnableMenu();
         nameDisplay.gameObject.SetActive(true);
     }
 
     public void RefreshLobbyScreen()
     {
-        Debug.Log("Refreshing clicked");
+        DebugHelper.Log("Refreshing clicked");
         soundEffects.PressHudButtonSound();
 
         DestroyRooms();
 
-        Debug.Log("Disconecting and Reconecting");
+        DebugHelper.Log("Disconecting and Reconecting");
         RefreshConection();
 
-        Invoke("ListRooms", 0.5f);
+        this.DelayedCall(0.5f, ListRooms);
 
     }
 
@@ -150,7 +151,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
     public void BackLobbyScreen()
     {
-        Debug.Log("BackLobbyScreen clicked");
+        DebugHelper.Log("BackLobbyScreen clicked");
         soundEffects.PressHudButtonSound();
 
         DestroyRooms();
@@ -158,11 +159,11 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         lobbyScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
 
-        var menu = FindObjectOfType<Menu>();
+        var menu = FindFirstObjectByType<Menu>();
         menu.EnableMenu();
         nameDisplay.gameObject.SetActive(true);
 
-        Debug.Log("Disconecting and Reconecting");
+        DebugHelper.Log("Disconecting and Reconecting");
         RefreshConection();
 
     }
@@ -182,8 +183,8 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         {
             if (!room.CompareTag("Undestructable"))
             {
-                Debug.Log("Destruindo sala : " + room.GetInstanceID());
-                Debug.Log("Destruindo sala : " + room.GetComponentInChildren<TMP_Text>().text);
+                DebugHelper.Log("Destruindo sala : " + room.GetInstanceID());
+                DebugHelper.Log("Destruindo sala : " + room.GetComponentInChildren<TMP_Text>().text);
                 Destroy(room.gameObject);
             }
 
@@ -203,21 +204,21 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
             roomNameWarning.SetActive(true);
             roomNameWarning.GetComponent<Animator>().SetBool("roomNameIsEmpty", true);
             createRoomButton.GetComponent<Button>().enabled = false;
-            Invoke("AfterClickStart", 1.5f);
+            this.DelayedCall(1.5f, AfterClickStart);
         }
         else if (alreadyExist)
         {
             alreadyExistNameWarning.SetActive(true);
             alreadyExistNameWarning.GetComponent<Animator>().SetBool("alreadyExistName", true);
             createRoomButton.GetComponent<Button>().enabled = false;
-            Invoke("AfterClickStart", 1.5f);
+            this.DelayedCall(1.5f, AfterClickStart);
         }
         else if (privateRoom != "No" && string.IsNullOrEmpty(password))
         {
             passwordWarning.SetActive(true);
             passwordWarning.GetComponent<Animator>().SetBool("passwordIsEmpty", true);
             createRoomButton.GetComponent<Button>().enabled = false;
-            Invoke("AfterClickStart", 1.5f);
+            this.DelayedCall(1.5f, AfterClickStart);
         }
         else
         {

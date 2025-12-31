@@ -2,8 +2,9 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 using System;
+using TimeCrax.Core;
 
-public class Component : MonoBehaviourPunCallbacks
+public class MachineComponent : MonoBehaviourPunCallbacks
 {
     public int componentId;
     public int malfunctions = 0;
@@ -17,18 +18,18 @@ public class Component : MonoBehaviourPunCallbacks
     private int count;
     void Start()
     {
-        soundEffects = FindObjectOfType<SoundEffects>();
-        gameOver = FindObjectOfType<GameOver>();
+        soundEffects = FindFirstObjectByType<SoundEffects>();
+        gameOver = FindFirstObjectByType<GameOver>();
         count = 0;
 
         var parent = gameObject.transform.parent;
         if (parent.name != "Enviroment")
         {
-            //Debug.Log("parent: " + parent.name);
+            //DebugHelper.Log("parent: " + parent.name);
             Transform[] opcoes = parent.GetComponentsInChildren<Transform>(true);
             for (int i = 0; i < opcoes.Length; i++) 
             {
-                //Debug.Log("opc: " + opc.name);
+                //DebugHelper.Log("opc: " + opc.name);
                 if (opcoes[i].GetComponent<Animator>() != null)
                 {
                     childrenWithanimator[count] = opcoes[i];
@@ -36,7 +37,7 @@ public class Component : MonoBehaviourPunCallbacks
                 }
                 else if (opcoes[i].CompareTag("Sparks"))
                 {
-                    //Debug.Log("sparks: " + opc.name);
+                    //DebugHelper.Log("sparks: " + opc.name);
                     sparks = opcoes[i];
                 }
                 else if (opcoes[i].CompareTag("Smoke"))
@@ -52,10 +53,10 @@ public class Component : MonoBehaviourPunCallbacks
             Transform[] childs = gameObject.GetComponentsInChildren<Transform>(true);
             foreach(var child in childs)
             {
-                //Debug.Log("child: " + child.name);
+                //DebugHelper.Log("child: " + child.name);
                 if (child.CompareTag("Sparks"))
                 {
-                    //Debug.Log("sparks: " + child.name);
+                    //DebugHelper.Log("sparks: " + child.name);
                     sparks = child;
                 }
                 else if (child.CompareTag("Smoke"))
@@ -74,21 +75,21 @@ public class Component : MonoBehaviourPunCallbacks
 
         if (gameObject.CompareTag("Selectable")) 
         {
-            var players = FindObjectsOfType<PlayerScript>();
+            var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
             foreach (var player in players)
             {
-                Debug.Log("Vez de " + player.nickname + " : " + player.GetYourTurn());
+                DebugHelper.Log("Vez de " + player.nickname + " : " + player.GetYourTurn());
                 if (player.GetYourTurn())
                 {
 
-                    Debug.Log("Number od cards: " + player.GetNumberOfRepairsCards());
+                    DebugHelper.Log("Number od cards: " + player.GetNumberOfRepairsCards());
 
                     if(player.GetNumberOfRepairsCards() >= players.Length)
                     {
 
                         photonView.RPC("RemoveMalfunction", RpcTarget.All);
                         player.RepairComponent(players.Length);
-                        Debug.Log("component: " + componentId);
+                        DebugHelper.Log("component: " + componentId);
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
                         gameInfo.gameObject.SetActive(true);
@@ -101,11 +102,11 @@ public class Component : MonoBehaviourPunCallbacks
                             }
                         }
 
-                        Invoke("HideRepairInfo", 1.5f);
+                        this.DelayedCall(1.5f, HideRepairInfo);
                     }
                     else
                     {
-                        Debug.Log("You need " + players.Length + " Repair Cards to repair one component!");
+                        DebugHelper.Log("You need " + players.Length + " Repair Cards to repair one component!");
 
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
@@ -120,14 +121,14 @@ public class Component : MonoBehaviourPunCallbacks
                             }
                         }
 
-                        Invoke("HideComponentInfo", 1.5f);
+                        this.DelayedCall(1.5f, HideComponentInfo);
                     }
                 }
             }
         }
         else
         {
-            Debug.Log("Você já realizou uma ação nesse turno");
+            DebugHelper.Log("Vocï¿½ jï¿½ realizou uma aï¿½ï¿½o nesse turno");
 
             Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
             gameInfo.gameObject.SetActive(true);
@@ -140,13 +141,13 @@ public class Component : MonoBehaviourPunCallbacks
                 }
             }
 
-            Invoke("HideActionInfo", 1.5f);
+            this.DelayedCall(1.5f, HideActionInfo);
         }
 
     }
     public void HideRepairInfo()
     {
-        //Debug.Log("HideRoundInfo()");
+        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -155,11 +156,11 @@ public class Component : MonoBehaviourPunCallbacks
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
     public void HideActionInfo()
     {
-        //Debug.Log("HideRoundInfo()");
+        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -168,7 +169,7 @@ public class Component : MonoBehaviourPunCallbacks
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
     public void HideComponentInfo()
     {
@@ -181,7 +182,7 @@ public class Component : MonoBehaviourPunCallbacks
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
 
     public void DisableGameInfo()
@@ -195,19 +196,19 @@ public class Component : MonoBehaviourPunCallbacks
 
         if (malfunctions > 1)
         {
-            Debug.Log("----> EndGame");
+            DebugHelper.Log("----> EndGame");
             soundEffects.PlayFinalComponentExplosionSound();
             //sparks.gameObject.SetActive(true);
             smoke.gameObject.SetActive(true);
 
             gameOver.gameIsOver = true;
 
-            Invoke("EndGame", 3f);
+            this.DelayedCall(3f, EndGame);
 
         }
         else
         {
-            Debug.Log("----> NOT EndGame");
+            DebugHelper.Log("----> NOT EndGame");
             if (componentWithAnimator != null)
             {
                 componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
@@ -230,11 +231,11 @@ public class Component : MonoBehaviourPunCallbacks
             //var parent = gameObject.transform.parent;
             //if (parent.name != "Enviroment")
             //{
-            //    //Debug.Log("parent: " + parent.name);
+            //    //DebugHelper.Log("parent: " + parent.name);
             //    Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
             //    foreach (var opc in opcoes)
             //    {
-            //        //Debug.Log("opc: " + opc.name);
+            //        //DebugHelper.Log("opc: " + opc.name);
             //        if (opc.GetComponent<Animator>() != null)
             //        {
             //            opc.GetComponent<Animator>().SetBool("malfunction", true);
@@ -259,8 +260,8 @@ public class Component : MonoBehaviourPunCallbacks
 
     public void EndGame()
     {
-        BackgroundMusic backgroundMusic = FindObjectOfType<BackgroundMusic>();
-        GameManager gameManager = FindObjectOfType<GameManager>();
+        BackgroundMusic backgroundMusic = FindFirstObjectByType<BackgroundMusic>();
+        GameManager gameManager = FindFirstObjectByType<GameManager>();
 
         gameManager.DeactivateAll();
         gameManager.ResetAllComponents();
@@ -269,7 +270,7 @@ public class Component : MonoBehaviourPunCallbacks
         backgroundMusic.PlayGameOverSound();
         gameOver.transform.GetChild(0).gameObject.SetActive(true);
         gameManager.hud.SetActive(false);
-        Debug.Log("name ---> " + gameOver.name);
+        DebugHelper.Log("name ---> " + gameOver.name);
 
 
         //Invoke("ReturningToMenu", 2f);
@@ -279,22 +280,22 @@ public class Component : MonoBehaviourPunCallbacks
     //public void ReturningToMenu()
     //{
     //    gameOver.transform.GetChild(0).gameObject.SetActive(false);
-    //    var gameManager = FindObjectOfType<GameManager>();
+    //    var gameManager = FindFirstObjectByType<GameManager>();
     //    gameManager.QuitGame();
     //}
 
     [PunRPC]
     public void RemoveMalfunction()
     {
-        ////ativar animação
+        ////ativar animaï¿½ï¿½o
         //var parent = gameObject.transform.parent;
         //if (parent.name != "Enviroment")
         //{
-        //    //Debug.Log("parent: " + parent.name);
+        //    //DebugHelper.Log("parent: " + parent.name);
         //    Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
         //    foreach (var opc in opcoes)
         //    {
-        //       // Debug.Log("opc: " + opc.name);
+        //       // DebugHelper.Log("opc: " + opc.name);
         //        if (opc.GetComponent<Animator>() != null)
         //        {
         //            opc.GetComponent<Animator>().SetBool("malfunction", false);
@@ -340,7 +341,7 @@ public class Component : MonoBehaviourPunCallbacks
         malfunctions--;
         gameObject.GetComponent<MeshCollider>().enabled = false;
 
-        var gameManager = FindObjectOfType<GameManager>();
+        var gameManager = FindFirstObjectByType<GameManager>();
         gameManager.BlockActions();
     }
 

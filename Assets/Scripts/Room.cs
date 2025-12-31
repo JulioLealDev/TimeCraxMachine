@@ -10,8 +10,8 @@ public class Room : MonoBehaviour
     public void JoinRoom()
     {
 
-        PasswordScreen passwordScreen = FindObjectOfType<PasswordScreen>(true);
-        LobbyOptions lobbyOptions = FindObjectOfType<LobbyOptions>(true);
+        PasswordScreen passwordScreen = FindFirstObjectByType<PasswordScreen>(FindObjectsInactive.Include);
+        LobbyOptions lobbyOptions = FindFirstObjectByType<LobbyOptions>(FindObjectsInactive.Include);
 
         if (isLocked.text == "Yes")
         {

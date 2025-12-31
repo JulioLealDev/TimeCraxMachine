@@ -5,17 +5,12 @@ public class Timeline : MonoBehaviourPunCallbacks
 {
     private bool zoom;
     private FinishTurn endButton;
+
     // Start is called before the first frame update
     void Start()
     {
         zoom = false;
-        endButton = FindObjectOfType<FinishTurn>(true);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        endButton = FindFirstObjectByType<FinishTurn>(FindObjectsInactive.Include);
     }
 
     public void OnMouseDown()
@@ -35,7 +30,7 @@ public class Timeline : MonoBehaviourPunCallbacks
     {
         zoom = !zoom;
 
-        var camera = FindObjectOfType<Camera>();
+        var camera = FindFirstObjectByType<CameraController>();
         if (zoom)
         {
             camera.ZoomTimeline();

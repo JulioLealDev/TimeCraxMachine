@@ -5,6 +5,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.XR;
 using TMPro;
+using TimeCrax.Core;
 
 public class RoomList : MonoBehaviourPunCallbacks
 {
@@ -23,16 +24,16 @@ public class RoomList : MonoBehaviourPunCallbacks
         for (int i = 0; i < roomList.Count; i++)
         {
             GameObject roomAlreadyExist = GameObject.Find(roomList[i].Name);
-            Debug.Log("Nome do objeto encontrado: "+roomAlreadyExist?.name);
-            Debug.Log("Nome do objeto a ser criado: " + roomList[i].Name +" que está no index: "+i);
+            DebugHelper.Log("Nome do objeto encontrado: "+roomAlreadyExist?.name);
+            DebugHelper.Log("Nome do objeto a ser criado: " + roomList[i].Name +" que estï¿½ no index: "+i);
 
             if (!roomAlreadyExist)
             {
                 GameObject Room = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity, GameObject.Find("Content").transform);
                 Room.name = roomList[i].Name;
                 string locked = roomList[i].CustomProperties["pass"].ToString();
-                Debug.Log("locked value: "+locked);
-                Debug.Log("isnullorwhite: "+string.IsNullOrWhiteSpace(locked));
+                DebugHelper.Log("locked value: "+locked);
+                DebugHelper.Log("isnullorwhite: "+string.IsNullOrWhiteSpace(locked));
                 foreach (Transform child in Room.GetComponentsInChildren<Transform>())
                 {
                     if(child.name == "NameRoomText")
@@ -57,11 +58,11 @@ public class RoomList : MonoBehaviourPunCallbacks
                     }
                 }
 
-                Debug.Log("criando objeto com nome de: " + roomList[i].Name);
+                DebugHelper.Log("criando objeto com nome de: " + roomList[i].Name);
             }
             else
             {
-                Debug.Log("Já existe uma sala com esse nome");
+                DebugHelper.Log("Jï¿½ existe uma sala com esse nome");
             }
 
         }

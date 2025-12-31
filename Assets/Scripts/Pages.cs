@@ -2,27 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TimeCrax.Core;
 
 public class Pages : MonoBehaviour
 {
-    public Image image;
-    public Sprite page01;
-    public Sprite page02;
-    public Sprite page03;
-    public Sprite page04;
-    public Button nextPageButton;
-    public Button previousPageButton;
-    public Button backToMenuButton;
-    public Canvas inputName;
-    public SoundEffects soundEffects;
-    public Menu menu;
+    [SerializeField] private Image image;
+    [SerializeField] private Sprite page01;
+    [SerializeField] private Sprite page02;
+    [SerializeField] private Sprite page03;
+    [SerializeField] private Sprite page04;
+    [SerializeField] private Button nextPageButton;
+    [SerializeField] private Button previousPageButton;
+    [SerializeField] private Button backToMenuButton;
+    [SerializeField] private Canvas inputName;
+    [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private Menu menu;
 
     public void NextButton()
     {
 
         soundEffects.TurnPageSound(2);
 
-        Debug.Log("noma da imagem" + image.GetComponent<Image>().sprite.name);
+        DebugHelper.Log("noma da imagem" + image.GetComponent<Image>().sprite.name);
 
         if (image.GetComponent<Image>().sprite == page01) 
         {
@@ -78,13 +79,13 @@ public class Pages : MonoBehaviour
 
         soundEffects.TurnPageSound(1);
 
-        Invoke("Back", 0.3f);
+        this.DelayedCall(0.3f, Back);
 
     }
 
     public void Back()
     {
-        Debug.Log("Reset Tutorial");
+        DebugHelper.Log("Reset Tutorial");
 
         inputName.gameObject.SetActive(true);
         menu.EnableMenu();

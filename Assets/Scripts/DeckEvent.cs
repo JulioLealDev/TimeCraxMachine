@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-    
+using TimeCrax.Core;
+
 public class DeckEvent : MonoBehaviourPunCallbacks
 {
-    //public DeckRepair deckRepair;
-    public GameManager gameManager;
-    public Canvas gameInfo;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private Canvas gameInfo;
+    [SerializeField] private SoundEffects soundEffects;
+
     private List<int> eventList = new List<int>();
     private int[] numbers = { 1, 2, 3, 4, 5, 6, 7 };
-    public SoundEffects soundEffects;
 
     void Start()
     {
@@ -28,7 +29,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
             gameManager.ActivateFinishButton(false);
             if (photonView.IsMine)
             {
-                var timeline = FindObjectOfType<Timeline>();
+                var timeline = FindFirstObjectByType<Timeline>();
                 timeline.ActiveTimeline(false);
 
                 EventRandom();
@@ -49,9 +50,9 @@ public class DeckEvent : MonoBehaviourPunCallbacks
                 }
             }
 
-            Debug.Log("Você já realizaou uma ação neste turno");
+            DebugHelper.Log("Vocï¿½ jï¿½ realizaou uma aï¿½ï¿½o neste turno");
 
-            Invoke("HideActionInfo", 1.5f);
+            this.DelayedCall(1.5f, HideActionInfo);
         }
     }
 
@@ -69,7 +70,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     }
     public void HideActionInfo()
     {
-        //Debug.Log("HideRoundInfo()");
+        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -78,12 +79,12 @@ public class DeckEvent : MonoBehaviourPunCallbacks
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
 
     public void DisableGameInfo()
     {
-        //Debug.Log("DisableGameInfo()");
+        //DebugHelper.Log("DisableGameInfo()");
         gameInfo.gameObject.SetActive(false);
     }
 
@@ -91,22 +92,22 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     {
         foreach (var number in eventList)
         {
-            Debug.Log(number);
+            DebugHelper.Log(number);
         }
 
-        Debug.Log("max range (index): " + (eventList.Count));
+        DebugHelper.Log("max range (index): " + (eventList.Count));
         int index = Random.Range(0, eventList.Count);
-        Debug.Log("result: " + index);
+        DebugHelper.Log("result: " + index);
 
         DrawEventCard(index);
 
     }
     public void DrawEventCard(int index)
     {
-        var eventCards = FindObjectsOfType<EventCard>();
+        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         foreach (var eventCard in eventCards)
         {
-            //Debug.Log("slotcount: "+ eventCard.slotCount+" -- valor: " + eventList[index]);
+            //DebugHelper.Log("slotcount: "+ eventCard.slotCount+" -- valor: " + eventList[index]);
             if (eventCard.slotCount == eventList[index])
             {
                 eventCard.DrawEventCard();
@@ -118,13 +119,13 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     public void RemoveIndex(int value)
     {
 
-        Debug.Log(" eventList.Count: " + eventList.Count);
+        DebugHelper.Log(" eventList.Count: " + eventList.Count);
         for (int i = 0; i < eventList.Count; i++)
         {
-            Debug.Log("eventList[i]: "+ eventList[i]+ " ---- valor :" + value);
+            DebugHelper.Log("eventList[i]: "+ eventList[i]+ " ---- valor :" + value);
             if (eventList[i] == value)
             {
-                Debug.Log("Removendo valor :" + value);
+                DebugHelper.Log("Removendo valor :" + value);
                 eventList.RemoveAt(i);
             }
         }
@@ -132,7 +133,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
         foreach (var number in eventList)
         {
-            Debug.Log("-- "+number);
+            DebugHelper.Log("-- "+number);
         }
     }
 
@@ -141,7 +142,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         eventList.Clear();
         eventList.AddRange(numbers);
 
-        var eventCards = FindObjectsOfType<EventCard>();
+        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
         foreach (var eventCard in eventCards)
         {

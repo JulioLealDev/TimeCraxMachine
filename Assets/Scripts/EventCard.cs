@@ -1,17 +1,18 @@
 using UnityEngine;
 using Photon.Pun;
 using System;
+using TimeCrax.Core;
 
 public class EventCard : MonoBehaviourPunCallbacks
 {
-    public Camera camera;
+    public CameraController cameraController;
     public int slotCount;
     public int slotYear;
 
     // Start is called before the first frame update
     void Start()
     {
-        camera = FindObjectOfType<Camera>();
+        cameraController = FindFirstObjectByType<CameraController>();
     }
 
     public void DrawEventCard()
@@ -29,17 +30,17 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     public void ZoomTimeline()
     {
-        camera.ZoomTimeline();
+        cameraController.ZoomTimeline();
     }
 
     public void waitToDistance()
     {
-        Invoke("DistanceTimeline", 3.3f);
+        this.DelayedCall(3.3f, DistanceTimeline);
     }
 
     public void DistanceTimeline()
     {
-        camera.DistanceTimeline();
+        cameraController.DistanceTimeline();
     }
 
     public void ResetStatusCard()
@@ -52,8 +53,8 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     public void ActivateEndButton()
     {
-        Debug.Log("ActivateEndButton");
-        var gameManager = FindObjectOfType<GameManager>();
+        DebugHelper.Log("ActivateEndButton");
+        var gameManager = FindFirstObjectByType<GameManager>();
         gameManager.ActivateEnd();
     }
 

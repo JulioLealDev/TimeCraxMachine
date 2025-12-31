@@ -1,180 +1,196 @@
-# Claude Instructions - Timecrax Machine Game
+# CLAUDE.md - Instruções para o Claude
 
-## Project Overview
-Timecrax Machine is a multiplayer educational history card game built in Unity. Players place historical event cards on a timeline in chronological order. The game uses Photon PUN for real-time multiplayer networking.
+Este arquivo contém instruções para o Claude ao trabalhar neste projeto.
 
-## Tech Stack
-- **Engine:** Unity 2022.3.51f1 (LTS)
-- **Language:** C#
-- **Networking:** Photon PUN 2 (Photon Unity Networking)
-- **UI:** Unity UI + TextMesh Pro
-- **Animations:** LeanTween
-- **Platform:** PC, Mobile (Android/iOS)
+## Sobre o Projeto
 
-## Project Structure
+**TimeCrax Machine** é um jogo 3D multiplayer cooperativo online desenvolvido em Unity. Os jogadores devem sequenciar eventos na linha do tempo corretamente antes que a máquina do tempo pare de funcionar.
+
+## Stack Tecnológica
+
+- **Engine:** Unity 6000.0.3 (C#)
+- **Networking:** Photon Unity Networking (PUN 2.52) para multiplayer
+- **Animações:** LeanTween
+- **UI:** TextMesh Pro
+- **Outros:** QuickOutline, AI Navigation
+
+## Migração para Unity 6 (Concluída)
+
+### Status
+- Migração de Unity 2022.3.51f1 para Unity 6000.0.3 concluída em 31/12/2024
+
+### Alterações Realizadas
+1. **APIs obsoletas migradas (70 ocorrências):**
+   - `FindObjectOfType<T>()` → `FindFirstObjectByType<T>()`
+   - `FindObjectsOfType<T>()` → `FindObjectsByType<T>(FindObjectsSortMode.None)`
+   - `FindObjectOfType<T>(true)` → `FindFirstObjectByType<T>(FindObjectsInactive.Include)`
+
+2. **Classes renomeadas para evitar conflitos:**
+   - `Camera.cs` → `CameraController.cs`
+   - `Component.cs` → `MachineComponent.cs`
+
+3. **Photon PUN atualizado:** v2.41 → v2.52
+
+## Estrutura do Projeto
+
 ```
 Assets/
-├── Animations/      # Animation clips and controllers
-├── HUD/             # UI elements and canvases
-├── LeanTween/       # Tweening library
-├── Materials/       # 3D materials
-├── Models/          # 3D models (FBX, etc.)
-├── Photon/          # Photon PUN configuration
-├── Prefabs/         # Reusable game objects
-├── QuickOutline/    # Outline shader for selection
-├── Resources/       # Runtime-loaded assets
-├── Scenes/          # Unity scenes
-│   └── TimeCraxMachine.unity  # Main game scene
-├── Scripts/         # C# game scripts
-├── Sounds/          # Audio files (SFX, music)
-├── TextMesh Pro/    # TMP assets
-└── Textures/        # 2D textures and sprites
+├── Scripts/       # Scripts C# do jogo
+├── Prefabs/       # Prefabs do Unity
+├── Scenes/        # Cenas do jogo
+├── Materials/     # Materiais e shaders
+├── Models/        # Modelos 3D
+├── Textures/      # Texturas
+├── Animations/    # Animações
+├── HUD/           # Elementos de interface
+├── Sounds/        # Arquivos de áudio
+├── Photon/        # Configurações do Photon
+├── Resources/     # Assets carregados em runtime
+└── Editor/        # Scripts de Editor (ferramentas)
 ```
 
-## Core Scripts
+## Scripts Principais
 
-### Game Flow
-- **GameManager.cs** - Main game controller, handles game state, rounds, turns
-- **GameConnection.cs** - Photon connection and room management
-- **Menu.cs** - Main menu logic
-- **LobbyOptions.cs** - Lobby configuration and player management
+- `GameManager.cs` - Gerenciador principal do jogo
+- `GameConnection.cs` - Gerenciamento de conexão multiplayer
+- `CameraController.cs` - Controle de câmera (antigo Camera.cs)
+- `MachineComponent.cs` - Componentes da máquina do tempo (antigo Component.cs)
+- `PlayerScript.cs` - Lógica do jogador
+- `EventCard.cs` / `EventSlot.cs` - Sistema de cartas de eventos
+- `DeckEvent.cs` / `DeckRepair.cs` - Sistema de baralhos
+- `CreateRoom.cs` / `EnterRoom.cs` - Sistema de salas multiplayer
 
-### Networking (Photon)
-- **CreateRoom.cs** - Room creation logic
-- **EnterRoom.cs** - Room joining logic
-- **RoomList.cs** - Available rooms display
-- **Room.cs** - Room data model
-- **PlayerScript.cs** - Player controller with network sync
+## Comandos de Build
 
-### Gameplay
-- **EventCard.cs** - Historical event card behavior
-- **EventSlot.cs** - Timeline slot for placing cards
-- **EventCardContent.cs** - Card data (year, description, image)
-- **DeckEvent.cs** - Event card deck management
-- **DeckRepair.cs** - Repair card deck management
-- **RepairCard.cs** - Repair card behavior
-- **Timeline.cs** - Timeline visualization
-- **GiveCards.cs** - Card distribution logic
-- **FinishTurn.cs** - End turn button logic
+O projeto é construído através do Unity Editor. Builds ficam em:
+- `Builds/` - Builds para desktop
+- `MobileBuilds/` - Builds para mobile
 
-### UI/UX
-- **Camera.cs** - Camera controls and zoom
-- **Pages.cs** - UI page navigation
-- **NameTag.cs** / **NamePlayerTag.cs** - Player name displays
-- **SoundEffects.cs** - SFX manager
-- **BackgroundMusic.cs** - Background music controller
-- **Tutorial.cs** - Tutorial system
+## Diretrizes de Código
 
-### Game States
-- **Victory.cs** - Win condition handling
-- **GameOver.cs** - Loss/end game handling
-- **QuitGame.cs** / **QuitInGaming.cs** - Exit game logic
+1. **Linguagem:** Scripts em C# seguindo convenções Unity
+2. **Namespace:** `TimeCrax.Core` para utilitários. Scripts de gameplay usam `using TimeCrax.Core;`
+3. **MonoBehaviour:** A maioria dos scripts herda de MonoBehaviour
+4. **Photon:** Scripts de rede usam MonoBehaviourPunCallbacks
+5. **Comentários:** Preferencialmente em português
+6. **APIs Unity 6:** Usar `FindFirstObjectByType` e `FindObjectsByType` ao invés de versões obsoletas
+7. **Novos scripts:** Sempre incluir `using TimeCrax.Core;` para acesso a DebugHelper, SessionData e DelayedCall
 
-### Visual
-- **OutlineAction.cs** / **OutlineComponent.cs** - Selection outline effects
-- **RandomMaterial.cs** - Random material assignment
-- **Sticker.cs** - Sticker/badge visuals
+## Ao Modificar Código
 
-## Conventions
+- Manter compatibilidade com Photon PUN 2
+- Testar sincronização multiplayer ao modificar lógica de jogo
+- Verificar referências de prefabs ao adicionar novos componentes
+- Respeitar o padrão de nomenclatura existente (PascalCase para classes e métodos públicos)
+- Usar APIs compatíveis com Unity 6
+- Não usar nomes de classes que conflitam com UnityEngine (Camera, Component, etc.)
 
-### Photon Networking
-- Use `MonoBehaviourPunCallbacks` for networked scripts
-- Use `[PunRPC]` attribute for remote procedure calls
-- Check `PhotonNetwork.IsMasterClient` for host-only logic
-- Use `photonView.RPC()` to call methods on all clients
-- RPC targets: `RpcTarget.All`, `RpcTarget.Others`, `RpcTarget.MasterClient`
+## Melhorias Implementadas (31/12/2024)
 
-### Script Pattern
+### Alto - Concluídas
+- [x] **Debug.Log wrapper** - Criado `DebugHelper.cs` que remove logs em builds de produção (269 ocorrências migradas)
+- [x] **GetComponent caching** - `CameraController.cs` otimizado como exemplo. Padrão a seguir nos demais scripts.
+- [x] **Substituir Invoke() por Coroutines** - 46 ocorrências migradas em 19 arquivos usando `this.DelayedCall()`
+
+### Médio - Concluídas
+- [x] **Revisar Update() desnecessários** - 5 métodos vazios removidos
+- [x] **Substituir PlayerPrefs por SessionData** - Criado `SessionData.cs` para dados de sessão (nickname, gameStarted, numberOfPlayers)
+
+### Médio - Em Progresso
+- [~] **Usar [SerializeField]** - 14 scripts migrados (~55 campos). Padrão documentado abaixo para continuar.
+
+### Baixo - Concluídas
+- [x] **Adicionar namespaces** - `TimeCrax.Core` adicionado aos utilitários. 27 scripts atualizados com `using TimeCrax.Core;`
+
+### Baixo - Pendente (Manual)
+- [ ] **Reorganizar scripts em subpastas** - Estrutura proposta abaixo. Deve ser feito pelo Unity Editor para preservar .meta files
+
+## Scripts Utilitários (Assets/Scripts/Core/) - Namespace: TimeCrax.Core
+
+- `DebugHelper.cs` - Wrapper para Debug.Log que é removido em builds de produção
+- `CoroutineHelper.cs` - Helper para substituir Invoke() por Coroutines
+- `SessionData.cs` - Dados de sessão em memória (substitui PlayerPrefs para dados temporários)
+
+### Estrutura de Pastas Proposta (Reorganização Manual)
+```
+Assets/Scripts/
+├── Core/       # Utilitários (já existe) - TimeCrax.Core
+├── Gameplay/   # GameManager, EventCard, EventSlot, DeckEvent, etc.
+├── Network/    # GameConnection, Room, RoomList
+├── UI/         # Menu, CreateRoom, EnterRoom, LobbyOptions, Pages
+├── Audio/      # BackgroundMusic, SoundEffects
+└── Visual/     # OutlineAction, OutlineComponent, RandomMaterial
+```
+**Nota:** Mover scripts pelo Unity Editor (arrastar no Project) para preservar arquivos .meta e referências.
+
+### Como usar DebugHelper
 ```csharp
-using UnityEngine;
-using Photon.Pun;
+// Ao invés de:
+Debug.Log("mensagem");
 
-public class MyScript : MonoBehaviourPunCallbacks
-{
-    // Public fields for Inspector
-    public GameObject myObject;
-
-    // Private fields
-    private int myValue;
-
-    void Start() { }
-    void Update() { }
-
-    // Photon RPC
-    [PunRPC]
-    public void MyNetworkedMethod() { }
-}
+// Use:
+DebugHelper.Log("mensagem");
 ```
+Os logs são automaticamente removidos em builds de produção.
 
-### Finding Objects
-- Use `FindObjectOfType<T>()` to find managers
-- GameManager is the central controller
-- Camera script handles all camera movements
-
-### Animations
-- Use Animator components with bool/int parameters
-- LeanTween for programmatic animations
-- Common pattern: `GetComponent<Animator>().SetBool("paramName", true)`
-
-## Game Mechanics
-
-### Card System
-- **Event Cards:** Historical events with year, placed on timeline
-- **Repair Cards:** Special cards to fix mistakes
-- Cards are drawn from decks and placed in slots
-
-### Turn Flow
-1. Player draws event card
-2. Player places card on timeline slot
-3. System validates chronological order
-4. Turn passes to next player
-
-### Multiplayer
-- Master client controls game flow
-- All game state synced via Photon RPCs
-- Players identified by `PhotonNetwork.NickName`
-
-## Common Patterns
-
-### Network Sync
+### Como usar CoroutineHelper
 ```csharp
-// Host-only execution
-if (PhotonNetwork.IsMasterClient)
-{
-    photonView.RPC("DoSomething", RpcTarget.All, parameter);
-}
+// Ao invés de:
+Invoke("MetodoX", 1.5f);
 
-[PunRPC]
-public void DoSomething(int param)
-{
-    // Executed on all clients
-}
+// Use:
+StartCoroutine(CoroutineHelper.DelayedAction(1.5f, MetodoX));
+// Ou:
+this.DelayedCall(1.5f, MetodoX);
 ```
 
-### Camera Control
+### Como usar SessionData
 ```csharp
-var camera = FindObjectOfType<Camera>();
-camera.ZoomTimeline();
-camera.DistanceTimeline();
+// Ao invés de:
+PlayerPrefs.SetString("nickname", value);
+var name = PlayerPrefs.GetString("nickname");
+
+// Use:
+SessionData.Nickname = value;
+var name = SessionData.Nickname;
 ```
 
-### Sound
+### Padrão [SerializeField]
 ```csharp
-var soundEffects = FindObjectOfType<SoundEffects>();
-soundEffects.PlaySound("soundName");
+// Ao invés de:
+public Animator animator;
+public GameObject target;
+
+// Use:
+[SerializeField] private Animator animator;
+[SerializeField] private GameObject target;
+```
+Campos que precisam ser acessados externamente devem ter property pública:
+```csharp
+[SerializeField] private int value;
+public int Value => value;
 ```
 
-## Build Targets
-- **PC:** Windows standalone
-- **Mobile:** Android APK, iOS (in Builds/ and MobileBuilds/)
+## Ferramentas de Editor
 
-## Important Notes
-- Main scene: `Assets/Scenes/TimeCraxMachine.unity`
-- Photon App ID configured in `Assets/Photon/PhotonUnityNetworking/Resources/PhotonServerSettings.asset`
-- Game requires internet connection for multiplayer
-- Single scene architecture (all game states in one scene)
+Scripts utilitários em `Assets/Editor/`:
+- `MigrateToUnity6.cs` - Ferramenta de migração de APIs (já executada)
+- `FindMissingScripts.cs` - Encontra e remove scripts faltando
 
-## Common Commands (Unity Editor)
-- Play: Ctrl+P
-- Build: File > Build Settings > Build
-- Photon Dashboard: Window > Photon Unity Networking > Highlight Server Settings
+## Arquivos Importantes
+
+- `ProjectSettings/` - Configurações do Unity (não modificar manualmente)
+- `Packages/` - Pacotes do Unity Package Manager
+- `.gitignore` - Arquivos ignorados pelo Git
+
+## Notas
+
+- O projeto usa Visual Studio / VS Code como IDE
+- Arquivos `.meta` são gerados automaticamente pelo Unity
+- Não modificar arquivos na pasta `Library/` (cache do Unity)
+
+## Referências Úteis
+
+- [Unity 6 LTS Releases](https://unity.com/releases/unity-6/support)
+- [PUN 2 Version History](https://doc.photonengine.com/pun/current/reference/version-history)
+- [Photon PUN Documentation](https://doc.photonengine.com/pun/current/getting-started/pun-intro)

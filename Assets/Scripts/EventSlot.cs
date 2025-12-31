@@ -1,32 +1,30 @@
 using UnityEngine;
 using Photon.Pun;
+using TimeCrax.Core;
 
 public class EventSlot : MonoBehaviourPunCallbacks
-
 {
-    public int slotNumber;
-    public int randomNumber;
+    [SerializeField] private int slotNumber;
+    [SerializeField] private int randomNumber;
+    [SerializeField] private SoundEffects soundEffects;
+
     private GameManager gameManager;
-    public SoundEffects soundEffects;
     private BackgroundMusic backgroundMusic;
     private Victory victory;
+
+    public int SlotNumber => slotNumber;
 
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = FindObjectOfType<GameManager>();
-        victory = FindObjectOfType<Victory>();
-        backgroundMusic = FindObjectOfType<BackgroundMusic>();
+        gameManager = FindFirstObjectByType<GameManager>();
+        victory = FindFirstObjectByType<Victory>();
+        backgroundMusic = FindFirstObjectByType<BackgroundMusic>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     public void OnMouseDown()
     {
-        var eventCards = FindObjectsOfType<EventCard>();
+        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
         photonView.RPC("ClickSlotSound", RpcTarget.All, 1);
 
@@ -38,16 +36,16 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
                 if (slotNumber == card.slotCount)
                 {
-                    //Debug.Log("É igual!");
+                    //DebugHelper.Log("ï¿½ igual!");
                     photonView.RPC("ClickSlotSound", RpcTarget.All, 2);
 
                     photonView.RPC("ClickedRightSlot", RpcTarget.All, card.slotCount);
                 }
                 else
                 {
-                    //Debug.Log("Noé igual!");
+                    //DebugHelper.Log("Noï¿½ igual!");
                     photonView.RPC("ClickSlotSound", RpcTarget.All, 3);
-                    Invoke("RandomComponent", 5f);
+                    this.DelayedCall(5f, RandomComponent);
 
                     photonView.RPC("ClickedWrongSlot", RpcTarget.All, card.slotCount);
 
@@ -69,11 +67,11 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         else if(idSound == 2)
         {
-            Invoke("PlayRightSound", 3.3f);
+            this.DelayedCall(3.3f, PlayRightSound);
         }
         else if(idSound == 3) 
         {
-            Invoke("PlayWrongSound", 3.3f);
+            this.DelayedCall(3.3f, PlayWrongSound);
         }
 
     }
@@ -98,14 +96,14 @@ public class EventSlot : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ClickedWrongSlot(int slotCount)
     {
-        var cards = FindObjectsOfType<EventCard>();
+        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         foreach (var card in cards)
         {
-            //Debug.Log("cardslotcount: "+ card.slotCount+" -- slotcount:"+slotCount);
+            //DebugHelper.Log("cardslotcount: "+ card.slotCount+" -- slotcount:"+slotCount);
             if (card.slotCount == slotCount)
             {
                 card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
-                //Debug.Log("cardname: "+card.name);
+                //DebugHelper.Log("cardname: "+card.name);
                 card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
                 card.tag = "Undestructable";
                 card.waitToDistance();
@@ -118,10 +116,10 @@ public class EventSlot : MonoBehaviourPunCallbacks
     {
         gameObject.tag = "Disabled";
 
-        var deckEvent = FindObjectOfType<DeckEvent>();
+        var deckEvent = FindFirstObjectByType<DeckEvent>();
         deckEvent.RemoveIndex(slotCount);
 
-        var cards = FindObjectsOfType<EventCard>();
+        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         foreach (var card in cards)
         {
             if(card.slotCount == slotCount)
@@ -139,32 +137,32 @@ public class EventSlot : MonoBehaviourPunCallbacks
     //[PunRPC]
     //public void ClickSlot()
     //{
-    //    var eventCards = FindObjectsOfType<EventCard>();
+    //    var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
     //    foreach (var card in eventCards)
     //    {
     //        if (card.CompareTag("Drew"))
     //        {
     //            SetUpSlots(false, "Undestructable");
-    //            //Debug.Log("CardName: " + card.slotCount + " -- SlotName: " + slotNumber);
+    //            //DebugHelper.Log("CardName: " + card.slotCount + " -- SlotName: " + slotNumber);
     //            card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
 
     //            if (slotNumber == card.slotCount)
     //            {
-    //                Debug.Log("É igual!");
+    //                DebugHelper.Log("ï¿½ igual!");
     //                card.tag = "Disabled";
     //                gameObject.tag = "Disabled";
-    //                var deckEvent = FindObjectOfType<DeckEvent>();
+    //                var deckEvent = FindFirstObjectByType<DeckEvent>();
     //                deckEvent.RemoveIndex(card.slotCount);
     //                card.waitToDistance();
     //                CheckIfWin();
     //            }
     //            else
     //            {
-    //                var gameManager = FindObjectOfType<GameManager>();
+    //                var gameManager = FindFirstObjectByType<GameManager>();
     //                gameManager.RandomComponentNumber();
     //                card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
     //                card.tag = "Undestructable";
-    //                Debug.Log("Noé igual!");
+    //                DebugHelper.Log("Noï¿½ igual!");
     //                card.waitToDistance();
     //            }
     //        }
@@ -173,12 +171,12 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
     public void SetUpSlots(bool activateSlot, string tag)
     {
-        //Debug.Log("SetUpSlots");
+        //DebugHelper.Log("SetUpSlots");
 
-        var slots = FindObjectsOfType<EventSlot>();
+        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
         foreach (var slot in slots)
         {
-            //Debug.Log("slot "+slot.slotNumber+" -- tag: "+slot.tag);
+            //DebugHelper.Log("slot "+slot.slotNumber+" -- tag: "+slot.tag);
             if (!slot.CompareTag("Disabled"))
             {
                 slot.tag = tag;
@@ -191,11 +189,11 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
     public void CheckIfWin()
     {
-        var slots = FindObjectsOfType<EventSlot>();
+        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
         int slotsFilled = 0;
         foreach (var slot in slots)
         {
-            //Debug.Log("slot " + slot.slotNumber + " -- tag: " + slot.tag);
+            //DebugHelper.Log("slot " + slot.slotNumber + " -- tag: " + slot.tag);
             if (slot.CompareTag("Disabled"))
             {
                 slotsFilled++;
@@ -204,13 +202,13 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (slotsFilled == 7)
         {
-            //GameOver gameOver = FindObjectOfType<GameOver>();
+            //GameOver gameOver = FindFirstObjectByType<GameOver>();
             //gameOver.gameIsOver = true;
 
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
             gameManager.ResetAllPlatenames();
-            Invoke("Victory", 5.5f);
+            this.DelayedCall(5.5f, Victory);
         }
     }
 
@@ -225,7 +223,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
     //public void ReturningToMenu()
     //{
     //    victory.transform.GetChild(0).gameObject.SetActive(false);
-    //    var gameManager = FindObjectOfType<GameManager>();
+    //    var gameManager = FindFirstObjectByType<GameManager>();
     //    gameManager.QuitGame();
     //}
 }

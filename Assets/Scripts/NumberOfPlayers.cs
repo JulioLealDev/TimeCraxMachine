@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using TimeCrax.Core;
 
 public class NumberOfPlayers : MonoBehaviour
 {
+    [SerializeField] private Animator animator;
+    [SerializeField] private TextMeshPro warningRoomCreated;
 
-    public Animator animator;
     private bool click = true;
-    public TextMeshPro warningRoomCreated;
 
     void Start()
     {
-        PlayerPrefs.SetInt("numberOfPlayers", 1);
+        SessionData.NumberOfPlayers = 1;
     }
 
     private void OnMouseDown()
@@ -27,24 +28,23 @@ public class NumberOfPlayers : MonoBehaviour
         {
             animator.enabled = false;
             warningRoomCreated.GetComponent<Animator>().SetBool("roomCreated", true);
-            Invoke("AfterClickRoulette", 1.0f);
+            this.DelayedCall(1.0f, AfterClickRoulette);
         }
         else
         {
             animator.SetBool("rouletteClick", click);
             click = !click;
-            var numberOfPlayers = PlayerPrefs.GetInt("numberOfPlayers");
+            var numberOfPlayers = SessionData.NumberOfPlayers;
             if (numberOfPlayers <= 3)
             {
-                PlayerPrefs.SetInt("numberOfPlayers", numberOfPlayers + 1);
-                PlayerPrefs.Save();
+                SessionData.NumberOfPlayers = numberOfPlayers + 1;
             }
             else
             {
-                PlayerPrefs.SetInt("numberOfPlayers", 1);
+                SessionData.NumberOfPlayers = 1;
             }
             gameObject.GetComponent<MeshCollider>().enabled = false;
-            Invoke("AfterClickRoulette", 0.8f);
+            this.DelayedCall(0.8f, AfterClickRoulette);
         }
 
     }

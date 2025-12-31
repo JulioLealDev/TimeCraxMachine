@@ -4,35 +4,31 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
+using TimeCrax.Core;
 
 public class EnterRoom : MonoBehaviour
 {
-    public Animator animator;
-    public Camera cam;
-    public GameObject suit;
-    public InputField nameDisplay;
-    public TextMeshPro warning;
-    public GameConnection gameConnection;
-    public Canvas lobby;
-    public GameObject blueButton;
-    public SoundEffects soundEffects;
+    [SerializeField] private Animator animator;
+    [SerializeField] private CameraController cam;
+    [SerializeField] private GameObject suit;
+    [SerializeField] private InputField nameDisplay;
+    [SerializeField] private TextMeshPro warning;
+    [SerializeField] private GameConnection gameConnection;
+    [SerializeField] private Canvas lobby;
+    [SerializeField] private GameObject blueButton;
+    [SerializeField] private SoundEffects soundEffects;
 
     void Start()
     {
-        PlayerPrefs.SetString("nickname", null);
-        nameDisplay.text = PlayerPrefs.GetString("nickname");
+        SessionData.Nickname = string.Empty;
+        nameDisplay.text = SessionData.Nickname;
     }
-    void Update()
-    {
-
-    }
-
     public void OnMouseDown()
     {
         soundEffects.PressButtonSound();
 
-        PlayerPrefs.SetString("nickname", nameDisplay.text);
-        var nickname =  PlayerPrefs.GetString("nickname");
+        SessionData.Nickname = nameDisplay.text;
+        var nickname = SessionData.Nickname;
 
         if (nickname == null || nickname.Equals(""))
         {
@@ -40,20 +36,20 @@ public class EnterRoom : MonoBehaviour
             warning.gameObject.GetComponent<Animator>().SetBool("nameIsEmpty", true);
             gameObject.GetComponent<MeshCollider>().enabled = false;
             blueButton.gameObject.GetComponent<MeshCollider>().enabled = false;
-            Invoke("AfterClickStart", 1.5f);
+            this.DelayedCall(1.5f, AfterClickStart);
         }
         else
         {
             //if (gameConnection.gameObject.activeInHierarchy)
             //{
-            var connection = FindObjectOfType<GameConnection>();
+            var connection = FindFirstObjectByType<GameConnection>();
             connection.Lobby();
             //}
             //else
             //{
             //    gameConnection.gameObject.SetActive(true);
             //}
-            var menu = FindObjectOfType<Menu>();
+            var menu = FindFirstObjectByType<Menu>();
             menu.DisableMenu();
             nameDisplay.gameObject.SetActive(false);
 
@@ -73,7 +69,7 @@ public class EnterRoom : MonoBehaviour
     //public void ValidateNickname()
     //{
 
-    //    if (nameDisplay.text.Contains(" ") || nameDisplay.text.Contains("-") || nameDisplay.text.Contains("´"))
+    //    if (nameDisplay.text.Contains(" ") || nameDisplay.text.Contains("-") || nameDisplay.text.Contains("ï¿½"))
     //    {
     //        nameDisplay.text = nameDisplay.text.Remove(nameDisplay.text.Length - 1);
     //        PlayerPrefs.SetString("nickname", nameDisplay.text);

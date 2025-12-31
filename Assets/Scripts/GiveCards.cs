@@ -1,5 +1,6 @@
 using UnityEngine.EventSystems;
 using UnityEngine;
+using TimeCrax.Core;
 
 public class GiveCards : MonoBehaviour
 {
@@ -8,9 +9,9 @@ public class GiveCards : MonoBehaviour
     private int sendNumberCards;
     private void OnMouseDown()
     {
-        Debug.Log("Clicou no player: " + gameObject.name);
+        DebugHelper.Log("Clicou no player: " + gameObject.name);
 
-        var players = FindObjectsOfType<PlayerScript>();
+        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
         foreach (var player in players)
         {
             if (player.GetYourTurn())
@@ -23,7 +24,7 @@ public class GiveCards : MonoBehaviour
         if (gameObject.tag == "Disabled")
         {
 
-            Debug.Log("Você já realizaou uma ação neste turno");
+            DebugHelper.Log("Vocï¿½ jï¿½ realizaou uma aï¿½ï¿½o neste turno");
 
             Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
             gameInfo.gameObject.SetActive(true);
@@ -36,11 +37,11 @@ public class GiveCards : MonoBehaviour
                 }
             }
 
-            Invoke("HideActionInfo", 1.5f);
+            this.DelayedCall(1.5f, HideActionInfo);
         }
         else if (sendNumberCards == 0)
         {
-            Debug.Log("Você não possui cartas de reparo");
+            DebugHelper.Log("Vocï¿½ nï¿½o possui cartas de reparo");
 
             Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
             gameInfo.gameObject.SetActive(true);
@@ -53,7 +54,7 @@ public class GiveCards : MonoBehaviour
                 }
             }
 
-            Invoke("HideCardInfo", 1.5f);
+            this.DelayedCall(1.5f, HideCardInfo);
         }
         else
         {
@@ -83,7 +84,7 @@ public class GiveCards : MonoBehaviour
                     int receiverNumberCards = player.GetNumberOfRepairsCards();
                     if(receiverNumberCards == 5)
                     {
-                        Debug.Log("Este jogador já possui 5 cartas");
+                        DebugHelper.Log("Este jogador jï¿½ possui 5 cartas");
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
                         gameInfo.gameObject.SetActive(true);
@@ -96,11 +97,11 @@ public class GiveCards : MonoBehaviour
                             }
                         }
 
-                        Invoke("HideFiveInfo", 1.5f);
+                        this.DelayedCall(1.5f, HideFiveInfo);
                     }
                     else
                     {
-                        var gameManager = FindObjectOfType<GameManager>();
+                        var gameManager = FindFirstObjectByType<GameManager>();
                         gameManager.GiveCard(numberPlayer);
                     }
                 }
@@ -113,7 +114,7 @@ public class GiveCards : MonoBehaviour
 
     public void HideFiveInfo()
     {
-        //Debug.Log("HideRoundInfo()");
+        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -122,12 +123,12 @@ public class GiveCards : MonoBehaviour
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
 
     public void HideActionInfo()
     {
-        //Debug.Log("HideRoundInfo()");
+        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -136,7 +137,7 @@ public class GiveCards : MonoBehaviour
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
 
     public void HideCardInfo()
@@ -149,12 +150,12 @@ public class GiveCards : MonoBehaviour
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
 
     public void DisableGameInfo()
     {
-        //Debug.Log("DisableGameInfo()");
+        //DebugHelper.Log("DisableGameInfo()");
         gameInfo.gameObject.SetActive(false);
     }
 }

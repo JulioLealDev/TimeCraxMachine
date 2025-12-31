@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TimeCrax.Core;
 
 public class Sticker : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class Sticker : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log("Clicou no sticker");
+        DebugHelper.Log("Clicou no sticker");
 
         menu.DisableMenu();
 

@@ -2,13 +2,14 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using TimeCrax.Core;
 
 public class QuitGame : MonoBehaviour
 {
-    public Animator animator;
-    public Camera cam;
-    public InputField nameDisplay;
-    public SoundEffects soundEffects;
+    [SerializeField] private Animator animator;
+    [SerializeField] private CameraController cam;
+    [SerializeField] private InputField nameDisplay;
+    [SerializeField] private SoundEffects soundEffects;
 
     private void OnMouseDown()
     {
@@ -23,7 +24,7 @@ public class QuitGame : MonoBehaviour
         cam.gameObject.GetComponent<Animator>().SetBool("quitGame", true);
         animator.SetBool("quitGame", false);
 
-        Invoke("AfterClickQuitButton", 2.9f);
+        this.DelayedCall(2.9f, AfterClickQuitButton);
     }
 
     private void AfterClickQuitButton()

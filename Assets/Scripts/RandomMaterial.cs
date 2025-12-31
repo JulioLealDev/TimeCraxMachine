@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System;
 using TMPro;
 using UnityEngine;
+using TimeCrax.Core;
 
 public class RandomMaterial : MonoBehaviourPunCallbacks
 {
@@ -28,7 +29,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
         if (randomNumberList.Contains(randomNumber))
         {
-            //Debug.Log("ja existe!!");
+            //DebugHelper.Log("ja existe!!");
             RandomMaterialIdList(materialListLenght);
         }
         else
@@ -61,7 +62,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
                 break;
         }
 
-        //Debug.Log("tamanho da lista de materiais: " + length);
+        //DebugHelper.Log("tamanho da lista de materiais: " + length);
 
         count = 0;
         while (count < 7)
@@ -71,7 +72,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
         for(int i = 0;i < randomNumberList.Length; i++)
         {
-            //Debug.Log("random number ["+i+"]: "+randomNumberList[i]);
+            //DebugHelper.Log("random number ["+i+"]: "+randomNumberList[i]);
         }
 
         photonView.RPC("SetAllValues", RpcTarget.All, theme, randomNumberList);
@@ -82,9 +83,9 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     public void SetAllValues(string theme, int[] randomNumberList)
     {
         timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
-        eventCards = FindObjectsOfType<EventCard>();
+        eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
-        //Debug.Log("Theme 3: " + theme.ToUpper());
+        //DebugHelper.Log("Theme 3: " + theme.ToUpper());
 
         switch (theme.ToUpper())
         {
@@ -138,8 +139,8 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     //[PunRPC]
     public void SetMaterialsToEventCards(int i, EventCardContent[] materialList, int[] randomNumberList)
     {
-        //Debug.Log("carta [" + i + "] recebendo materia: " +materialList[randomNumberList[i]].material.name);
-        //Debug.Log("carta [" + i + "] recebendo ano: " + materialList[randomNumberList[i]].year);
+        //DebugHelper.Log("carta [" + i + "] recebendo materia: " +materialList[randomNumberList[i]].material.name);
+        //DebugHelper.Log("carta [" + i + "] recebendo ano: " + materialList[randomNumberList[i]].year);
         eventCards[i].GetComponent<Renderer>().material = materialList[randomNumberList[i]].material;
         eventCards[i].slotYear = materialList[randomNumberList[i]].year;
         selectedYears[i] = materialList[randomNumberList[i]].year;
@@ -154,11 +155,11 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
             for (int y = 0; y < selectedYears.Length; y++)
             {
-                //Debug.Log("eventCards.slotYear: "+ eventCards[i].slotYear+"  == selectedYears"+ selectedYears[y]);
+                //DebugHelper.Log("eventCards.slotYear: "+ eventCards[i].slotYear+"  == selectedYears"+ selectedYears[y]);
                 if (eventCards[i].slotYear == selectedYears[y])
                 {
                     eventCards[i].slotCount = y + 1;
-                    //Debug.Log("carta index: " + i + " recebe valor: " + (y+1));
+                    //DebugHelper.Log("carta index: " + i + " recebe valor: " + (y+1));
                 }
             }
 
@@ -171,10 +172,10 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
         timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
 
-        //Debug.Log("Entrou no SetTime");
+        //DebugHelper.Log("Entrou no SetTime");
         for (int i = 0; i < timelineTearsList.Length; i++)
         {
-            //Debug.Log("--- " + timelineTearsList[i].name);
+            //DebugHelper.Log("--- " + timelineTearsList[i].name);
             timelineTearsList[i].text = selectedYears[i].ToString();
         }
     }

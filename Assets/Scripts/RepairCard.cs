@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using TimeCrax.Core;
 
 public class RepairCard : MonoBehaviourPunCallbacks
 {
@@ -8,7 +9,7 @@ public class RepairCard : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        players = FindObjectsOfType<PlayerScript>();
+        players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
         DrawRepairCard();
 
@@ -22,7 +23,7 @@ public class RepairCard : MonoBehaviourPunCallbacks
 
     public void CheckingPlayer()
     {
-        //var players = FindObjectsOfType<PlayerScript>();
+        //var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
         foreach (var player in players)
         {
             if (player.GetComponent<PhotonView>().OwnerActorNr == photonView.OwnerActorNr)
@@ -42,27 +43,27 @@ public class RepairCard : MonoBehaviourPunCallbacks
 
     public void ShowRepairCards(int numberOfRepairCards)
     {
-        Debug.Log("number of cards: " + numberOfRepairCards);
+        DebugHelper.Log("number of cards: " + numberOfRepairCards);
 
         switch (numberOfRepairCards)
         {
             case 1:
-                Debug.Log("trocando a posição");
+                DebugHelper.Log("trocando a posiï¿½ï¿½o");
                 gameObject.transform.SetPositionAndRotation(new Vector3(0f, 0.648899972f, 0.638700008f), new Quaternion(0.906307876f, 0, 0, -0.42261827f));
                 index = 0;
                 break;
             case 2:
-                Debug.Log("trocando a posição");
+                DebugHelper.Log("trocando a posiï¿½ï¿½o");
                 gameObject.transform.SetPositionAndRotation(new Vector3(0.0196000002f, 0.647700012f, 0.635900021f), new Quaternion(-0.893287599f, 0.0578520186f, -0.131124616f, 0.426024318f));
                 index = 1;
                 break;
             case 3:
-                Debug.Log("trocando a posição");
+                DebugHelper.Log("trocando a posiï¿½ï¿½o");
                 gameObject.transform.SetPositionAndRotation(new Vector3(-0.0238000005f, 0.648599982f, 0.644800007f), new Quaternion(-0.9102512f, -0.0436024554f, 0.0974093974f, 0.400066316f));
                 index = 2;
                 break;
             case 4:
-                Debug.Log("trocando a posição");
+                DebugHelper.Log("trocando a posiï¿½ï¿½o");
                 gameObject.transform.SetPositionAndRotation(new Vector3(0.0368999988f, 0.642799973f, 0.637899995f), new Quaternion(-0.872396052f, 0.0844448283f, -0.222514987f, 0.426944137f));
                 index = 3;
                 break;
@@ -71,7 +72,7 @@ public class RepairCard : MonoBehaviourPunCallbacks
                 index = 4;
                 break;
             default:
-                Debug.Log("Não possui cartas");
+                DebugHelper.Log("Nï¿½o possui cartas");
                 break;
         }
 
@@ -91,7 +92,7 @@ public class RepairCard : MonoBehaviourPunCallbacks
 
         foreach(var player in players)
         {
-            Debug.Log("player owner numb: "+ player.photonView.OwnerActorNr+ " - card owner numb: "+ gameObject.GetPhotonView().OwnerActorNr);
+            DebugHelper.Log("player owner numb: "+ player.photonView.OwnerActorNr+ " - card owner numb: "+ gameObject.GetPhotonView().OwnerActorNr);
             if(player.photonView.OwnerActorNr == gameObject.GetPhotonView().OwnerActorNr)
             {
                 owner = player;

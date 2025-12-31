@@ -3,6 +3,7 @@ using UnityEngine;
 using Photon.Pun;
 using System.Linq;
 using TMPro;
+using TimeCrax.Core;
 
 public class PlayerScript : MonoBehaviourPunCallbacks
 {
@@ -48,16 +49,16 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
     public void DrawEventCard()
     {
-        Debug.Log("You draw one EventCard!");
+        DebugHelper.Log("You draw one EventCard!");
     }
     public void DrawRepairCard()
     {
         numberRepairCards++;
 
-        Debug.Log("------ mais: "+numberRepairCardsText);
+        DebugHelper.Log("------ mais: "+numberRepairCardsText);
 
         var findObject = GameObject.Find(numberRepairCardsText);
-        Debug.Log("name: "+findObject.name);
+        DebugHelper.Log("name: "+findObject.name);
 
         int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
         numberOfCards++;
@@ -74,10 +75,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     {
         otherPlayer.numberRepairCards++;
 
-        Debug.Log("------ menos: " + numberRepairCardsText);
+        DebugHelper.Log("------ menos: " + numberRepairCardsText);
 
         var findObject = GameObject.Find(numberRepairCardsText);
-        Debug.Log("name: " + findObject.name);
+        DebugHelper.Log("name: " + findObject.name);
 
         int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
         numberOfCards--;
@@ -87,7 +88,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
     public void RepairComponent(int cards)
     {
-        Debug.Log("cartas: " + cards);
+        DebugHelper.Log("cartas: " + cards);
         photonView.RPC("DescreaseAndDestroyCards", RpcTarget.All, cards);
     }
 
@@ -96,10 +97,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     {
         numberRepairCards -= cards;
 
-        Debug.Log("------ repair: " + numberRepairCardsText);
+        DebugHelper.Log("------ repair: " + numberRepairCardsText);
 
         var findObject = GameObject.Find(numberRepairCardsText);
-        Debug.Log("name: " + findObject.name);
+        DebugHelper.Log("name: " + findObject.name);
 
         int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
         numberOfCards -= cards;
@@ -121,7 +122,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
     public void DestroyRepairCards(int cardNumber)
     {
-        var allCards = FindObjectsOfType<RepairCard>();
+        var allCards = FindObjectsByType<RepairCard>(FindObjectsSortMode.None);
         List<RepairCard> cardList = new List<RepairCard>();
 
         foreach (var card in allCards)
@@ -135,7 +136,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
         for (var i = 0; i < cardNumber; i++)
         {
-            Debug.Log("carta -> " + orderedlist[i].photonView.ViewID);
+            DebugHelper.Log("carta -> " + orderedlist[i].photonView.ViewID);
             orderedlist[i].GetComponent<Animator>().enabled = true;
             orderedlist[i].GetComponent<Animator>().SetBool("destroyCard", true);
         }

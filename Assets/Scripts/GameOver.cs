@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TimeCrax.Core;
 
 public class GameOver : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class GameOver : MonoBehaviour
         soundEffects.PressHudButtonSound();
 
         exitGame = true;
-        Debug.Log("exiteGame: " + exitGame);
+        DebugHelper.Log("exiteGame: " + exitGame);
 
         gameManager.BackToMenu();
     }

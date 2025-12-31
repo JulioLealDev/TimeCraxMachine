@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using TimeCrax.Core;
 
 public class GameConnection : MonoBehaviourPunCallbacks
 {
@@ -39,7 +40,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void ConnectingInServerAndLobby()
     {
-        //Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        //DebugHelper.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         sufix++;
         string name = "Players"+sufix.ToString();
         PhotonNetwork.LocalPlayer.NickName = name;
@@ -51,7 +52,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.InLobby == false)
         {
-            Debug.Log("Entrando no Lobby");
+            DebugHelper.Log("Entrando no Lobby");
             PhotonNetwork.JoinLobby();
         }
     }
@@ -65,8 +66,8 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void Lobby()
     {
-        Debug.Log("Entrou no LobbyScreen");
-        PhotonNetwork.LocalPlayer.NickName = PlayerPrefs.GetString("nickname");
+        DebugHelper.Log("Entrou no LobbyScreen");
+        PhotonNetwork.LocalPlayer.NickName = SessionData.Nickname;
         lobbyBackgroundScreen.SetActive(true);
         lobbyScreen.SetActive(true);
         roomList.GetComponent<RoomList>().GetRoomsList(rooms);
@@ -76,16 +77,16 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
-        Debug.Log("Entrou no Create Room");
-        PhotonNetwork.LocalPlayer.NickName = PlayerPrefs.GetString("nickname");
+        DebugHelper.Log("Entrou no Create Room");
+        PhotonNetwork.LocalPlayer.NickName = SessionData.Nickname;
         lobbyBackgroundScreen.SetActive(true);
         createRoom.SetActive(true);
     }
 
     public void CreatedRoom(string nameRoom, int maxPlayers, string difficulty, string theme, string password)
     {
-        //Debug.Log("password: " + password + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(password));
-        Debug.Log("Entrou na Sala Criada");
+        //DebugHelper.Log("password: " + password + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(password));
+        DebugHelper.Log("Entrou na Sala Criada");
         RoomOptions options = new RoomOptions { MaxPlayers = (byte)maxPlayers, EmptyRoomTtl = 0, PlayerTtl = 0 };
         options.CustomRoomPropertiesForLobby = new string[3] { "dif", "the", "pass" };
         options.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
@@ -93,13 +94,13 @@ public class GameConnection : MonoBehaviourPunCallbacks
         options.CustomRoomProperties.Add("the", theme);
         options.CustomRoomProperties.Add("pass", password);
         PhotonNetwork.CreateRoom( nameRoom, options, null);
-        //Debug.Log("options.pass: " + options.CustomRoomProperties["pass"] + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(options.CustomRoomProperties["pass"].ToString()));
+        //DebugHelper.Log("options.pass: " + options.CustomRoomProperties["pass"] + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(options.CustomRoomProperties["pass"].ToString()));
     }
     
     public void ReturnigToMenu()
     {
-        Debug.Log("Entrou no Return to menu");
-        var menu = FindObjectOfType<Menu>();
+        DebugHelper.Log("Entrou no Return to menu");
+        var menu = FindFirstObjectByType<Menu>();
         menu.EnableMenu();
         fullGameScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
@@ -111,7 +112,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
         chatLog.text = null;
         lobbyScreen.SetActive(false);
         fullGameScreen.SetActive(true);
-        Invoke("ReturnigToMenu", 4);
+        this.DelayedCall(4f, ReturnigToMenu);
 
         if (returnCode == ErrorCode.GameDoesNotExist)
         {
@@ -127,7 +128,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        Debug.Log("Client saiu da sala");
+        DebugHelper.Log("Client saiu da sala");
         chatLog.text += "\n" + otherPlayer.NickName + " saiu na sala";
         ListPlayersInRoom();
         //CheckIfIsMaster();
@@ -137,7 +138,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         //Rooms.Clear();
-        Debug.Log("Master saiu da Sala");
+        DebugHelper.Log("Master saiu da Sala");
         ListPlayersInRoom();
         chatLog.text = null;
         //DisconectAndReconect();
@@ -145,7 +146,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void DisconectAndReconect()
     {
-        Debug.Log("Disconecting and Reconecting");
+        DebugHelper.Log("Disconecting and Reconecting");
         PhotonNetwork.Disconnect();
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -165,12 +166,12 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void JoinRoomInList(string roomName)
     {
-        Debug.Log("Entrando na sala: " + roomName);
+        DebugHelper.Log("Entrando na sala: " + roomName);
         PhotonNetwork.JoinRoom(roomName);
     }
     public override void OnJoinedRoom()
     {
-        Debug.Log("Entrou na sala");
+        DebugHelper.Log("Entrou na sala");
 
         createRoom.SetActive(false);
         lobbyScreen.SetActive(false);
@@ -178,7 +179,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         //if (!lobbyScreen.gameObject.activeInHierarchy)
         //{
-        //    Debug.Log("Entrou no if");
+        //    DebugHelper.Log("Entrou no if");
         //    createRoom.SetActive(false);
         //    lobby.SetActive(true);
         //}
@@ -192,7 +193,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
         passwordTitle.GetComponent<TextMeshProUGUI>().text = "Password: " + PhotonNetwork.CurrentRoom.CustomProperties["pass"];
         ListPlayersInRoom();
 
-        chatLog.text += "Você entrou na sala";
+        chatLog.text += "Vocï¿½ entrou na sala";
 
         //maxPlayers.text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
     }
@@ -219,16 +220,16 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public bool CheckPassword(string nameRoom, string password)
     {
-        Debug.Log("Entrou no CheckPassword");
+        DebugHelper.Log("Entrou no CheckPassword");
 
         for (int i = 0; i < rooms.Count; i++)
         {
-            Debug.Log("RoomName: "+ rooms[i].Name.ToUpper()+" ----- nameRoom: "+ nameRoom.ToUpper());
+            DebugHelper.Log("RoomName: "+ rooms[i].Name.ToUpper()+" ----- nameRoom: "+ nameRoom.ToUpper());
             if (rooms[i].Name.ToUpper() == nameRoom.ToUpper())
             {
                 string passwordRoom = rooms[i].CustomProperties["pass"].ToString();
 
-                Debug.Log("Comparando senhas: ---- senha01: " + passwordRoom.ToUpper() + " senha02: " + password.ToUpper());
+                DebugHelper.Log("Comparando senhas: ---- senha01: " + passwordRoom.ToUpper() + " senha02: " + password.ToUpper());
                 if ( passwordRoom.ToUpper() == password.ToUpper())
                 {
                     return true;
@@ -236,7 +237,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
                 else
                 {
                     //passwordCorrect = false;
-                    Debug.Log("Password Errado 01");
+                    DebugHelper.Log("Password Errado 01");
                 }
             }
 
@@ -272,8 +273,8 @@ public class GameConnection : MonoBehaviourPunCallbacks
     }
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        Debug.Log("Atualizando salas");
-        Debug.Log("Numero de salas criadas: "+roomList.Count);
+        DebugHelper.Log("Atualizando salas");
+        DebugHelper.Log("Numero de salas criadas: "+roomList.Count);
 
         rooms.Clear();
         closedRooms.Clear();
@@ -281,26 +282,26 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < roomList.Count; i++)
         {
-            Debug.Log(" - " + roomList[i].Name);
+            DebugHelper.Log(" - " + roomList[i].Name);
             if (roomList[i].PlayerCount == 0 || !roomList[i].IsOpen) 
             {
-                Debug.Log("Sala vazia ou fechada");
+                DebugHelper.Log("Sala vazia ou fechada");
                 roomList[i].RemovedFromList = true;
                 closedRooms.Add(roomList[i]);
             }
             else
             {
-                Debug.Log("adicionando sala aberta na lista");
+                DebugHelper.Log("adicionando sala aberta na lista");
                 roomList[i].RemovedFromList = false;
                 rooms.Add(roomList[i]);
             }
 
         }
-        Debug.Log("Salas ABERTAS armazenadas na lista flexivel:");
-        Debug.Log("Tamanho da lista: "+rooms.Count);
+        DebugHelper.Log("Salas ABERTAS armazenadas na lista flexivel:");
+        DebugHelper.Log("Tamanho da lista: "+rooms.Count);
         for (int i = 0; i < rooms.Count; i++)
         {
-            Debug.Log("Sala: " + rooms[i].Name+" no index: "+ i);
+            DebugHelper.Log("Sala: " + rooms[i].Name+" no index: "+ i);
         }
 
     }

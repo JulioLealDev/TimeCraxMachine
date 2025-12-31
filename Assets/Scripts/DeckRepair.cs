@@ -1,12 +1,13 @@
 using UnityEngine;
 using Photon.Pun;
+using TimeCrax.Core;
 
 public class DeckRepair : MonoBehaviourPunCallbacks
 {
-    public DeckEvent deckEvent;
-    public GameManager gameManager;
-    public Canvas gameInfo;
-    public SoundEffects soundEffects;
+    [SerializeField] private DeckEvent deckEvent;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private Canvas gameInfo;
+    [SerializeField] private SoundEffects soundEffects;
 
     public void OnMouseDown()
     {
@@ -15,18 +16,18 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         {
             photonView.RPC("ClickDraw", RpcTarget.All, 1);
 
-            var players = FindObjectsOfType<PlayerScript>();
+            var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
             foreach (var player in players)
             {
                 if (player.GetYourTurn())
                 {
                     if (player.GetNumberOfRepairsCards() == 5)
                     {
-                        Debug.Log("Você já possui 5 cartas");
+                        DebugHelper.Log("Vocï¿½ jï¿½ possui 5 cartas");
                     }
                     else
                     {
-                        Debug.Log("Você já realizou uma ação neste turno");
+                        DebugHelper.Log("Vocï¿½ jï¿½ realizou uma aï¿½ï¿½o neste turno");
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
                         gameInfo.gameObject.SetActive(true);
@@ -39,7 +40,7 @@ public class DeckRepair : MonoBehaviourPunCallbacks
                             }
                         }
 
-                        Invoke("HideActionInfo", 1.5f);
+                        this.DelayedCall(1.5f, HideActionInfo);
                     }
                 }
 
@@ -85,7 +86,7 @@ public class DeckRepair : MonoBehaviourPunCallbacks
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
         }
-        Invoke("DisableGameInfo", 0.5f);
+        this.DelayedCall(0.5f, DisableGameInfo);
     }
 
     public void DisableGameInfo()
