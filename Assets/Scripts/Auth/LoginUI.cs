@@ -1,53 +1,52 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using TMPro;
 using TimeCrax.Core;
 
 namespace TimeCrax.Auth
 {
     /// <summary>
-    /// Controller da UI de Login/Registro.
-    /// Gerencia os formulários, validação e navegação.
+    /// Controller da UI de Login.
+    /// Gerencia o formulário de login e redirecionamento para registro no site.
     /// </summary>
     public class LoginUI : MonoBehaviour
     {
         [Header("Painéis")]
         [SerializeField] private GameObject loginPanel;
-        [SerializeField] private GameObject registerPanel;
         [SerializeField] private GameObject loadingPanel;
 
         [Header("Login - Campos")]
-        [SerializeField] private TMP_InputField loginEmailInput;
-        [SerializeField] private TMP_InputField loginPasswordInput;
+        [SerializeField] private TMP_InputField emailInput;
+        [SerializeField] private TMP_InputField passwordInput;
         [SerializeField] private Button loginButton;
-        [SerializeField] private Button goToRegisterButton;
-        [SerializeField] private TextMeshProUGUI loginErrorText;
-
-        [Header("Registro - Campos")]
-        [SerializeField] private TMP_InputField registerFirstNameInput;
-        [SerializeField] private TMP_InputField registerLastNameInput;
-        [SerializeField] private TMP_InputField registerEmailInput;
-        [SerializeField] private TMP_InputField registerPasswordInput;
-        [SerializeField] private TMP_InputField registerConfirmPasswordInput;
         [SerializeField] private Button registerButton;
-        [SerializeField] private Button goToLoginButton;
-        [SerializeField] private TextMeshProUGUI registerErrorText;
+        [SerializeField] private TextMeshProUGUI errorText;
 
         [Header("Configurações")]
-        [SerializeField] private string mainMenuSceneName = "MainMenu";
+        [SerializeField] private string mainMenuSceneName = "TimeCraxMachine";
+        [SerializeField] private string registerWebsiteUrl = "http://localhost:5173/register";
         [SerializeField] private bool autoLoginIfTokenExists = true;
+        [SerializeField] private float minimumLoadingTime = 3f;
 
         [Header("Audio")]
         [SerializeField] private SoundEffects soundEffects;
 
         private bool isLoading = false;
+        private float loadingStartTime;
+        private AuthResult pendingResult;
+        private EventSystem cachedEventSystem;
 
         private void Start()
         {
+            // Cache do EventSystem
+            cachedEventSystem = EventSystem.current;
+
             SetupButtons();
             SetupInputFields();
-            ClearErrors();
+            ClearError();
 
             // Tenta auto-login se já tem token válido
             if (autoLoginIfTokenExists && TokenManager.IsLoggedIn)
@@ -61,59 +60,56 @@ namespace TimeCrax.Auth
             }
         }
 
+        private void Update()
+        {
+            // Bloqueia input durante loading
+            if (isLoading) return;
+
+            // Tab para navegar entre campos
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                if (emailInput != null && emailInput.isFocused)
+                {
+                    emailInput.DeactivateInputField();
+                    passwordInput?.ActivateInputField();
+                    passwordInput?.Select();
+                }
+                else if (passwordInput != null && passwordInput.isFocused)
+                {
+                    passwordInput.DeactivateInputField();
+                    emailInput?.ActivateInputField();
+                    emailInput?.Select();
+                }
+            }
+        }
+
         private void SetupButtons()
         {
             if (loginButton != null)
                 loginButton.onClick.AddListener(OnLoginClicked);
 
-            if (goToRegisterButton != null)
-                goToRegisterButton.onClick.AddListener(ShowRegisterPanel);
-
             if (registerButton != null)
                 registerButton.onClick.AddListener(OnRegisterClicked);
-
-            if (goToLoginButton != null)
-                goToLoginButton.onClick.AddListener(ShowLoginPanel);
         }
 
         private void SetupInputFields()
         {
-            // Configura campos de senha para ocultar texto
-            if (loginPasswordInput != null)
-                loginPasswordInput.contentType = TMP_InputField.ContentType.Password;
-
-            if (registerPasswordInput != null)
-                registerPasswordInput.contentType = TMP_InputField.ContentType.Password;
-
-            if (registerConfirmPasswordInput != null)
-                registerConfirmPasswordInput.contentType = TMP_InputField.ContentType.Password;
+            // Configura campo de senha para ocultar texto
+            if (passwordInput != null)
+                passwordInput.contentType = TMP_InputField.ContentType.Password;
 
             // Permite enviar com Enter
-            if (loginPasswordInput != null)
-                loginPasswordInput.onSubmit.AddListener(_ => OnLoginClicked());
-
-            if (registerConfirmPasswordInput != null)
-                registerConfirmPasswordInput.onSubmit.AddListener(_ => OnRegisterClicked());
+            if (passwordInput != null)
+                passwordInput.onSubmit.AddListener(_ => OnLoginClicked());
         }
 
         #region Panel Navigation
 
         public void ShowLoginPanel()
         {
-            PlayButtonSound();
             if (loginPanel != null) loginPanel.SetActive(true);
-            if (registerPanel != null) registerPanel.SetActive(false);
             if (loadingPanel != null) loadingPanel.SetActive(false);
-            ClearErrors();
-        }
-
-        public void ShowRegisterPanel()
-        {
-            PlayButtonSound();
-            if (loginPanel != null) loginPanel.SetActive(false);
-            if (registerPanel != null) registerPanel.SetActive(true);
-            if (loadingPanel != null) loadingPanel.SetActive(false);
-            ClearErrors();
+            ClearError();
         }
 
         private void ShowLoading(bool show)
@@ -129,38 +125,29 @@ namespace TimeCrax.Auth
 
             if (registerButton != null)
                 registerButton.interactable = !show;
-        }
 
-        private void ClearErrors()
-        {
-            if (loginErrorText != null)
+            // Desabilita todo input (mouse/teclado) durante loading
+            if (cachedEventSystem != null)
             {
-                loginErrorText.text = string.Empty;
-                loginErrorText.gameObject.SetActive(false);
-            }
-
-            if (registerErrorText != null)
-            {
-                registerErrorText.text = string.Empty;
-                registerErrorText.gameObject.SetActive(false);
+                cachedEventSystem.enabled = !show;
             }
         }
 
-        private void ShowLoginError(string message)
+        private void ClearError()
         {
-            if (loginErrorText != null)
+            if (errorText != null)
             {
-                loginErrorText.text = message;
-                loginErrorText.gameObject.SetActive(true);
+                errorText.text = string.Empty;
+                errorText.gameObject.SetActive(false);
             }
         }
 
-        private void ShowRegisterError(string message)
+        private void ShowError(string message)
         {
-            if (registerErrorText != null)
+            if (errorText != null)
             {
-                registerErrorText.text = message;
-                registerErrorText.gameObject.SetActive(true);
+                errorText.text = message;
+                errorText.gameObject.SetActive(true);
             }
         }
 
@@ -173,119 +160,81 @@ namespace TimeCrax.Auth
             if (isLoading) return;
 
             PlayButtonSound();
-            ClearErrors();
+            ClearError();
 
-            string email = loginEmailInput?.text?.Trim() ?? string.Empty;
-            string password = loginPasswordInput?.text ?? string.Empty;
+            string email = emailInput?.text?.Trim() ?? string.Empty;
+            string password = passwordInput?.text ?? string.Empty;
 
             // Validação local
             if (string.IsNullOrEmpty(email))
             {
-                ShowLoginError("Digite seu email");
+                ShowError("Digite seu email");
                 return;
             }
 
             if (!AuthService.ValidateEmail(email))
             {
-                ShowLoginError("Email inválido");
+                ShowError("Email inválido");
                 return;
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                ShowLoginError("Digite sua senha");
+                ShowError("Digite sua senha");
                 return;
             }
 
             // Envia para o servidor
             ShowLoading(true);
+            loadingStartTime = Time.time;
+            pendingResult = null;
             AuthService.Instance.Login(email, password, OnLoginComplete);
         }
 
         private void OnLoginComplete(AuthResult result)
         {
+            pendingResult = result;
+            StartCoroutine(WaitMinimumLoadingTime());
+        }
+
+        private IEnumerator WaitMinimumLoadingTime()
+        {
+            // Calcula quanto tempo falta para completar o tempo mínimo
+            float elapsedTime = Time.time - loadingStartTime;
+            float remainingTime = minimumLoadingTime - elapsedTime;
+
+            if (remainingTime > 0)
+            {
+                yield return new WaitForSeconds(remainingTime);
+            }
+
+            // Agora processa o resultado
             ShowLoading(false);
 
-            if (result.Success)
+            if (pendingResult.Success)
             {
                 DebugHelper.Log("[LoginUI] Login bem-sucedido!");
                 OnAuthenticationSuccess();
             }
             else
             {
-                DebugHelper.Log($"[LoginUI] Erro no login: {result.ErrorCode}");
-                ShowLoginError(result.ErrorMessage);
+                DebugHelper.Log($"[LoginUI] Erro no login: {pendingResult.ErrorCode}");
+                ShowError(pendingResult.ErrorMessage);
             }
         }
 
         #endregion
 
-        #region Register
+        #region Register (Website Redirect)
 
+        /// <summary>
+        /// Abre o site de registro no navegador
+        /// </summary>
         private void OnRegisterClicked()
         {
-            if (isLoading) return;
-
             PlayButtonSound();
-            ClearErrors();
-
-            string firstName = registerFirstNameInput?.text?.Trim() ?? string.Empty;
-            string lastName = registerLastNameInput?.text?.Trim() ?? string.Empty;
-            string email = registerEmailInput?.text?.Trim() ?? string.Empty;
-            string password = registerPasswordInput?.text ?? string.Empty;
-            string confirmPassword = registerConfirmPasswordInput?.text ?? string.Empty;
-
-            // Validações locais
-            if (string.IsNullOrEmpty(firstName) || firstName.Length < 2)
-            {
-                ShowRegisterError("Nome deve ter pelo menos 2 caracteres");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(lastName) || lastName.Length < 2)
-            {
-                ShowRegisterError("Sobrenome deve ter pelo menos 2 caracteres");
-                return;
-            }
-
-            if (!AuthService.ValidateEmail(email))
-            {
-                ShowRegisterError("Email inválido");
-                return;
-            }
-
-            var (isValidPassword, passwordError) = AuthService.ValidatePassword(password);
-            if (!isValidPassword)
-            {
-                ShowRegisterError(AuthErrorCodes.GetMessage(passwordError));
-                return;
-            }
-
-            if (password != confirmPassword)
-            {
-                ShowRegisterError("As senhas não coincidem");
-                return;
-            }
-
-            // Envia para o servidor
-            ShowLoading(true);
-            AuthService.Instance.Register(firstName, lastName, email, password, OnRegisterComplete);
-        }
-
-        private void OnRegisterComplete(AuthResult result)
-        {
-            ShowLoading(false);
-
-            if (result.Success)
-            {
-                DebugHelper.Log("[LoginUI] Registro bem-sucedido!");
-                OnAuthenticationSuccess();
-            }
-            else
-            {
-                DebugHelper.Log($"[LoginUI] Erro no registro: {result.ErrorCode}");
-                ShowRegisterError(result.ErrorMessage);
-            }
+            DebugHelper.Log($"[LoginUI] Abrindo URL de registro: {registerWebsiteUrl}");
+            Application.OpenURL(registerWebsiteUrl);
         }
 
         #endregion
@@ -295,22 +244,37 @@ namespace TimeCrax.Auth
         private void ValidateExistingSession()
         {
             ShowLoading(true);
+            loadingStartTime = Time.time;
 
             AuthService.Instance.GetCurrentUser(result =>
             {
-                ShowLoading(false);
-
-                if (result.Success)
-                {
-                    DebugHelper.Log($"[LoginUI] Sessão válida para: {result.Data.FullName}");
-                    OnAuthenticationSuccess();
-                }
-                else
-                {
-                    DebugHelper.Log("[LoginUI] Sessão inválida, mostrando login");
-                    ShowLoginPanel();
-                }
+                StartCoroutine(WaitMinimumLoadingTimeForSession(result));
             });
+        }
+
+        private IEnumerator WaitMinimumLoadingTimeForSession(UserResult result)
+        {
+            // Calcula quanto tempo falta para completar o tempo mínimo
+            float elapsedTime = Time.time - loadingStartTime;
+            float remainingTime = minimumLoadingTime - elapsedTime;
+
+            if (remainingTime > 0)
+            {
+                yield return new WaitForSeconds(remainingTime);
+            }
+
+            ShowLoading(false);
+
+            if (result.Success)
+            {
+                DebugHelper.Log($"[LoginUI] Sessão válida para: {result.Data.FullName}");
+                OnAuthenticationSuccess();
+            }
+            else
+            {
+                DebugHelper.Log("[LoginUI] Sessão inválida, mostrando login");
+                ShowLoginPanel();
+            }
         }
 
         #endregion
@@ -341,8 +305,8 @@ namespace TimeCrax.Auth
             ShowLoginPanel();
 
             // Limpa campos
-            if (loginEmailInput != null) loginEmailInput.text = string.Empty;
-            if (loginPasswordInput != null) loginPasswordInput.text = string.Empty;
+            if (emailInput != null) emailInput.text = string.Empty;
+            if (passwordInput != null) passwordInput.text = string.Empty;
         }
 
         /// <summary>

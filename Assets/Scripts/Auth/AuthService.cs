@@ -14,7 +14,7 @@ namespace TimeCrax.Auth
     public class AuthService : MonoBehaviour
     {
         [Header("Configuração da API")]
-        [SerializeField] private string apiBaseUrl = "http://localhost:5000";
+        [SerializeField] private string apiBaseUrl = "http://localhost:5139";
 
         [Header("Debug")]
         [SerializeField] private bool logRequests = true;
