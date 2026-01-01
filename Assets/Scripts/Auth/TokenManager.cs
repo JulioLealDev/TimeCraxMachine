@@ -129,7 +129,7 @@ namespace TimeCrax.Auth
 
             UserId = userData.id ?? string.Empty;
             UserEmail = userData.email ?? string.Empty;
-            UserName = userData.FullName ?? string.Empty;
+            UserName = userData.firstName ?? string.Empty;
 
             PlayerPrefs.Save();
             DebugHelper.Log($"[TokenManager] Dados do usuário salvos: {UserName}");

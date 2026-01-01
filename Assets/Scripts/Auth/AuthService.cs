@@ -84,6 +84,9 @@ namespace TimeCrax.Auth
                 if (result.Success)
                 {
                     TokenManager.SaveTokens(result.Data);
+
+                    // Busca dados completos do usuário após login
+                    yield return GetCurrentUserCoroutine(_ => { });
                 }
 
                 onComplete?.Invoke(result);
