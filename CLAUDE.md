@@ -8,7 +8,7 @@ Este arquivo contém instruções para o Claude ao trabalhar neste projeto.
 
 ## Stack Tecnológica
 
-- **Engine:** Unity 6000.0.3 (C#)
+- **Engine:** Unity 6000.3.2f1 (C#)
 - **Networking:** Photon Unity Networking (PUN 2.52) para multiplayer
 - **Animações:** LeanTween
 - **UI:** TextMesh Pro
@@ -17,7 +17,7 @@ Este arquivo contém instruções para o Claude ao trabalhar neste projeto.
 ## Migração para Unity 6 (Concluída)
 
 ### Status
-- Migração de Unity 2022.3.51f1 para Unity 6000.0.3 concluída em 31/12/2024
+- Migração de Unity 2022.3.51f1 para Unity 6000.3.2f1 concluída em 01/01/2025
 
 ### Alterações Realizadas
 1. **APIs obsoletas migradas (70 ocorrências):**
@@ -36,18 +36,34 @@ Este arquivo contém instruções para o Claude ao trabalhar neste projeto.
 ```
 Assets/
 ├── Scripts/       # Scripts C# do jogo
+│   ├── Auth/      # Sistema de autenticação
+│   └── Core/      # Utilitários (DebugHelper, SessionData, etc.)
+├── Editor/        # Scripts de Editor (ferramentas)
 ├── Prefabs/       # Prefabs do Unity
 ├── Scenes/        # Cenas do jogo
+│   ├── Intro.unity        # Cena de intro (fade in/out)
+│   ├── LoginScreen.unity  # Tela de login
+│   └── TimeCraxMachine.unity  # Cena principal do jogo
 ├── Materials/     # Materiais e shaders
 ├── Models/        # Modelos 3D
 ├── Textures/      # Texturas
+├── Fonts/         # Fontes (Cinzel, Marcellus)
 ├── Animations/    # Animações
 ├── HUD/           # Elementos de interface
 ├── Sounds/        # Arquivos de áudio
 ├── Photon/        # Configurações do Photon
-├── Resources/     # Assets carregados em runtime
-└── Editor/        # Scripts de Editor (ferramentas)
+└── Resources/     # Assets carregados em runtime
 ```
+
+## Fluxo de Cenas
+
+```
+Intro → LoginScreen → TimeCraxMachine
+```
+
+1. **Intro**: Exibe logo/imagem por 5s com fade in/out (2s cada)
+2. **LoginScreen**: Login com email/senha, botão de registro redireciona para website
+3. **TimeCraxMachine**: Menu principal e jogo
 
 ## Scripts Principais
 
@@ -59,10 +75,11 @@ Assets/
 - `EventCard.cs` / `EventSlot.cs` - Sistema de cartas de eventos
 - `DeckEvent.cs` / `DeckRepair.cs` - Sistema de baralhos
 - `CreateRoom.cs` / `EnterRoom.cs` - Sistema de salas multiplayer
+- `UserNameDisplay.cs` - Exibe nome do usuário logado em TextMeshPro 3D
 
 ## Sistema de Autenticação (Assets/Scripts/Auth/) - Namespace: TimeCrax.Auth
 
-Integração com o TimeCrax Backend (ASP.NET Core 8.0 + PostgreSQL) para login/registro.
+Integração com o TimeCrax Backend (ASP.NET Core 8.0 + PostgreSQL) para login.
 
 ### Scripts de Autenticação
 
@@ -70,14 +87,15 @@ Integração com o TimeCrax Backend (ASP.NET Core 8.0 + PostgreSQL) para login/r
 |--------|-----------|
 | `AuthModels.cs` | DTOs para requests/responses da API |
 | `AuthService.cs` | Serviço HTTP para comunicação com a API (Singleton) |
-| `TokenManager.cs` | Gerenciamento de tokens JWT (armazenamento seguro) |
-| `LoginUI.cs` | Controller da UI de login/registro |
+| `TokenManager.cs` | Gerenciamento de tokens JWT (armazenamento em PlayerPrefs) |
+| `LoginUI.cs` | Controller da UI de login (tempo mínimo 3s, Tab navigation, bloqueio de input) |
+| `IntroController.cs` | Controller da cena de intro (fade in/out automático) |
 
 ### Configuração
 
 1. Adicionar `AuthService` a um GameObject na cena de login
 2. Configurar `apiBaseUrl` no Inspector:
-   - Dev: `http://localhost:5000`
+   - Dev: `http://localhost:5139`
    - Prod: `https://api.timecrax.com` (exemplo)
 
 ### Endpoints da API
@@ -99,6 +117,7 @@ AuthService.Instance.Login("email@exemplo.com", "SenhaSegura123", result =>
     if (result.Success)
     {
         // Token salvo automaticamente
+        // Dados do usuário buscados automaticamente via /me
         Debug.Log("Logado como: " + TokenManager.UserName);
     }
     else
@@ -107,25 +126,31 @@ AuthService.Instance.Login("email@exemplo.com", "SenhaSegura123", result =>
     }
 });
 
-// Registro
-AuthService.Instance.Register("João", "Silva", "email@exemplo.com", "SenhaSegura123", result =>
-{
-    if (result.Success)
-    {
-        // Auto-login após registro
-    }
-});
-
 // Verificar login
 if (TokenManager.IsLoggedIn)
 {
-    string userName = TokenManager.UserName;
+    string userName = TokenManager.UserName;  // Primeiro nome do usuário
     string userId = TokenManager.UserId;
 }
 
 // Logout
 AuthService.Instance.Logout();
 ```
+
+### Exibir Nome do Usuário (UserNameDisplay)
+
+```csharp
+// Adicionar UserNameDisplay.cs a um objeto com TextMeshPro
+// O script busca automaticamente:
+// 1. TokenManager.UserName (se logado)
+// 2. SessionData.Nickname (fallback)
+// 3. "Jogador" (padrão)
+```
+
+**Setup no Unity:**
+1. Criar TextMeshPro 3D como filho do objeto desejado
+2. Adicionar componente `UserNameDisplay`
+3. Ajustar Character Spacing (valores negativos para texto menor)
 
 ### Requisitos de Senha
 
@@ -134,59 +159,49 @@ AuthService.Instance.Logout();
 - 1 letra minúscula (a-z)
 - 1 dígito (0-9)
 
-### Validação Local
-
-```csharp
-// Validar senha antes de enviar
-var (isValid, errorCode) = AuthService.ValidatePassword("SenhaSegura123");
-if (!isValid)
-{
-    string msg = AuthErrorCodes.GetMessage(errorCode);
-}
-
-// Validar email
-bool emailOk = AuthService.ValidateEmail("email@exemplo.com");
-```
-
 ### Rate Limiting
 
 A API tem limites de tentativas:
 - Login: 5 tentativas / 15 min (por email)
 - Registro: 10 tentativas / 60 min (por IP)
 
-Erro `TOO_MANY_REQUESTS` é tratado automaticamente.
-
-### Roles de Usuário
-
-- `student` - Estudante
-- `teacher` - Professor
-- `player` - Jogador (padrão para o jogo)
-
 ### Estrutura da Cena de Login
 
 ```
-LoginScene
+LoginScreen
 ├── Canvas
 │   ├── LoginPanel
 │   │   ├── EmailInput (TMP_InputField)
 │   │   ├── PasswordInput (TMP_InputField)
 │   │   ├── LoginButton (Button)
-│   │   ├── GoToRegisterButton (Button)
+│   │   ├── RegisterButton (Button) → Abre URL do website
 │   │   └── ErrorText (TextMeshProUGUI)
-│   ├── RegisterPanel
-│   │   ├── FirstNameInput (TMP_InputField)
-│   │   ├── LastNameInput (TMP_InputField)
-│   │   ├── EmailInput (TMP_InputField)
-│   │   ├── PasswordInput (TMP_InputField)
-│   │   ├── ConfirmPasswordInput (TMP_InputField)
-│   │   ├── RegisterButton (Button)
-│   │   ├── GoToLoginButton (Button)
-│   │   └── ErrorText (TextMeshProUGUI)
-│   └── LoadingPanel
-│       └── LoadingIndicator
-├── AuthService (GameObject com AuthService.cs)
-└── LoginUI (GameObject com LoginUI.cs)
+│   └── LoadingPanel (tempo mínimo 3s)
+├── EventSystem
+├── Camera
+└── LoginUI (GameObject com LoginUI.cs e AuthService.cs)
 ```
+
+### Estrutura da Cena de Intro
+
+```
+Intro
+├── Canvas
+│   ├── ContentCanvasGroup (imagem/logo)
+│   └── FadeImage (preto, criado automaticamente se não existir)
+└── IntroController (GameObject com IntroController.cs)
+```
+
+## Ferramentas de Editor (Assets/Editor/)
+
+| Script | Menu | Descrição |
+|--------|------|-----------|
+| `PlayFromLoginScene.cs` | Edit > Play From Login Scene (Ctrl+Shift+P) | Inicia jogo pela LoginScreen |
+| `ClearAuthTokens.cs` | Edit > Clear Auth Tokens | Limpa tokens salvos (para testar login) |
+| `EnableMeshReadWrite.cs` | Edit > Fix All Mesh Read-Write | Habilita Read/Write em modelos (OutlineComponent) |
+| `MigrateToUnity6.cs` | Tools > TimeCrax | Migração de APIs obsoletas |
+| `FindMissingScripts.cs` | Tools > TimeCrax | Encontra scripts faltando |
+| `FontReplacerTool.cs` | Tools > TimeCrax | Substitui fontes em massa |
 
 ## Comandos de Build
 
@@ -197,7 +212,7 @@ O projeto é construído através do Unity Editor. Builds ficam em:
 ## Diretrizes de Código
 
 1. **Linguagem:** Scripts em C# seguindo convenções Unity
-2. **Namespace:** `TimeCrax.Core` para utilitários, `TimeCrax.Auth` para autenticação. Scripts de gameplay usam `using TimeCrax.Core;`
+2. **Namespace:** `TimeCrax.Core` para utilitários, `TimeCrax.Auth` para autenticação
 3. **MonoBehaviour:** A maioria dos scripts herda de MonoBehaviour
 4. **Photon:** Scripts de rede usam MonoBehaviourPunCallbacks
 5. **Comentários:** Preferencialmente em português
@@ -212,45 +227,13 @@ O projeto é construído através do Unity Editor. Builds ficam em:
 - Respeitar o padrão de nomenclatura existente (PascalCase para classes e métodos públicos)
 - Usar APIs compatíveis com Unity 6
 - Não usar nomes de classes que conflitam com UnityEngine (Camera, Component, etc.)
-
-## Melhorias Implementadas (31/12/2024)
-
-### Alto - Concluídas
-- [x] **Debug.Log wrapper** - Criado `DebugHelper.cs` que remove logs em builds de produção (269 ocorrências migradas)
-- [x] **GetComponent caching** - `CameraController.cs` otimizado como exemplo. Padrão a seguir nos demais scripts.
-- [x] **Substituir Invoke() por Coroutines** - 46 ocorrências migradas em 19 arquivos usando `this.DelayedCall()`
-
-### Médio - Concluídas
-- [x] **Revisar Update() desnecessários** - 5 métodos vazios removidos
-- [x] **Substituir PlayerPrefs por SessionData** - Criado `SessionData.cs` para dados de sessão (nickname, gameStarted, numberOfPlayers)
-
-### Médio - Em Progresso
-- [~] **Usar [SerializeField]** - 14 scripts migrados (~55 campos). Padrão documentado abaixo para continuar.
-
-### Baixo - Concluídas
-- [x] **Adicionar namespaces** - `TimeCrax.Core` adicionado aos utilitários. 27 scripts atualizados com `using TimeCrax.Core;`
-
-### Baixo - Pendente (Manual)
-- [ ] **Reorganizar scripts em subpastas** - Estrutura proposta abaixo. Deve ser feito pelo Unity Editor para preservar .meta files
+- **IMPORTANTE:** Sempre salvar cenas (Ctrl+S) após alterações no Unity Editor
 
 ## Scripts Utilitários (Assets/Scripts/Core/) - Namespace: TimeCrax.Core
 
 - `DebugHelper.cs` - Wrapper para Debug.Log que é removido em builds de produção
 - `CoroutineHelper.cs` - Helper para substituir Invoke() por Coroutines
 - `SessionData.cs` - Dados de sessão em memória (substitui PlayerPrefs para dados temporários)
-
-### Estrutura de Pastas Proposta (Reorganização Manual)
-```
-Assets/Scripts/
-├── Auth/       # Autenticação (já existe) - TimeCrax.Auth
-├── Core/       # Utilitários (já existe) - TimeCrax.Core
-├── Gameplay/   # GameManager, EventCard, EventSlot, DeckEvent, etc.
-├── Network/    # GameConnection, Room, RoomList
-├── UI/         # Menu, CreateRoom, EnterRoom, LobbyOptions, Pages
-├── Audio/      # BackgroundMusic, SoundEffects
-└── Visual/     # OutlineAction, OutlineComponent, RandomMaterial
-```
-**Nota:** Mover scripts pelo Unity Editor (arrastar no Project) para preservar arquivos .meta e referências.
 
 ### Como usar DebugHelper
 ```csharp
@@ -294,17 +277,6 @@ public GameObject target;
 [SerializeField] private Animator animator;
 [SerializeField] private GameObject target;
 ```
-Campos que precisam ser acessados externamente devem ter property pública:
-```csharp
-[SerializeField] private int value;
-public int Value => value;
-```
-
-## Ferramentas de Editor
-
-Scripts utilitários em `Assets/Editor/`:
-- `MigrateToUnity6.cs` - Ferramenta de migração de APIs (já executada)
-- `FindMissingScripts.cs` - Encontra e remove scripts faltando
 
 ## Arquivos Importantes
 
@@ -317,6 +289,7 @@ Scripts utilitários em `Assets/Editor/`:
 - O projeto usa Visual Studio / VS Code como IDE
 - Arquivos `.meta` são gerados automaticamente pelo Unity
 - Não modificar arquivos na pasta `Library/` (cache do Unity)
+- Após alterações no Unity Editor, sempre salvar a cena antes de commitar
 
 ## Referências Úteis
 
