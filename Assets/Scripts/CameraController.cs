@@ -48,8 +48,6 @@ public class CameraController : MonoBehaviourPunCallbacks
                 childrens[i].gameObject.GetComponent<MeshCollider>().enabled = true;
             }
         }
-        GameObject inputName = GameObject.FindGameObjectWithTag("InputName");
-        inputName.GetComponent<Canvas>().enabled = true;
     }
 
     void AwaitDistanceCamera()
