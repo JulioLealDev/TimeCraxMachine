@@ -37,7 +37,8 @@ Este arquivo contém instruções para o Claude ao trabalhar neste projeto.
 Assets/
 ├── Scripts/       # Scripts C# do jogo
 │   ├── Auth/      # Sistema de autenticação
-│   └── Core/      # Utilitários (DebugHelper, SessionData, etc.)
+│   ├── Core/      # Utilitários (DebugHelper, SessionData, etc.)
+│   └── Themes/    # Sistema de download e gerenciamento de temas
 ├── Editor/        # Scripts de Editor (ferramentas)
 ├── Prefabs/       # Prefabs do Unity
 ├── Scenes/        # Cenas do jogo
@@ -190,6 +191,91 @@ Intro
 │   ├── ContentCanvasGroup (imagem/logo)
 │   └── FadeImage (preto, criado automaticamente se não existir)
 └── IntroController (GameObject com IntroController.cs)
+```
+
+## Sistema de Temas (Assets/Scripts/Themes/) - Namespace: TimeCrax.Themes
+
+Sistema para download e gerenciamento de temas de jogo da API do backend.
+
+### Scripts de Temas
+
+| Script | Descrição |
+|--------|-----------|
+| `ThemeModels.cs` | Classes de dados para temas (ThemeData, ThemeCard, etc.) |
+| `ThemeStorage.cs` | Armazenamento local de temas (Application.persistentDataPath) |
+| `ThemeDownloader.cs` | Serviço HTTP para download de temas da API (Singleton) |
+| `ThemeManager.cs` | Gerenciador principal de temas (Singleton) |
+
+### Endpoints da API de Temas
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/themes/storage` | Lista temas disponíveis para download (paginado) |
+| GET | `/themes/{id}/download` | Download completo do tema com todas as cartas |
+
+### Como usar ThemeManager
+
+```csharp
+using TimeCrax.Themes;
+
+// Listar temas disponíveis na API
+ThemeManager.Instance.GetAvailableThemes(1, 20, result =>
+{
+    if (result.Success)
+    {
+        foreach (var theme in result.Data.items)
+        {
+            Debug.Log($"Tema: {theme.name} por {theme.creatorName}");
+        }
+    }
+});
+
+// Baixar tema
+ThemeManager.Instance.DownloadTheme("guid-do-tema", (success, error) =>
+{
+    if (success)
+        Debug.Log("Tema baixado com sucesso!");
+});
+
+// Listar temas baixados
+var downloaded = ThemeManager.Instance.DownloadedThemes;
+
+// Selecionar tema para jogar
+ThemeManager.Instance.SelectTheme("guid-do-tema");
+
+// Verificar se há tema selecionado
+if (ThemeManager.Instance.HasSelectedTheme)
+{
+    var cards = ThemeManager.Instance.GetSelectedThemeCards();
+}
+
+// Carregar imagem local de uma carta
+Texture2D texture = ThemeManager.Instance.LoadCardImage(card);
+
+// Deletar tema baixado
+ThemeManager.Instance.DeleteTheme("guid-do-tema");
+```
+
+### Armazenamento Local
+
+- Temas são salvos em `Application.persistentDataPath/Themes/`
+- Cada tema tem sua própria pasta com ID como nome
+- Imagens são baixadas e salvas localmente
+- Manifesto (`manifest.json`) mantém lista de temas baixados
+
+### Eventos do ThemeManager
+
+```csharp
+ThemeManager.Instance.OnThemeSelected += (theme) => { /* tema selecionado */ };
+ThemeManager.Instance.OnThemeDownloaded += (theme) => { /* tema baixado */ };
+ThemeManager.Instance.OnThemeDeleted += (themeId) => { /* tema deletado */ };
+```
+
+### Eventos do ThemeDownloader (Progresso)
+
+```csharp
+ThemeDownloader.Instance.OnDownloadProgress += (progress) => { /* 0.0 a 1.0 */ };
+ThemeDownloader.Instance.OnDownloadStatus += (status) => { /* mensagem de status */ };
 ```
 
 ## Ferramentas de Editor (Assets/Editor/)
