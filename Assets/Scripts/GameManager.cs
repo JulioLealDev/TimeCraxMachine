@@ -8,6 +8,7 @@ using System.Linq;
 using System;
 using System.Collections;
 using TimeCrax.Core;
+using TimeCrax.Themes;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -22,7 +23,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public CameraController gameCamera;
     public GameObject inputName;
     public GameObject suitTop;
-    public GameObject gameHUD;
     public GameObject hud;
     public FinishTurn endButton;
     public GameObject quitButton;
@@ -244,8 +244,23 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            //photonView.RPC("GetRandomEventCards", RpcTarget.All, theme);
-            randomMaterial.GetRandomMaterial(theme);
+            // Verificar se há tema da API selecionado
+            if (ThemeManager.Instance != null && ThemeManager.Instance.HasSelectedTheme)
+            {
+                // Novo sistema: usar tema da API
+                var selectedTheme = ThemeManager.Instance.SelectedTheme;
+                DebugHelper.Log($"[GameManager] Usando tema da API: {selectedTheme.name}");
+
+                randomMaterial.InitializeForTheme(selectedTheme);
+                randomMaterial.GetRandomMaterialFromTheme();
+            }
+            else
+            {
+                // Sistema legado: usar temas pré-definidos
+                DebugHelper.Log($"[GameManager] Usando tema legado: {theme}");
+                randomMaterial.GetRandomMaterial(theme);
+            }
+
             this.DelayedCall(6f, StartGame);
         }
     }

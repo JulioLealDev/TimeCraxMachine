@@ -2,12 +2,16 @@ using UnityEngine;
 using Photon.Pun;
 using System;
 using TimeCrax.Core;
+using TimeCrax.Themes;
 
 public class EventCard : MonoBehaviourPunCallbacks
 {
     public CameraController cameraController;
     public int slotCount;
     public int slotYear;
+
+    // Referência à carta do tema (novo sistema)
+    private ThemeCard themeCard;
 
     // Start is called before the first frame update
     void Start()
@@ -58,4 +62,39 @@ public class EventCard : MonoBehaviourPunCallbacks
         gameManager.ActivateEnd();
     }
 
+    #region Theme System
+
+    /// <summary>
+    /// Define a carta do tema associada a este EventCard
+    /// </summary>
+    public void SetThemeCard(ThemeCard card)
+    {
+        themeCard = card;
+    }
+
+    /// <summary>
+    /// Retorna a carta do tema associada
+    /// </summary>
+    public ThemeCard GetThemeCard()
+    {
+        return themeCard;
+    }
+
+    /// <summary>
+    /// Verifica se esta carta tem quiz associado
+    /// </summary>
+    public bool HasQuiz()
+    {
+        return themeCard?.quizData?.HasQuiz ?? false;
+    }
+
+    /// <summary>
+    /// Retorna o tipo de quiz disponível para esta carta
+    /// </summary>
+    public QuizType GetQuizType()
+    {
+        return themeCard?.quizData?.GetAvailableQuizType() ?? QuizType.None;
+    }
+
+    #endregion
 }

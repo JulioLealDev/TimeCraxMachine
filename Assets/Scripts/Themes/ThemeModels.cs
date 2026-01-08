@@ -11,8 +11,10 @@ namespace TimeCrax.Themes
         public int year;
         public string era;
         public string title;
+        public string caption;      // Legenda da carta (novo campo da API)
         public string imageUrl;
         public string localImagePath;
+        public CardQuizData quizData; // Dados do quiz da carta
     }
 
     [Serializable]
@@ -63,7 +65,9 @@ namespace TimeCrax.Themes
         public string creatorName;
         public string resume;
         public string recommendation;
-        public string coverImageUrl;
+        public string image;           // Nova API: imagem de capa
+        public string coverImageUrl;   // Manter para compatibilidade
+        public string uploadSessionId; // Nova API
         public int cardCount;
         public List<ThemeCardResponse> cards;
     }
@@ -76,7 +80,14 @@ namespace TimeCrax.Themes
         public int year;
         public string era;
         public string title;
+        public string caption;         // Legenda da carta
         public string imageUrl;
+
+        // Quizzes da API
+        public ImageQuizResponse imageQuiz;
+        public TextQuizResponse textQuiz;
+        public TrueFalseQuizResponse trueFalseQuiz;
+        public CorrelationQuizResponse correlationQuiz;
     }
 
     [Serializable]

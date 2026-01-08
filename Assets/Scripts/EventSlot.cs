@@ -1,6 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
+using TimeCrax.Quiz;
 
 public class EventSlot : MonoBehaviourPunCallbacks
 {
@@ -11,6 +12,11 @@ public class EventSlot : MonoBehaviourPunCallbacks
     private GameManager gameManager;
     private BackgroundMusic backgroundMusic;
     private Victory victory;
+    private QuizManager quizManager;
+
+    // Estado do quiz pendente
+    private int pendingQuizSlotCount = -1;
+    private EventCard pendingQuizCard;
 
     public int SlotNumber => slotNumber;
 
@@ -20,6 +26,21 @@ public class EventSlot : MonoBehaviourPunCallbacks
         gameManager = FindFirstObjectByType<GameManager>();
         victory = FindFirstObjectByType<Victory>();
         backgroundMusic = FindFirstObjectByType<BackgroundMusic>();
+        quizManager = QuizManager.Instance;
+
+        // Inscrever no evento de quiz completado
+        if (quizManager != null)
+        {
+            quizManager.OnQuizCompleted += OnQuizCompleted;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (quizManager != null)
+        {
+            quizManager.OnQuizCompleted -= OnQuizCompleted;
+        }
     }
 
     public void OnMouseDown()
@@ -114,24 +135,115 @@ public class EventSlot : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ClickedRightSlot(int slotCount)
     {
+        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
+        EventCard targetCard = null;
+
+        foreach (var card in cards)
+        {
+            if (card.slotCount == slotCount)
+            {
+                targetCard = card;
+                break;
+            }
+        }
+
+        if (targetCard == null) return;
+
+        // Verificar se a carta tem quiz
+        if (targetCard.HasQuiz() && quizManager != null)
+        {
+            // Guardar estado pendente para quando o quiz terminar
+            pendingQuizSlotCount = slotCount;
+            pendingQuizCard = targetCard;
+
+            // Animar a carta para o slot (mas ainda não confirma)
+            targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
+
+            // Iniciar quiz (apenas o Master Client inicia, sincroniza via RPC)
+            if (PhotonNetwork.IsMasterClient)
+            {
+                var themeCard = targetCard.GetThemeCard();
+                quizManager.StartQuiz(themeCard, slotCount);
+            }
+        }
+        else
+        {
+            // Sem quiz - fluxo original
+            FinalizeCorrectSlot(slotCount, targetCard);
+        }
+    }
+
+    /// <summary>
+    /// Finaliza a colocação correta da carta no slot (após quiz ou sem quiz)
+    /// </summary>
+    private void FinalizeCorrectSlot(int slotCount, EventCard card)
+    {
         gameObject.tag = "Disabled";
 
         var deckEvent = FindFirstObjectByType<DeckEvent>();
         deckEvent.RemoveIndex(slotCount);
 
-        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-        foreach (var card in cards)
+        card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
+        card.tag = "Disabled";
+        card.waitToDistance();
+
+        CheckIfWin();
+    }
+
+    /// <summary>
+    /// Callback quando o quiz é completado
+    /// </summary>
+    private void OnQuizCompleted(bool correct)
+    {
+        if (pendingQuizSlotCount < 0 || pendingQuizCard == null) return;
+
+        if (correct)
         {
-            if(card.slotCount == slotCount)
+            DebugHelper.Log($"[EventSlot] Quiz correto! Finalizando slot {pendingQuizSlotCount}");
+            FinalizeCorrectSlot(pendingQuizSlotCount, pendingQuizCard);
+        }
+        else
+        {
+            DebugHelper.Log($"[EventSlot] Quiz errado! Carta volta ao deck");
+            // Quiz falhou - carta volta ao deck
+            if (PhotonNetwork.IsMasterClient)
             {
-                card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
-                card.tag = "Disabled";
-                card.waitToDistance();
+                photonView.RPC("QuizFailed", RpcTarget.All, pendingQuizSlotCount);
             }
         }
 
-        CheckIfWin();
+        // Limpar estado pendente
+        pendingQuizSlotCount = -1;
+        pendingQuizCard = null;
+    }
 
+    [PunRPC]
+    public void QuizFailed(int slotCount)
+    {
+        DebugHelper.Log($"[EventSlot] RPC QuizFailed - slotCount: {slotCount}");
+
+        // Encontrar a carta
+        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
+        foreach (var card in cards)
+        {
+            if (card.slotCount == slotCount)
+            {
+                // Animar erro
+                card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
+                card.tag = "Undestructable";
+                card.waitToDistance();
+                break;
+            }
+        }
+
+        // Reativar slots para nova tentativa
+        this.DelayedCall(3.5f, () =>
+        {
+            SetUpSlots(true, "Selectable");
+        });
+
+        // Tocar som de erro
+        soundEffects.PlayWrongSlotSound();
     }
 
     //[PunRPC]
