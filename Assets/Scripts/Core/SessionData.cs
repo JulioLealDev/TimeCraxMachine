@@ -27,6 +27,11 @@ namespace TimeCrax.Core
         public static int NumberOfPlayers { get; set; } = 1;
 
         /// <summary>
+        /// Dificuldade do jogo selecionada (Easy, Normal, Hard).
+        /// </summary>
+        public static string GameDifficulty { get; set; } = "Normal";
+
+        /// <summary>
         /// Reseta todos os dados da sessão para os valores padrão.
         /// </summary>
         public static void Reset()
@@ -34,6 +39,7 @@ namespace TimeCrax.Core
             Nickname = string.Empty;
             GameStarted = false;
             NumberOfPlayers = 1;
+            GameDifficulty = "Normal";
         }
     }
 }
