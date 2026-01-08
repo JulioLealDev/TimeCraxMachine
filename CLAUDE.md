@@ -38,6 +38,7 @@ Assets/
 ├── Scripts/       # Scripts C# do jogo
 │   ├── Auth/      # Sistema de autenticação
 │   ├── Core/      # Utilitários (DebugHelper, SessionData, etc.)
+│   ├── Quiz/      # Sistema de quiz para cartas
 │   └── Themes/    # Sistema de download e gerenciamento de temas
 ├── Editor/        # Scripts de Editor (ferramentas)
 ├── Prefabs/       # Prefabs do Unity
@@ -76,7 +77,10 @@ Intro → LoginScreen → TimeCraxMachine
 - `EventCard.cs` / `EventSlot.cs` - Sistema de cartas de eventos
 - `DeckEvent.cs` / `DeckRepair.cs` - Sistema de baralhos
 - `CreateRoom.cs` / `EnterRoom.cs` - Sistema de salas multiplayer
+- `RandomMaterial.cs` - Seleção aleatória de cartas do tema
 - `UserNameDisplay.cs` - Exibe nome do usuário logado em TextMeshPro 3D
+- `Quiz/QuizManager.cs` - Gerenciador de quiz com sincronização multiplayer
+- `Quiz/QuizUI.cs` - Interface do usuário para os painéis de quiz
 
 ## Sistema de Autenticação (Assets/Scripts/Auth/) - Namespace: TimeCrax.Auth
 
@@ -202,8 +206,9 @@ Sistema para download e gerenciamento de temas de jogo da API do backend.
 | Script | Descrição |
 |--------|-----------|
 | `ThemeModels.cs` | Classes de dados para temas (ThemeData, ThemeCard, etc.) |
+| `QuizModels.cs` | Classes de dados para quizzes (ImageQuiz, TextQuiz, etc.) |
 | `ThemeStorage.cs` | Armazenamento local de temas (Application.persistentDataPath) |
-| `ThemeDownloader.cs` | Serviço HTTP para download de temas da API (Singleton) |
+| `ThemeDownloader.cs` | Serviço HTTP para download de temas e imagens de quiz da API |
 | `ThemeManager.cs` | Gerenciador principal de temas (Singleton) |
 
 ### Endpoints da API de Temas
@@ -278,6 +283,115 @@ ThemeDownloader.Instance.OnDownloadProgress += (progress) => { /* 0.0 a 1.0 */ }
 ThemeDownloader.Instance.OnDownloadStatus += (status) => { /* mensagem de status */ };
 ```
 
+## Sistema de Quiz (Assets/Scripts/Quiz/) - Namespace: TimeCrax.Quiz
+
+Sistema de quiz integrado ao fluxo de jogo. Após o jogador acertar o slot de uma carta, um quiz é apresentado. Se acertar, a carta é confirmada; se errar, a carta volta ao deck.
+
+### Scripts de Quiz
+
+| Script | Descrição |
+|--------|-----------|
+| `QuizManager.cs` | Gerenciador principal de quiz com RPCs para multiplayer (Singleton) |
+| `QuizUI.cs` | Interface do usuário para os 4 tipos de painéis de quiz |
+
+### Modelos de Quiz (em Themes/QuizModels.cs)
+
+| Classe | Descrição |
+|--------|-----------|
+| `QuizType` | Enum: None, ImageQuiz, TextQuiz, TrueFalseQuiz, CorrelationQuiz |
+| `ImageQuiz` | Quiz com 4 opções em imagem |
+| `TextQuiz` | Quiz com 4 opções em texto |
+| `TrueFalseQuiz` | Quiz de verdadeiro ou falso |
+| `CorrelationQuiz` | Quiz de associação imagem-texto |
+| `CardQuizData` | Container com todos os tipos de quiz de uma carta |
+
+### Fluxo do Jogo com Quiz
+
+```
+Jogador compra carta → Posiciona no slot → Slot correto?
+    ├── NÃO → Malfunction (componente quebra)
+    └── SIM → Carta tem quiz?
+        ├── NÃO → Carta confirmada no slot
+        └── SIM → Exibe quiz → Acertou?
+            ├── SIM → Carta confirmada no slot
+            └── NÃO → Carta volta ao deck
+```
+
+### Como usar QuizManager
+
+```csharp
+using TimeCrax.Quiz;
+using TimeCrax.Themes;
+
+// Iniciar quiz para uma carta (chamado automaticamente pelo EventSlot)
+QuizManager.Instance.StartQuiz(themeCard, slotCount);
+
+// Submeter resposta de múltipla escolha (ImageQuiz ou TextQuiz)
+QuizManager.Instance.SubmitAnswer(selectedIndex);
+
+// Submeter resposta de verdadeiro/falso
+QuizManager.Instance.SubmitTrueFalseAnswer(true);
+
+// Submeter resposta de correlação
+QuizManager.Instance.SubmitCorrelationAnswer(orderList);
+
+// Verificar se quiz está ativo
+if (QuizManager.Instance.IsQuizActive)
+{
+    var card = QuizManager.Instance.GetCurrentCard();
+    var type = QuizManager.Instance.GetCurrentQuizType();
+}
+```
+
+### Eventos do QuizManager
+
+```csharp
+QuizManager.Instance.OnQuizStarted += (card, quizType) => { /* quiz iniciado */ };
+QuizManager.Instance.OnQuizCompleted += (correct) => { /* quiz finalizado */ };
+QuizManager.Instance.OnTimerUpdated += (normalizedTime) => { /* 0.0 a 1.0 */ };
+```
+
+### RPCs Multiplayer
+
+| RPC | Descrição |
+|-----|-----------|
+| `RPC_StartQuiz(slotCount, quizType)` | Sincroniza início do quiz com todos |
+| `RPC_QuizResult(slotCount, correct)` | Sincroniza resultado do quiz |
+| `QuizFailed(slotCount)` | Carta volta ao deck após erro |
+
+### Estrutura do QuizCanvas (Prefab a criar)
+
+```
+QuizCanvas
+├── Background (Image semi-transparente)
+├── TimerBar (Image com fillAmount)
+├── QuestionText (TextMeshProUGUI)
+├── ImageQuizPanel
+│   └── ImageOptionButtons[4] (Button + RawImage)
+├── TextQuizPanel
+│   └── TextOptionButtons[4] (Button + TextMeshProUGUI)
+├── TrueFalsePanel
+│   ├── TrueButton
+│   └── FalseButton
+├── CorrelationPanel
+│   ├── CorrelationImages[4]
+│   └── CorrelationTexts[4]
+└── ResultFeedback
+    ├── ResultText
+    └── ResultIcon
+```
+
+### Verificar se EventCard tem Quiz
+
+```csharp
+// No EventCard
+if (eventCard.HasQuiz())
+{
+    QuizType type = eventCard.GetQuizType();
+    ThemeCard themeCard = eventCard.GetThemeCard();
+}
+```
+
 ## Ferramentas de Editor (Assets/Editor/)
 
 | Script | Menu | Descrição |
@@ -298,7 +412,11 @@ O projeto é construído através do Unity Editor. Builds ficam em:
 ## Diretrizes de Código
 
 1. **Linguagem:** Scripts em C# seguindo convenções Unity
-2. **Namespace:** `TimeCrax.Core` para utilitários, `TimeCrax.Auth` para autenticação
+2. **Namespaces:**
+   - `TimeCrax.Core` - Utilitários (DebugHelper, SessionData, etc.)
+   - `TimeCrax.Auth` - Sistema de autenticação
+   - `TimeCrax.Themes` - Sistema de temas e modelos de quiz
+   - `TimeCrax.Quiz` - Sistema de quiz
 3. **MonoBehaviour:** A maioria dos scripts herda de MonoBehaviour
 4. **Photon:** Scripts de rede usam MonoBehaviourPunCallbacks
 5. **Comentários:** Preferencialmente em português
