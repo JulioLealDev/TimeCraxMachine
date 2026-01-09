@@ -232,8 +232,21 @@ public class EventSlot : MonoBehaviourPunCallbacks
                 card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
                 card.tag = "Undestructable";
                 card.waitToDistance();
+
+                // Resetar estado da carta após animação para poder ser comprada novamente
+                this.DelayedCall(3.5f, () =>
+                {
+                    card.ResetStatusCard();
+                });
                 break;
             }
+        }
+
+        // Adicionar carta de volta ao deck
+        var deckEvent = FindFirstObjectByType<DeckEvent>();
+        if (deckEvent != null)
+        {
+            deckEvent.AddCardBack(slotCount);
         }
 
         // Reativar slots para nova tentativa

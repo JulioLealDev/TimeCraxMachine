@@ -137,6 +137,26 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         }
     }
 
+    /// <summary>
+    /// Adiciona uma carta de volta ao deck (usado quando quiz falha)
+    /// </summary>
+    public void AddCardBack(int slotCount)
+    {
+        if (!eventList.Contains(slotCount))
+        {
+            eventList.Add(slotCount);
+            DebugHelper.Log($"[DeckEvent] Carta {slotCount} adicionada de volta ao deck");
+        }
+    }
+
+    /// <summary>
+    /// Retorna quantidade de cartas restantes no deck
+    /// </summary>
+    public int GetRemainingCards()
+    {
+        return eventList.Count;
+    }
+
     public void ResetAllEventCards()
     {
         eventList.Clear();
