@@ -20,7 +20,7 @@ public class Sticker : MonoBehaviour
         configurations.SetDefaultSlidersValues();
 
         configurations.gameObject.SetActive(true);
-        inputName.gameObject.SetActive(false);
+        //inputName.gameObject.SetActive(false);
 
         soundEffects.TagSound();
 

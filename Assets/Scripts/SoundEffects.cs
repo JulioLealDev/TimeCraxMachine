@@ -19,88 +19,77 @@ public class SoundEffects : MonoBehaviour
     public AudioClip componentFinalExplosionSound;
     public AudioClip componentRepairSound;
 
-    void Start()
-    {
+    private AudioSource audioSource;
 
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void TurnPageSound(int number)
     {
         if (number == 1)
         {
-            gameObject.GetComponent<AudioSource>().clip = turnPage01;
-            gameObject.GetComponent<AudioSource>().Play();
-
+            audioSource.PlayOneShot(turnPage01);
         }
         else if (number == 2)
         {
-
-            gameObject.GetComponent<AudioSource>().clip = turnPage03;
-            gameObject.GetComponent<AudioSource>().Play();
-
+            audioSource.PlayOneShot(turnPage03);
         }
     }
 
     public void PressButtonSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = buttonSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(buttonSound);
     }
 
     public void PressHudButtonSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = hudbuttonSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(hudbuttonSound);
     }
+
     public void TagSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = nameTagSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(nameTagSound);
     }
 
     public void PlayRouletteSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = rouletteSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(rouletteSound);
     }
 
     public void PlayDrawCardSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = drawCard;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(drawCard);
     }
 
     public void PlayRightSlotSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = rightSlotSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(rightSlotSound);
     }
 
     public void PlayWrongSlotSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = wrongSlotSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(wrongSlotSound);
     }
 
     public void PlayClickSlotSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = clickSlotSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(clickSlotSound);
     }
+
     public void PlayComponentExplosionSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = componentExplosionSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(componentExplosionSound);
     }
 
     public void PlayFinalComponentExplosionSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = componentFinalExplosionSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(componentFinalExplosionSound);
     }
+
     public void PlayComponentRepairSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = componentRepairSound;
-        gameObject.GetComponent<AudioSource>().Play();
+        audioSource.PlayOneShot(componentRepairSound);
     }
 }

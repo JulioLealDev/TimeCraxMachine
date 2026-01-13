@@ -91,8 +91,12 @@ public class Menu : MonoBehaviour
     public void ActivateInputName()
     {
         DebugHelper.Log("ativando input");
-        inputName.gameObject.SetActive(true);
-        inputNameText.gameObject.SetActive(true);
+
+        if (inputName != null)
+            inputName.gameObject.SetActive(true);
+
+        if (inputNameText != null)
+            inputNameText.gameObject.SetActive(true);
     } 
     public void DisableMenu()
     {

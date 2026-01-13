@@ -10,6 +10,7 @@ public class GameDifficultySelector : MonoBehaviour
     [SerializeField] private Sprite[] difficultySprites; // 0=Easy, 1=Normal, 2=Hard
     [SerializeField] private Button leftButton;
     [SerializeField] private Button rightButton;
+    public SoundEffects soundEffects;
 
     private static readonly string[] Difficulties = { "Easy", "Normal", "Hard" };
     private int currentIndex = 1;
@@ -29,6 +30,7 @@ public class GameDifficultySelector : MonoBehaviour
             currentIndex = Difficulties.Length - 1;
 
         UpdateDisplay();
+        soundEffects.PressHudButtonSound();
     }
 
     private void OnRightClick()
@@ -38,6 +40,7 @@ public class GameDifficultySelector : MonoBehaviour
             currentIndex = 0;
 
         UpdateDisplay();
+        soundEffects.PressHudButtonSound();
     }
 
     private void UpdateDisplay()

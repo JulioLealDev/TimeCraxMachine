@@ -10,6 +10,7 @@ public class PlayerCountSelector : MonoBehaviour
     [SerializeField] private Sprite[] playerCountSprites; // 0=1Player, 1=2Players, 2=3Players, 3=4Players
     [SerializeField] private Button leftButton;
     [SerializeField] private Button rightButton;
+    public SoundEffects soundEffects;
 
     private int currentCount = 4;
     private const int MinPlayers = 1;
@@ -31,6 +32,7 @@ public class PlayerCountSelector : MonoBehaviour
             currentCount = MaxPlayers;
 
         UpdateDisplay();
+        soundEffects.PressHudButtonSound();
     }
 
     private void OnRightClick()
@@ -40,6 +42,7 @@ public class PlayerCountSelector : MonoBehaviour
             currentCount = MinPlayers;
 
         UpdateDisplay();
+        soundEffects.PressHudButtonSound();
     }
 
     private void UpdateDisplay()

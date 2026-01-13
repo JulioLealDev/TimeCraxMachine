@@ -8,14 +8,19 @@ namespace TimeCrax.Themes
     public class ThemeManager : MonoBehaviour
     {
         private static ThemeManager _instance;
+        private static bool _isQuitting = false;
+
         public static ThemeManager Instance
         {
             get
             {
+                if (_isQuitting)
+                    return null;
+
                 if (_instance == null)
                 {
                     _instance = FindFirstObjectByType<ThemeManager>();
-                    if (_instance == null)
+                    if (_instance == null && !_isQuitting)
                     {
                         GameObject go = new GameObject("ThemeManager");
                         _instance = go.AddComponent<ThemeManager>();
@@ -49,6 +54,17 @@ namespace TimeCrax.Themes
             DontDestroyOnLoad(gameObject);
             ThemeStorage.Initialize();
             RefreshDownloadedThemes();
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isQuitting = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+                _instance = null;
         }
 
         public void RefreshDownloadedThemes()

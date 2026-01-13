@@ -4,6 +4,7 @@ using TMPro;
 using System;
 using UnityEngine.UI;
 using TimeCrax.Core;
+using TimeCrax.Themes;
 
 public class LobbyOptions : MonoBehaviourPunCallbacks
 {
@@ -59,7 +60,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         privateRoom = !privateRoom;
         if(!privateRoom)
         {
-            DebugHelper.Log("N�o privada");
+            DebugHelper.Log("Não privada");
             passwordInput.GetComponent<TMP_InputField>().text = " ";
             passwordLabel.GetComponent<TextMeshProUGUI>().color = Color.gray;
         }
@@ -74,22 +75,38 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         Verifications();
-
     }
 
     public void AllVerifyed()
     {
         soundEffects.PressHudButtonSound();
 
-        string roomName = roomNameInput.GetComponent<TMP_InputField>().text;
         string maxPlayers = maxPlayersDropdown.GetComponent<TextMeshProUGUI>().text;
         string difficulty = difficultyDropdown.GetComponent<TextMeshProUGUI>().text;
-        string theme = themeDropdown.GetComponent<TextMeshProUGUI>().text;
         string password = passwordInput.GetComponent<TMP_InputField>().text;
 
+        // Verificar se há tema da API selecionado
+        string theme;
+        string themeId = "";
+
+        if (ThemeManager.Instance != null && ThemeManager.Instance.HasSelectedTheme)
+        {
+            var selectedTheme = ThemeManager.Instance.SelectedTheme;
+            theme = selectedTheme.name;
+            themeId = selectedTheme.id;
+            DebugHelper.Log($"[LobbyOptions] Usando tema da API: {theme} (ID: {themeId})");
+        }
+        else
+        {
+            // Tema legado do dropdown
+            theme = themeDropdown.GetComponent<TextMeshProUGUI>().text;
+            DebugHelper.Log($"[LobbyOptions] Usando tema legado: {theme}");
+        }
+
+        string roomName = roomNameInput.GetComponent<TMP_InputField>().text + " - " + theme;
         int max = Int32.Parse(maxPlayers.Substring(0, 1));
 
-        gameConnection.CreatedRoom(roomName, max, difficulty, theme, password);
+        gameConnection.CreatedRoom(roomName, max, difficulty, theme, password, themeId);
     }
     public void CancelCreateRoom()
     {
@@ -101,7 +118,9 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
         var menu = FindFirstObjectByType<Menu>();
         menu.EnableMenu();
-        nameDisplay.gameObject.SetActive(true);
+
+        if (nameDisplay != null)
+            nameDisplay.gameObject.SetActive(true);
     }
 
     public void CancelRoomScreen()
@@ -112,16 +131,13 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         roomScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
 
-
-        //if (PhotonNetwork.LocalPlayer.IsMasterClient)
-        //{
-        //    DebugHelper.Log("� o master");
-           PhotonNetwork.LeaveRoom(false);
-        //}
+        PhotonNetwork.LeaveRoom(false);
 
         var menu = FindFirstObjectByType<Menu>();
         menu.EnableMenu();
-        nameDisplay.gameObject.SetActive(true);
+
+        if (nameDisplay != null)
+            nameDisplay.gameObject.SetActive(true);
     }
 
     public void RefreshLobbyScreen()
@@ -161,11 +177,12 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
         var menu = FindFirstObjectByType<Menu>();
         menu.EnableMenu();
-        nameDisplay.gameObject.SetActive(true);
+
+        if (nameDisplay != null)
+            nameDisplay.gameObject.SetActive(true);
 
         DebugHelper.Log("Disconecting and Reconecting");
         RefreshConection();
-
     }
 
     public void ActivateButtons(bool activate)
@@ -194,11 +211,11 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     public void Verifications()
     {
         string roomName = roomNameInput.GetComponent<TMP_InputField>().text;
-        string password = passwordInput.GetComponent<TMP_InputField>().text;
-        string privateRoom = privateDropdown.GetComponent <TextMeshProUGUI > ().text;
+        string password = passwordInput != null ? passwordInput.GetComponent<TMP_InputField>().text : "";
+        string privateRoom = privateDropdown != null ? privateDropdown.GetComponent<TextMeshProUGUI>().text : "No";
 
         bool alreadyExist = gameConnection.CheckRoomName(roomName);
-        
+
         if (string.IsNullOrEmpty(roomName))
         {
             roomNameWarning.SetActive(true);

@@ -21,7 +21,6 @@ public class OutlineAction : MonoBehaviour
 
     void Update()
     {
-
         // Highlight
         if (highlight != null)
         {

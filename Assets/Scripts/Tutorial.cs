@@ -5,7 +5,7 @@ using TimeCrax.Core;
 public class Tutorial : MonoBehaviour
 {
     public Canvas canvas;
-    public Canvas inputName;
+    //public Canvas inputName;
     public SoundEffects soundEffects;
     public Menu menu;
 
@@ -16,7 +16,7 @@ public class Tutorial : MonoBehaviour
 
 
         canvas.gameObject.SetActive(true);
-        inputName.gameObject.SetActive(false);
+        //inputName.gameObject.SetActive(false);
         menu.DisableMenu();
 
     }

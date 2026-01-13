@@ -83,18 +83,19 @@ public class GameConnection : MonoBehaviourPunCallbacks
         createRoom.SetActive(true);
     }
 
-    public void CreatedRoom(string nameRoom, int maxPlayers, string difficulty, string theme, string password)
+    public void CreatedRoom(string nameRoom, int maxPlayers, string difficulty, string theme, string password, string themeId = "")
     {
         //DebugHelper.Log("password: " + password + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(password));
         DebugHelper.Log("Entrou na Sala Criada");
         RoomOptions options = new RoomOptions { MaxPlayers = (byte)maxPlayers, EmptyRoomTtl = 0, PlayerTtl = 0 };
-        options.CustomRoomPropertiesForLobby = new string[3] { "dif", "the", "pass" };
+        options.CustomRoomPropertiesForLobby = new string[4] { "dif", "the", "pass", "themeId" };
         options.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
         options.CustomRoomProperties.Add("dif", difficulty);
         options.CustomRoomProperties.Add("the", theme);
         options.CustomRoomProperties.Add("pass", password);
-        PhotonNetwork.CreateRoom( nameRoom, options, null);
-        //DebugHelper.Log("options.pass: " + options.CustomRoomProperties["pass"] + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(options.CustomRoomProperties["pass"].ToString()));
+        options.CustomRoomProperties.Add("themeId", themeId);
+        PhotonNetwork.CreateRoom(nameRoom, options, null);
+        DebugHelper.Log($"[GameConnection] Sala criada com tema: {theme} (ID: {themeId})");
     }
     
     public void ReturnigToMenu()
@@ -189,11 +190,11 @@ public class GameConnection : MonoBehaviourPunCallbacks
         roomNameTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Name;
         maxPlayersTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
         themeTitle.GetComponent<TextMeshProUGUI>().text = "Theme: " + PhotonNetwork.CurrentRoom.CustomProperties["the"];
-        difficultyTitle.GetComponent<TextMeshProUGUI>().text = "Difficulty: " + PhotonNetwork.CurrentRoom.CustomProperties["dif"];
-        passwordTitle.GetComponent<TextMeshProUGUI>().text = "Password: " + PhotonNetwork.CurrentRoom.CustomProperties["pass"];
+        difficultyTitle.GetComponent<TextMeshProUGUI>().text = "" + PhotonNetwork.CurrentRoom.CustomProperties["dif"];
+        passwordTitle.GetComponent<TextMeshProUGUI>().text = "" + PhotonNetwork.CurrentRoom.CustomProperties["pass"];
         ListPlayersInRoom();
 
-        chatLog.text += "Voc� entrou na sala";
+        chatLog.text += "Você entrou na sala";
 
         //maxPlayers.text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
     }

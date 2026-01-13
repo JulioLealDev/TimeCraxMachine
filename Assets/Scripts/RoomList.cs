@@ -25,16 +25,29 @@ public class RoomList : MonoBehaviourPunCallbacks
         {
             GameObject roomAlreadyExist = GameObject.Find(roomList[i].Name);
             DebugHelper.Log("Nome do objeto encontrado: "+roomAlreadyExist?.name);
-            DebugHelper.Log("Nome do objeto a ser criado: " + roomList[i].Name +" que est� no index: "+i);
+            DebugHelper.Log("Nome do objeto a ser criado: " + roomList[i].Name +" que está no index: "+i);
 
             if (!roomAlreadyExist)
             {
-                GameObject Room = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity, GameObject.Find("Content").transform);
-                Room.name = roomList[i].Name;
+                GameObject roomObj = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity, GameObject.Find("Content").transform);
+                roomObj.name = roomList[i].Name;
                 string locked = roomList[i].CustomProperties["pass"].ToString();
+                string themeName = roomList[i].CustomProperties["the"].ToString();
+                string themeId = roomList[i].CustomProperties.ContainsKey("themeId")
+                    ? roomList[i].CustomProperties["themeId"].ToString()
+                    : "";
+
                 DebugHelper.Log("locked value: "+locked);
-                DebugHelper.Log("isnullorwhite: "+string.IsNullOrWhiteSpace(locked));
-                foreach (Transform child in Room.GetComponentsInChildren<Transform>())
+                DebugHelper.Log("themeId: "+themeId);
+
+                // Configurar dados do tema no Room
+                Room roomComponent = roomObj.GetComponent<Room>();
+                if (roomComponent != null)
+                {
+                    roomComponent.SetThemeData(themeId, themeName);
+                }
+
+                foreach (Transform child in roomObj.GetComponentsInChildren<Transform>())
                 {
                     if(child.name == "NameRoomText")
                     {
@@ -46,7 +59,7 @@ public class RoomList : MonoBehaviourPunCallbacks
                     }
                     else if (child.name == "ThemeText")
                     {
-                        child.GetComponent<TMP_Text>().text = roomList[i].CustomProperties["the"].ToString();
+                        child.GetComponent<TMP_Text>().text = themeName;
                     }
                     else if (child.name == "DifficultyText")
                     {
@@ -62,7 +75,7 @@ public class RoomList : MonoBehaviourPunCallbacks
             }
             else
             {
-                DebugHelper.Log("J� existe uma sala com esse nome");
+                DebugHelper.Log("Já existe uma sala com esse nome");
             }
 
         }

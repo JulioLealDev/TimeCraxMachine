@@ -33,6 +33,10 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     private ThemeData currentTheme;
     private List<ThemeCard> selectedCards; // 7 cartas selecionadas aleatoriamente
 
+    [Header("Theme Card Material")]
+    [SerializeField] private Material eventCardBaseMaterial; // Material base com shader EventCardComposite
+    [SerializeField] private Texture2D cardTemplateTexture; // Textura do template da carta
+
     private void RandomMaterialIdList(int materialListLenght)
     {
 
@@ -307,14 +311,36 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         var texture = ThemeStorage.LoadLocalImage(themeCard.localImagePath);
         if (texture != null)
         {
-            // Criar material com a textura
             var renderer = eventCard.GetComponent<Renderer>();
             if (renderer != null)
             {
-                // Clonar material para não afetar outros objetos
-                var material = new Material(renderer.material);
-                material.mainTexture = texture;
-                renderer.material = material;
+                // Verificar se temos o material base configurado
+                if (eventCardBaseMaterial != null)
+                {
+                    // Usar o shader de composição
+                    var material = new Material(eventCardBaseMaterial);
+
+                    // Definir o template (frame da carta)
+                    if (cardTemplateTexture != null)
+                    {
+                        material.SetTexture("_MainTex", cardTemplateTexture);
+                    }
+
+                    // Definir a imagem do tema
+                    material.SetTexture("_ImageTex", texture);
+
+                    renderer.material = material;
+                    DebugHelper.Log($"[RandomMaterial] Carta {index}: Usando shader de composição");
+                }
+                else
+                {
+                    // Fallback: usar material padrão (imagem ocupa toda a carta)
+                    var material = new Material(Shader.Find("Standard"));
+                    material.mainTexture = texture;
+                    material.SetFloat("_Glossiness", 0.2f);
+                    renderer.material = material;
+                    DebugHelper.Log($"[RandomMaterial] Carta {index}: Usando fallback (sem template)");
+                }
             }
         }
         else

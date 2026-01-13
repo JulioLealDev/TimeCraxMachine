@@ -14,7 +14,7 @@ public class Pages : MonoBehaviour
     [SerializeField] private Button nextPageButton;
     [SerializeField] private Button previousPageButton;
     [SerializeField] private Button backToMenuButton;
-    [SerializeField] private Canvas inputName;
+    //[SerializeField] private Canvas inputName;
     [SerializeField] private SoundEffects soundEffects;
     [SerializeField] private Menu menu;
 
@@ -87,7 +87,7 @@ public class Pages : MonoBehaviour
     {
         DebugHelper.Log("Reset Tutorial");
 
-        inputName.gameObject.SetActive(true);
+        //inputName.gameObject.SetActive(true);
         menu.EnableMenu();
 
         image.GetComponent<Image>().sprite = page01;

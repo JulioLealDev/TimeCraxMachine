@@ -87,6 +87,10 @@ MonoBehaviour:
   - SetTimelineYears
   - SetValues
   - SetAllValues
+  - RPC_QuizResult
+  - RPC_StartQuiz
+  - SetAllValuesFromTheme
+  - QuizFailed
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -14,14 +14,19 @@ namespace TimeCrax.Themes
         [SerializeField] private bool logRequests = true;
 
         private static ThemeDownloader _instance;
+        private static bool _isQuitting = false;
+
         public static ThemeDownloader Instance
         {
             get
             {
+                if (_isQuitting)
+                    return null;
+
                 if (_instance == null)
                 {
                     _instance = FindFirstObjectByType<ThemeDownloader>();
-                    if (_instance == null)
+                    if (_instance == null && !_isQuitting)
                     {
                         GameObject go = new GameObject("ThemeDownloader");
                         _instance = go.AddComponent<ThemeDownloader>();
@@ -43,6 +48,17 @@ namespace TimeCrax.Themes
             _instance = this;
             DontDestroyOnLoad(gameObject);
             ThemeStorage.Initialize();
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isQuitting = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+                _instance = null;
         }
 
         public event Action<float> OnDownloadProgress;
