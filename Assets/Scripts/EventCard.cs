@@ -1,6 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 using System;
+using TMPro;
 using TimeCrax.Core;
 using TimeCrax.Themes;
 
@@ -9,6 +10,7 @@ public class EventCard : MonoBehaviourPunCallbacks
     public CameraController cameraController;
     public int slotCount;
     public int slotYear;
+    public string era;
 
     // Referência à carta do tema (novo sistema)
     private ThemeCard themeCard;
@@ -19,15 +21,39 @@ public class EventCard : MonoBehaviourPunCallbacks
         cameraController = FindFirstObjectByType<CameraController>();
     }
 
+    /// <summary>
+    /// Chama RPC para comprar carta (usado quando precisa sincronizar)
+    /// </summary>
     public void DrawEventCard()
     {
         photonView.RPC("DrawingEventCard", RpcTarget.All);
     }
 
+    /// <summary>
+    /// Executa a compra localmente (usado quando já está dentro de um RPC sincronizado)
+    /// </summary>
+    public void DrawEventCardLocal()
+    {
+        DrawingEventCardInternal();
+    }
+
     [PunRPC]
     public void DrawingEventCard()
     {
+        DrawingEventCardInternal();
+    }
+
+    private void DrawingEventCardInternal()
+    {
         gameObject.GetComponent<MeshRenderer>().enabled = true;
+
+        // Ativar MeshRenderer do CardText
+        var cardText = GetComponentInChildren<TextMeshPro>();
+        if (cardText != null)
+        {
+            cardText.GetComponent<MeshRenderer>().enabled = true;
+        }
+
         gameObject.tag = "Drew";
         gameObject.GetComponent<Animator>().SetBool("drawingEventCard", true);
     }
@@ -50,6 +76,14 @@ public class EventCard : MonoBehaviourPunCallbacks
     public void ResetStatusCard()
     {
         gameObject.GetComponent<MeshRenderer>().enabled = false;
+
+        // Desativar MeshRenderer do CardText
+        var cardText = GetComponentInChildren<TextMeshPro>();
+        if (cardText != null)
+        {
+            cardText.GetComponent<MeshRenderer>().enabled = false;
+        }
+
         gameObject.GetComponent<Animator>().SetBool("wrongSlot", false);
         gameObject.GetComponent<Animator>().SetBool("drawingEventCard", false);
         gameObject.GetComponent<Animator>().SetInteger("slotClicked", 0);
@@ -70,6 +104,16 @@ public class EventCard : MonoBehaviourPunCallbacks
     public void SetThemeCard(ThemeCard card)
     {
         themeCard = card;
+
+        // Definir era
+        era = card.era;
+
+        // Definir título no CardText
+        var cardText = GetComponentInChildren<TextMeshPro>();
+        if (cardText != null)
+        {
+            cardText.text = card.title;
+        }
     }
 
     /// <summary>

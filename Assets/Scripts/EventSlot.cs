@@ -47,100 +47,92 @@ public class EventSlot : MonoBehaviourPunCallbacks
     {
         var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
-        photonView.RPC("ClickSlotSound", RpcTarget.All, 1);
-
         foreach (var card in eventCards)
         {
             if (card.CompareTag("Drew"))
             {
-                SetUpSlots(false, "Undestructable");
-
-                if (slotNumber == card.slotCount)
-                {
-                    //DebugHelper.Log("� igual!");
-                    photonView.RPC("ClickSlotSound", RpcTarget.All, 2);
-
-                    photonView.RPC("ClickedRightSlot", RpcTarget.All, card.slotCount);
-                }
-                else
-                {
-                    //DebugHelper.Log("No� igual!");
-                    photonView.RPC("ClickSlotSound", RpcTarget.All, 3);
-                    this.DelayedCall(5f, RandomComponent);
-
-                    photonView.RPC("ClickedWrongSlot", RpcTarget.All, card.slotCount);
-
-                }
+                // Enviar requisição ao MasterClient para processar o clique no slot
+                photonView.RPC("RequestSlotClick", RpcTarget.MasterClient, card.slotCount, slotNumber);
+                break; // Só processa uma carta
             }
-
-            //photonView.RPC("ClickSlot", RpcTarget.All);
         }
-
-
     }
 
+    /// <summary>
+    /// RPC enviado ao MasterClient para processar clique no slot
+    /// </summary>
     [PunRPC]
-    public void ClickSlotSound(int idSound)
+    public void RequestSlotClick(int cardSlotCount, int clickedSlotNumber)
     {
-        if(idSound == 1)
+        if (PhotonNetwork.IsMasterClient)
         {
-            soundEffects.PlayClickSlotSound();
+            bool isCorrectSlot = clickedSlotNumber == cardSlotCount;
+            DebugHelper.Log($"[EventSlot] MasterClient processando clique: cardSlot={cardSlotCount}, clickedSlot={clickedSlotNumber}, correct={isCorrectSlot}");
+
+            // Sincronizar para todos
+            photonView.RPC("ExecuteSlotClick", RpcTarget.All, cardSlotCount, clickedSlotNumber, isCorrectSlot);
         }
-        else if(idSound == 2)
+    }
+
+    /// <summary>
+    /// RPC executado em todos para processar clique no slot
+    /// </summary>
+    [PunRPC]
+    public void ExecuteSlotClick(int cardSlotCount, int clickedSlotNumber, bool isCorrectSlot)
+    {
+        DebugHelper.Log($"[EventSlot] ExecuteSlotClick: cardSlot={cardSlotCount}, clickedSlot={clickedSlotNumber}, correct={isCorrectSlot}");
+
+        // Som de clique no slot
+        soundEffects.PlayClickSlotSound();
+
+        // Desativar slots
+        SetUpSlots(false, "Undestructable");
+
+        if (isCorrectSlot)
         {
+            // Slot correto - som de acerto após delay
             this.DelayedCall(3.3f, PlayRightSound);
+
+            // Processar slot correto
+            ProcessRightSlot(cardSlotCount, clickedSlotNumber);
         }
-        else if(idSound == 3) 
+        else
         {
+            // Slot errado - som de erro após delay
             this.DelayedCall(3.3f, PlayWrongSound);
-        }
 
-    }
-
-    [PunRPC]
-    public void PlayRightSound()
-    {
-        soundEffects.PlayRightSlotSound();
-    }
-
-    [PunRPC]
-    public void PlayWrongSound()
-    {
-        soundEffects.PlayWrongSlotSound();
-    }
-
-    public void RandomComponent()
-    {
-        gameManager.RandomComponentNumber();
-    }
-
-    [PunRPC]
-    public void ClickedWrongSlot(int slotCount)
-    {
-        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-        foreach (var card in cards)
-        {
-            //DebugHelper.Log("cardslotcount: "+ card.slotCount+" -- slotcount:"+slotCount);
-            if (card.slotCount == slotCount)
+            // Animar carta para slot errado
+            var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
+            foreach (var card in cards)
             {
-                card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
-                //DebugHelper.Log("cardname: "+card.name);
-                card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
-                card.tag = "Undestructable";
-                card.waitToDistance();
+                if (card.slotCount == cardSlotCount)
+                {
+                    card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
+                    card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
+                    card.tag = "Undestructable";
+                    card.waitToDistance();
+                }
+            }
+
+            // Agendar malfunction apenas no MasterClient
+            if (PhotonNetwork.IsMasterClient)
+            {
+                this.DelayedCall(5f, RandomComponent);
             }
         }
     }
 
-    [PunRPC]
-    public void ClickedRightSlot(int slotCount)
+    /// <summary>
+    /// Processa slot correto (pode ter quiz)
+    /// </summary>
+    private void ProcessRightSlot(int cardSlotCount, int clickedSlotNumber)
     {
         var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         EventCard targetCard = null;
 
         foreach (var card in cards)
         {
-            if (card.slotCount == slotCount)
+            if (card.slotCount == cardSlotCount)
             {
                 targetCard = card;
                 break;
@@ -153,42 +145,74 @@ public class EventSlot : MonoBehaviourPunCallbacks
         if (targetCard.HasQuiz() && quizManager != null)
         {
             // Guardar estado pendente para quando o quiz terminar
-            pendingQuizSlotCount = slotCount;
+            pendingQuizSlotCount = cardSlotCount;
             pendingQuizCard = targetCard;
+            pendingQuizClickedSlotNumber = clickedSlotNumber;
 
             // Animar a carta para o slot (mas ainda não confirma)
-            targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
+            targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
 
-            // Iniciar quiz (apenas o Master Client inicia, sincroniza via RPC)
+            // Iniciar quiz apenas no MasterClient
             if (PhotonNetwork.IsMasterClient)
             {
                 var themeCard = targetCard.GetThemeCard();
-                quizManager.StartQuiz(themeCard, slotCount);
+                quizManager.StartQuiz(themeCard, cardSlotCount);
             }
         }
         else
         {
             // Sem quiz - fluxo original
-            FinalizeCorrectSlot(slotCount, targetCard);
+            FinalizeCorrectSlotLocal(cardSlotCount, targetCard, clickedSlotNumber);
         }
     }
 
     /// <summary>
-    /// Finaliza a colocação correta da carta no slot (após quiz ou sem quiz)
+    /// Finaliza slot correto localmente (já sincronizado)
     /// </summary>
-    private void FinalizeCorrectSlot(int slotCount, EventCard card)
+    private void FinalizeCorrectSlotLocal(int slotCount, EventCard card, int clickedSlotNumber)
     {
-        gameObject.tag = "Disabled";
+        // Encontrar o slot que foi clicado para desativá-lo
+        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
+        foreach (var slot in slots)
+        {
+            if (slot.slotNumber == clickedSlotNumber)
+            {
+                slot.gameObject.tag = "Disabled";
+                break;
+            }
+        }
 
         var deckEvent = FindFirstObjectByType<DeckEvent>();
-        deckEvent.RemoveIndex(slotCount);
+        // Apenas MasterClient remove do deck (ele vai sincronizar via RPC)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            deckEvent.RemoveIndex(slotCount);
+        }
 
-        card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
+        card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
         card.tag = "Disabled";
         card.waitToDistance();
 
         CheckIfWin();
     }
+
+    public void PlayRightSound()
+    {
+        soundEffects.PlayRightSlotSound();
+    }
+
+    public void PlayWrongSound()
+    {
+        soundEffects.PlayWrongSlotSound();
+    }
+
+    public void RandomComponent()
+    {
+        gameManager.RandomComponentNumber();
+    }
+
+    // Armazena o slotNumber do slot que foi clicado para quiz
+    private int pendingQuizClickedSlotNumber = -1;
 
     /// <summary>
     /// Callback quando o quiz é completado
@@ -200,7 +224,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         if (correct)
         {
             DebugHelper.Log($"[EventSlot] Quiz correto! Finalizando slot {pendingQuizSlotCount}");
-            FinalizeCorrectSlot(pendingQuizSlotCount, pendingQuizCard);
+            FinalizeCorrectSlotLocal(pendingQuizSlotCount, pendingQuizCard, pendingQuizClickedSlotNumber);
         }
         else
         {
@@ -215,6 +239,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         // Limpar estado pendente
         pendingQuizSlotCount = -1;
         pendingQuizCard = null;
+        pendingQuizClickedSlotNumber = -1;
     }
 
     [PunRPC]

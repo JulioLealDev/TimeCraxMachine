@@ -290,7 +290,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         DebugHelper.Log("player list lenght: " + PhotonNetwork.PlayerList.Length);
 
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        // Ordenar PlayerList por ActorNumber para garantir ordem consistente em todos os clientes
+        var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+
+        for (int i = 0; i < orderedPlayerList.Length; i++)
         {
             int name = i + 1;
             for (int x = 0; x < components.Length; x++)
@@ -307,7 +310,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 else if (components[x].name == namePlayer + name.ToString())
                 {
                     TextMeshProUGUI textName = components[x].gameObject.GetComponentInChildren<TextMeshProUGUI>();
-                    textName.text = PhotonNetwork.PlayerList[i].NickName;
+                    textName.text = orderedPlayerList[i].NickName;
                     textName.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
                 }
                 else if (components[x].name == repairCardSymbol + name.ToString())
@@ -350,9 +353,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        //DebugHelper.Log("FirstTurn()");
-        //photonView.RPC("Turn", RpcTarget.All);
-        Turn();
+        // Sincronizar início do turno via RPC
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("SyncTurn", RpcTarget.All, time);
+        }
     }
 
     public bool CheckTimeAndIndex(PlayerScript[] orderedPlayers)
@@ -377,7 +382,51 @@ public class GameManager : MonoBehaviourPunCallbacks
         return false;
     }
 
-    //[PunRPC]
+    /// <summary>
+    /// RPC para sincronizar o turno entre todos os clientes (apenas time)
+    /// </summary>
+    [PunRPC]
+    public void SyncTurn(int syncedTime)
+    {
+        SyncTurnInternal(syncedTime, -1);
+    }
+
+    /// <summary>
+    /// RPC para sincronizar o turno entre todos os clientes (time + round)
+    /// </summary>
+    [PunRPC]
+    public void SyncTurnWithRound(int syncedTime, int syncedRound)
+    {
+        SyncTurnInternal(syncedTime, syncedRound);
+    }
+
+    private void SyncTurnInternal(int syncedTime, int syncedRound)
+    {
+        DebugHelper.Log($"[GameManager] SyncTurn recebido: time={syncedTime}, round={syncedRound}");
+        time = syncedTime;
+        if (syncedRound >= 0)
+        {
+            round = syncedRound;
+        }
+
+        // Garantir que orderedPlayers está populado
+        if (orderedPlayers == null || orderedPlayers.Length == 0)
+        {
+            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+            orderedPlayers = new PlayerScript[players.Length];
+
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i].index == 0) orderedPlayers[0] = players[i];
+                else if (players[i].index == 1) orderedPlayers[1] = players[i];
+                else if (players[i].index == 2) orderedPlayers[2] = players[i];
+                else if (players[i].index == 3) orderedPlayers[3] = players[i];
+            }
+        }
+
+        Turn();
+    }
+
     public void Turn()
     {
 
@@ -466,10 +515,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            DebugHelper.Log("Caiu no else");
-            time = 0;
+            DebugHelper.Log("Caiu no else - nova rodada");
             round++;
-            Turn();
+            time = 0;
+
+            // Sincronizar novo round via RPC (apenas MasterClient)
+            if (PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("SyncTurnWithRound", RpcTarget.All, time, round);
+            }
         }
 
     }
@@ -611,85 +665,93 @@ public class GameManager : MonoBehaviourPunCallbacks
         //    component.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
         //}
 
+        // Encontrar o jogador LOCAL (controlado por este cliente)
+        PlayerScript localPlayer = null;
+        PlayerScript currentTurnPlayer = null;
+
         foreach (var player in players)
         {
-            //player.UpdateIndex();
             DebugHelper.Log("jogador " + player.name + " index: " + player.index + " -----  time: " + time);
+
+            // Verificar se é o jogador local
+            if (player.photonView.IsMine)
+            {
+                localPlayer = player;
+            }
+
+            // Verificar se é o jogador no turno atual
             if (player.index == time)
             {
+                currentTurnPlayer = player;
+            }
+        }
 
-                if (player.GetNumberOfRepairsCards() == 5)
-                {
-                    //DebugHelper.Log("tem 5 cartas");
-                    deckRepair.tag = "Disabled";
-                }
-                else
-                {
-                    //DebugHelper.Log("nao tem 5 cartas");
-                    deckRepair.tag = "Selectable";
-                }
+        // Verificar se o jogador LOCAL está no turno
+        bool isMyTurn = localPlayer != null && localPlayer.index == time;
 
-                foreach (var timeCraxComponent in timeCraxComponents)
-                {
-                    if (timeCraxComponent.malfunctions == 1)
-                    {
-                        timeCraxComponent.tag = "Selectable";
-                    }
-                }
+        DebugHelper.Log($"[StartTurn] isMyTurn: {isMyTurn}, localPlayer: {localPlayer?.nickname}, currentTurnPlayer: {currentTurnPlayer?.nickname}");
 
-                DebugHelper.Log("Ativando MeshCollider dos objetos");
-                endButton.GetComponent<MeshCollider>().enabled = true;
-                quitButton.GetComponent<MeshCollider>().enabled = true;
-
-                timeline.GetComponent<MeshCollider>().enabled = true;
-                deckEvent.GetComponent<MeshCollider>().enabled = true;
-                deckRepair.GetComponent<MeshCollider>().enabled = true;
-                deckEvent.tag = "Selectable";
-                timeline.tag = "Selectable";
-
-
-                for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-                {
-                    string name = "plateName0" + (i + 1);
-                    var plate = GameObject.Find(name);
-
-                    plate.GetComponent<MeshCollider>().enabled = true;
-                    plate.tag = "Selectable";
-                }
-
-                string plateName = "plateName0" + (time + 1);
-                var findObject = GameObject.Find(plateName);
-
-                findObject.GetComponent<MeshCollider>().enabled = false;
-
+        if (isMyTurn && currentTurnPlayer != null)
+        {
+            // É meu turno - ativar controles
+            if (currentTurnPlayer.GetNumberOfRepairsCards() == 5)
+            {
+                deckRepair.tag = "Disabled";
             }
             else
             {
-                //DebugHelper.Log("4 -- ");
-                player.SetYourTurn(false);
+                deckRepair.tag = "Selectable";
+            }
 
-                //foreach (Button component in components)
-                //{
-                //    if (!(component.name == "QuitGame"))
-                //    {
-                //        component.interactable = false;
-                //    }
-
-                //}
-                endButton.GetComponent<MeshCollider>().enabled = false;
-
-                timeline.GetComponent<MeshCollider>().enabled = false;
-                deckEvent.GetComponent<MeshCollider>().enabled = false;
-                deckRepair.GetComponent<MeshCollider>().enabled = false;
-
-                for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+            foreach (var timeCraxComponent in timeCraxComponents)
+            {
+                if (timeCraxComponent.malfunctions == 1)
                 {
-                    string name = "plateName0" + (i + 1);
-                    var plate = GameObject.Find(name);
-
-                    plate.GetComponent<MeshCollider>().enabled = false;
-                    //plate.tag = "Selectable";
+                    timeCraxComponent.tag = "Selectable";
                 }
+            }
+
+            DebugHelper.Log("Ativando MeshCollider dos objetos");
+            endButton.GetComponent<MeshCollider>().enabled = true;
+            quitButton.GetComponent<MeshCollider>().enabled = true;
+
+            timeline.GetComponent<MeshCollider>().enabled = true;
+            deckEvent.GetComponent<MeshCollider>().enabled = true;
+            deckRepair.GetComponent<MeshCollider>().enabled = true;
+            deckEvent.tag = "Selectable";
+            timeline.tag = "Selectable";
+
+            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+            {
+                string name = "plateName0" + (i + 1);
+                var plate = GameObject.Find(name);
+
+                plate.GetComponent<MeshCollider>().enabled = true;
+                plate.tag = "Selectable";
+            }
+
+            string plateName = "plateName0" + (time + 1);
+            var findObject = GameObject.Find(plateName);
+            findObject.GetComponent<MeshCollider>().enabled = false;
+        }
+        else
+        {
+            // NÃO é meu turno - desativar controles
+            if (localPlayer != null)
+            {
+                localPlayer.SetYourTurn(false);
+            }
+
+            endButton.GetComponent<MeshCollider>().enabled = false;
+            timeline.GetComponent<MeshCollider>().enabled = false;
+            deckEvent.GetComponent<MeshCollider>().enabled = false;
+            deckRepair.GetComponent<MeshCollider>().enabled = false;
+
+            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+            {
+                string name = "plateName0" + (i + 1);
+                var plate = GameObject.Find(name);
+                plate.GetComponent<MeshCollider>().enabled = false;
             }
         }
     }
@@ -855,27 +917,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void FinishTurn()
     {
         DebugHelper.Log("4 -- Finish turn, time ++");
-        time++;
         deckRepair.tag = "Disabled";
         deckEvent.tag = "Disabled";
         timeline.tag = "Disabled";
 
-
-        //for(int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-        //{
-        //    string plateName = "plateName0" + (i + 1);
-        //    var findObject = GameObject.Find(plateName);
-
-        //   findObject.GetComponent<MeshCollider>().enabled = true;
-        //}
-
-
-        //photonView.RPC("Turn", RpcTarget.All);
-
-        Turn();
+        // Apenas MasterClient incrementa e sincroniza o time
+        if (PhotonNetwork.IsMasterClient)
+        {
+            time++;
+            photonView.RPC("SyncTurn", RpcTarget.All, time);
+        }
 
         SetUpComponents();
-
     }
 
     public void ChangeRepairCardsView(PlayerScript player)
@@ -1263,8 +1316,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             //DebugHelper.Log("Carta que est� sendo passada: " + lastCard.photonView.ViewID);
 
-            //DebugHelper.Log("player recebendo o owner: " + PhotonNetwork.PlayerList[playerReceiving.index].NickName);
-            lastCard.photonView.TransferOwnership(PhotonNetwork.PlayerList[playerReceiving.index]);
+            // Ordenar PlayerList por ActorNumber para garantir ordem consistente
+            var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+            //DebugHelper.Log("player recebendo o owner: " + orderedPlayerList[playerReceiving.index].NickName);
+            lastCard.photonView.TransferOwnership(orderedPlayerList[playerReceiving.index]);
 
             //DebugHelper.Log("Recebendo carta: " + playerReceiving.nickname);
             playerReceiving.numberRepairCards++;

@@ -22,26 +22,32 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     {
         numberRepairCards = 0;
 
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        // Ordenar PlayerList por ActorNumber para garantir ordem consistente em todos os clientes
+        var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+
+        for (int i = 0; i < orderedPlayerList.Length; i++)
         {
-            if (PhotonNetwork.PlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
             {
-                nickname = PhotonNetwork.PlayerList[i].NickName;
+                nickname = orderedPlayerList[i].NickName;
                 index = i;
                 plateNameIndex = i;
-                actorNumber = PhotonNetwork.PlayerList[i].ActorNumber;
+                actorNumber = orderedPlayerList[i].ActorNumber;
             }
         }
 
         numberRepairCardsText = "numberRepairCards0" + (index + 1);
-}
+    }
     public void UpdateIndex()
     {
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        // Ordenar PlayerList por ActorNumber para garantir ordem consistente em todos os clientes
+        var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+
+        for (int i = 0; i < orderedPlayerList.Length; i++)
         {
-            if (PhotonNetwork.PlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
             {
-                //nickname = PhotonNetwork.PlayerList[i].NickName;
+                //nickname = orderedPlayerList[i].NickName;
                 index = i;
             }
         }

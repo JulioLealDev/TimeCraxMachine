@@ -83,7 +83,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
         string maxPlayers = maxPlayersDropdown.GetComponent<TextMeshProUGUI>().text;
         string difficulty = difficultyDropdown.GetComponent<TextMeshProUGUI>().text;
-        string password = passwordInput.GetComponent<TMP_InputField>().text;
+        string password = passwordInput != null ? passwordInput.GetComponent<TMP_InputField>().text : "";
 
         // Verificar se há tema da API selecionado
         string theme;
@@ -99,7 +99,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         else
         {
             // Tema legado do dropdown
-            theme = themeDropdown.GetComponent<TextMeshProUGUI>().text;
+            theme = themeDropdown != null ? themeDropdown.GetComponent<TextMeshProUGUI>().text : "World History";
             DebugHelper.Log($"[LobbyOptions] Usando tema legado: {theme}");
         }
 

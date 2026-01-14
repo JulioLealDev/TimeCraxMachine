@@ -17,18 +17,21 @@ public class Timeline : MonoBehaviourPunCallbacks
     {
         if (gameObject.CompareTag("Selectable"))
         {
+            // Calcular novo estado localmente
+            bool newZoom = !zoom;
 
             endButton.GetComponent<MeshCollider>().enabled = zoom;
             ActiveTimeline(false);
-            photonView.RPC("ClickTimeline", RpcTarget.All);
-        }
 
+            // Enviar estado explícito via RPC (não toggle)
+            photonView.RPC("SetZoomState", RpcTarget.All, newZoom);
+        }
     }
 
     [PunRPC]
-    public void ClickTimeline()
+    public void SetZoomState(bool newZoom)
     {
-        zoom = !zoom;
+        zoom = newZoom;
 
         var camera = FindFirstObjectByType<CameraController>();
         if (zoom)
@@ -39,8 +42,6 @@ public class Timeline : MonoBehaviourPunCallbacks
         {
             camera.DistanceTimeline();
         }
-
-       
     }
 
     public void ActiveTimeline(bool activate)
@@ -48,5 +49,11 @@ public class Timeline : MonoBehaviourPunCallbacks
         gameObject.GetComponent<MeshCollider>().enabled = activate;
     }
 
-
+    /// <summary>
+    /// Reseta o estado do zoom (usado ao iniciar nova partida)
+    /// </summary>
+    public void ResetZoom()
+    {
+        zoom = false;
+    }
 }

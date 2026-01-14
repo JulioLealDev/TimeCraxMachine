@@ -11,7 +11,6 @@ namespace TimeCrax.Themes
         public int year;
         public string era;
         public string title;
-        public string caption;      // Legenda da carta (novo campo da API)
         public string imageUrl;
         public string localImagePath;
         public CardQuizData quizData; // Dados do quiz da carta
@@ -80,7 +79,6 @@ namespace TimeCrax.Themes
         public int year;
         public string era;
         public string title;
-        public string caption;         // Legenda da carta
         public string imageUrl;
 
         // Quizzes da API

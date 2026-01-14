@@ -291,7 +291,6 @@ namespace TimeCrax.Themes
                     year = card.year,
                     era = card.era,
                     title = card.title,
-                    caption = card.caption ?? card.title, // Fallback para title se caption for null
                     imageUrl = card.imageUrl,
                     quizData = ConvertQuizData(card)
                 });

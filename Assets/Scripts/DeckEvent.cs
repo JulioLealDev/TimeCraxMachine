@@ -20,20 +20,10 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
-
         if (gameObject.CompareTag("Selectable"))
         {
-            photonView.RPC("ClickDraw", RpcTarget.All, 1);
-
-            gameManager.BlockActions();
-            gameManager.ActivateFinishButton(false);
-            if (photonView.IsMine)
-            {
-                var timeline = FindFirstObjectByType<Timeline>();
-                timeline.ActiveTimeline(false);
-
-                EventRandom();
-            }
+            // Enviar requisição ao MasterClient para processar a compra
+            photonView.RPC("RequestDrawEventCard", RpcTarget.MasterClient);
         }
         else
         {
@@ -50,9 +40,57 @@ public class DeckEvent : MonoBehaviourPunCallbacks
                 }
             }
 
-            DebugHelper.Log("Voc� j� realizaou uma a��o neste turno");
+            DebugHelper.Log("Você já realizou uma ação neste turno");
 
             this.DelayedCall(1.5f, HideActionInfo);
+        }
+    }
+
+    /// <summary>
+    /// RPC enviado ao MasterClient para processar a compra de carta
+    /// </summary>
+    [PunRPC]
+    public void RequestDrawEventCard()
+    {
+        // Apenas MasterClient processa e sincroniza para todos
+        if (PhotonNetwork.IsMasterClient)
+        {
+            int index = Random.Range(0, eventList.Count);
+            int slotCount = eventList[index];
+            DebugHelper.Log($"[DeckEvent] MasterClient gerou slotCount: {slotCount}");
+
+            // Sincronizar som, bloqueio e carta para todos
+            photonView.RPC("ExecuteDrawEventCard", RpcTarget.All, slotCount);
+        }
+    }
+
+    /// <summary>
+    /// RPC executado em todos os clientes para comprar a carta
+    /// </summary>
+    [PunRPC]
+    public void ExecuteDrawEventCard(int slotCount)
+    {
+        DebugHelper.Log($"[DeckEvent] ExecuteDrawEventCard: slotCount={slotCount}");
+
+        // Tocar som
+        soundEffects.PlayDrawCardSound();
+
+        // Bloquear ações
+        gameManager.BlockActions();
+        gameManager.ActivateFinishButton(false);
+
+        var timeline = FindFirstObjectByType<Timeline>();
+        timeline.ActiveTimeline(false);
+
+        // Comprar a carta (local, pois já estamos dentro de um RPC sincronizado)
+        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
+        foreach (var eventCard in eventCards)
+        {
+            if (eventCard.slotCount == slotCount)
+            {
+                eventCard.DrawEventCardLocal();
+                break;
+            }
         }
     }
 
@@ -88,52 +126,39 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         gameInfo.gameObject.SetActive(false);
     }
 
-    public void EventRandom()
-    {
-        foreach (var number in eventList)
-        {
-            DebugHelper.Log(number);
-        }
 
-        DebugHelper.Log("max range (index): " + (eventList.Count));
-        int index = Random.Range(0, eventList.Count);
-        DebugHelper.Log("result: " + index);
-
-        DrawEventCard(index);
-
-    }
-    public void DrawEventCard(int index)
-    {
-        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-        foreach (var eventCard in eventCards)
-        {
-            //DebugHelper.Log("slotcount: "+ eventCard.slotCount+" -- valor: " + eventList[index]);
-            if (eventCard.slotCount == eventList[index])
-            {
-                eventCard.DrawEventCard();
-            }
-
-        }
-
-    }
+    /// <summary>
+    /// Remove carta do deck - chamado via RPC para sincronizar
+    /// </summary>
     public void RemoveIndex(int value)
     {
+        // Apenas MasterClient inicia a remoção e sincroniza
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RemoveIndexRPC", RpcTarget.All, value);
+        }
+    }
 
+    [PunRPC]
+    public void RemoveIndexRPC(int value)
+    {
+        DebugHelper.Log($"[DeckEvent] RemoveIndexRPC: removendo {value}");
         DebugHelper.Log(" eventList.Count: " + eventList.Count);
+
         for (int i = 0; i < eventList.Count; i++)
         {
-            DebugHelper.Log("eventList[i]: "+ eventList[i]+ " ---- valor :" + value);
+            DebugHelper.Log("eventList[i]: " + eventList[i] + " ---- valor :" + value);
             if (eventList[i] == value)
             {
                 DebugHelper.Log("Removendo valor :" + value);
                 eventList.RemoveAt(i);
+                break; // Importante: sair após remover para evitar index out of range
             }
         }
 
-
         foreach (var number in eventList)
         {
-            DebugHelper.Log("-- "+number);
+            DebugHelper.Log("-- " + number);
         }
     }
 
@@ -141,6 +166,16 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     /// Adiciona uma carta de volta ao deck (usado quando quiz falha)
     /// </summary>
     public void AddCardBack(int slotCount)
+    {
+        // Apenas MasterClient inicia a adição e sincroniza
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("AddCardBackRPC", RpcTarget.All, slotCount);
+        }
+    }
+
+    [PunRPC]
+    public void AddCardBackRPC(int slotCount)
     {
         if (!eventList.Contains(slotCount))
         {

@@ -56,6 +56,34 @@ public class GameConnection : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinLobby();
         }
     }
+
+    public override void OnJoinedLobby()
+    {
+        DebugHelper.Log("[GameConnection] Entrou no Lobby");
+
+        // Se há sala pendente para criar, criar agora
+        if (pendingRoomData != null)
+        {
+            DebugHelper.Log("[GameConnection] Criando sala pendente...");
+            CreateRoomInternal(
+                pendingRoomData.nameRoom,
+                pendingRoomData.maxPlayers,
+                pendingRoomData.difficulty,
+                pendingRoomData.theme,
+                pendingRoomData.password,
+                pendingRoomData.themeId
+            );
+            pendingRoomData = null;
+        }
+
+        // Se há sala pendente para entrar, entrar agora
+        if (!string.IsNullOrEmpty(pendingJoinRoomName))
+        {
+            DebugHelper.Log($"[GameConnection] Entrando na sala pendente: {pendingJoinRoomName}");
+            PhotonNetwork.JoinRoom(pendingJoinRoomName);
+            pendingJoinRoomName = null;
+        }
+    }
     public void Start()
     {
         //PhotonNetwork.LocalPlayer.NickName = PlayerPrefs.GetString("nickname");
@@ -87,6 +115,40 @@ public class GameConnection : MonoBehaviourPunCallbacks
     {
         //DebugHelper.Log("password: " + password + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(password));
         DebugHelper.Log("Entrou na Sala Criada");
+
+        // Verificar se está conectado ao Master Server e pronto para operações
+        if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby)
+        {
+            DebugHelper.Log("[GameConnection] Não está pronto para criar sala. Reconectando...");
+
+            // Armazenar dados para criar sala após reconexão
+            pendingRoomData = new PendingRoomData
+            {
+                nameRoom = nameRoom,
+                maxPlayers = maxPlayers,
+                difficulty = difficulty,
+                theme = theme,
+                password = password,
+                themeId = themeId
+            };
+
+            // Reconectar se necessário
+            if (!PhotonNetwork.IsConnected)
+            {
+                PhotonNetwork.ConnectUsingSettings();
+            }
+            else if (PhotonNetwork.IsConnected && !PhotonNetwork.InLobby)
+            {
+                PhotonNetwork.JoinLobby();
+            }
+            return;
+        }
+
+        CreateRoomInternal(nameRoom, maxPlayers, difficulty, theme, password, themeId);
+    }
+
+    private void CreateRoomInternal(string nameRoom, int maxPlayers, string difficulty, string theme, string password, string themeId)
+    {
         RoomOptions options = new RoomOptions { MaxPlayers = (byte)maxPlayers, EmptyRoomTtl = 0, PlayerTtl = 0 };
         options.CustomRoomPropertiesForLobby = new string[4] { "dif", "the", "pass", "themeId" };
         options.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
@@ -96,6 +158,19 @@ public class GameConnection : MonoBehaviourPunCallbacks
         options.CustomRoomProperties.Add("themeId", themeId);
         PhotonNetwork.CreateRoom(nameRoom, options, null);
         DebugHelper.Log($"[GameConnection] Sala criada com tema: {theme} (ID: {themeId})");
+    }
+
+    // Dados pendentes para criar sala após reconexão
+    private PendingRoomData pendingRoomData;
+
+    private class PendingRoomData
+    {
+        public string nameRoom;
+        public int maxPlayers;
+        public string difficulty;
+        public string theme;
+        public string password;
+        public string themeId;
     }
     
     public void ReturnigToMenu()
@@ -154,37 +229,94 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void CheckIfIsMaster()
     {
+        DebugHelper.Log($"[GameConnection] CheckIfIsMaster - IsMasterClient: {PhotonNetwork.IsMasterClient}");
+
+        // Tentar encontrar o botão se a referência não estiver configurada
+        if (buttonStart == null && roomScreen != null)
+        {
+            var buttons = roomScreen.GetComponentsInChildren<Button>(true);
+            foreach (var btn in buttons)
+            {
+                if (btn.gameObject.name == "StartGameButton" || btn.gameObject.name == "Start" || btn.gameObject.name == "ButtonStart" || btn.gameObject.name == "StartButton")
+                {
+                    buttonStart = btn;
+                    DebugHelper.Log($"[GameConnection] Botão Start encontrado dinamicamente: {btn.gameObject.name}");
+                    break;
+                }
+            }
+        }
+
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.CurrentRoom.IsOpen = true;
-            buttonStart.interactable = true;
+            if (buttonStart != null)
+            {
+                buttonStart.interactable = true;
+                DebugHelper.Log("[GameConnection] Botão Start HABILITADO (MasterClient)");
+            }
+            else
+            {
+                DebugHelper.Log("[GameConnection] ERRO: buttonStart é null!");
+            }
         }
         else
         {
-            buttonStart.interactable = false;
+            if (buttonStart != null)
+            {
+                buttonStart.interactable = false;
+                DebugHelper.Log("[GameConnection] Botão Start DESABILITADO (não é MasterClient)");
+            }
+            else
+            {
+                DebugHelper.Log("[GameConnection] ERRO: buttonStart é null!");
+            }
         }
     }
 
     public void JoinRoomInList(string roomName)
     {
         DebugHelper.Log("Entrando na sala: " + roomName);
+
+        // Verificar se está conectado ao Master Server e pronto para operações
+        if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby)
+        {
+            DebugHelper.Log("[GameConnection] Não está pronto para entrar na sala. Reconectando...");
+
+            // Armazenar nome da sala para entrar após reconexão
+            pendingJoinRoomName = roomName;
+
+            // Reconectar se necessário
+            if (!PhotonNetwork.IsConnected)
+            {
+                PhotonNetwork.ConnectUsingSettings();
+            }
+            else if (PhotonNetwork.IsConnected && !PhotonNetwork.InLobby)
+            {
+                PhotonNetwork.JoinLobby();
+            }
+            return;
+        }
+
         PhotonNetwork.JoinRoom(roomName);
     }
+
+    // Nome da sala pendente para entrar após reconexão
+    private string pendingJoinRoomName;
     public override void OnJoinedRoom()
     {
         DebugHelper.Log("Entrou na sala");
 
         createRoom.SetActive(false);
         lobbyScreen.SetActive(false);
-        roomScreen.SetActive(true); 
+        roomScreen.SetActive(true);
 
-        //if (!lobbyScreen.gameObject.activeInHierarchy)
-        //{
-        //    DebugHelper.Log("Entrou no if");
-        //    createRoom.SetActive(false);
-        //    lobby.SetActive(true);
-        //}
+        // Primeiro desabilita o botão para todos
+        if (buttonStart != null)
+        {
+            buttonStart.interactable = false;
+        }
 
+        // Depois verifica se é MasterClient para habilitar
         CheckIfIsMaster();
 
         roomNameTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Name;
