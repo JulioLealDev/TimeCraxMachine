@@ -83,6 +83,9 @@ namespace TimeCrax.Themes
                 downloader.OnDownloadStatus += OnDownloadStatus;
             }
 
+            // Inscrever nos eventos do ThemeInfoUI
+            SetupThemeInfoEvents();
+
             // Verificar se já há tema selecionado
             if (ThemeManager.Instance != null && ThemeManager.Instance.HasSelectedTheme)
                 selectedThemeId = ThemeManager.Instance.SelectedTheme.id;
@@ -95,6 +98,13 @@ namespace TimeCrax.Themes
             {
                 downloader.OnDownloadProgress -= OnDownloadProgress;
                 downloader.OnDownloadStatus -= OnDownloadStatus;
+            }
+
+            if (ThemeInfoUI.Instance != null)
+            {
+                ThemeInfoUI.Instance.OnDownloadRequested -= OnThemeInfoDownloadRequested;
+                ThemeInfoUI.Instance.OnPlayRequested -= OnThemeInfoPlayRequested;
+                ThemeInfoUI.Instance.OnClose -= OnThemeInfoClosed;
             }
         }
 
@@ -129,6 +139,9 @@ namespace TimeCrax.Themes
 
             themeSelectionCanvas.SetActive(true);
 
+            // Garantir inscrição nos eventos do ThemeInfoUI
+            SetupThemeInfoEvents();
+
             if (canvasGroup != null)
             {
                 canvasGroup.alpha = 0;
@@ -150,6 +163,22 @@ namespace TimeCrax.Themes
             LoadThemesFromAPI();
 
             DebugHelper.Log("[ThemeSelectionUI] Show");
+        }
+
+        private void SetupThemeInfoEvents()
+        {
+            if (ThemeInfoUI.Instance != null)
+            {
+                // Remover inscrições anteriores para evitar duplicatas
+                ThemeInfoUI.Instance.OnDownloadRequested -= OnThemeInfoDownloadRequested;
+                ThemeInfoUI.Instance.OnPlayRequested -= OnThemeInfoPlayRequested;
+                ThemeInfoUI.Instance.OnClose -= OnThemeInfoClosed;
+
+                // Inscrever novamente
+                ThemeInfoUI.Instance.OnDownloadRequested += OnThemeInfoDownloadRequested;
+                ThemeInfoUI.Instance.OnPlayRequested += OnThemeInfoPlayRequested;
+                ThemeInfoUI.Instance.OnClose += OnThemeInfoClosed;
+            }
         }
 
         public void Hide()
@@ -399,6 +428,37 @@ namespace TimeCrax.Themes
 
         private void OnThemeSelected(string themeId)
         {
+            // Encontrar o tema na lista
+            var theme = filteredThemes.Find(t => t.id == themeId);
+            if (theme == null)
+            {
+                theme = allThemes.Find(t => t.id == themeId);
+            }
+
+            if (theme == null)
+            {
+                DebugHelper.Log($"[ThemeSelectionUI] Theme not found: {themeId}");
+                return;
+            }
+
+            // Verificar se está baixado
+            bool isDownloaded = ThemeManager.Instance.IsThemeDownloaded(themeId);
+
+            // Mostrar ThemeInfoUI
+            if (ThemeInfoUI.Instance != null)
+            {
+                ThemeInfoUI.Instance.Show(theme, isDownloaded);
+            }
+            else
+            {
+                DebugHelper.Log("[ThemeSelectionUI] ThemeInfoUI.Instance is null");
+            }
+
+            DebugHelper.Log($"[ThemeSelectionUI] Showing info for: {themeId}");
+        }
+
+        public void SelectTheme(string themeId)
+        {
             // Desmarcar anterior
             foreach (var card in cardInstances)
             {
@@ -417,6 +477,27 @@ namespace TimeCrax.Themes
             UpdateFooter();
 
             DebugHelper.Log($"[ThemeSelectionUI] Theme selected: {themeId}");
+        }
+
+        private void OnThemeInfoDownloadRequested(string themeId)
+        {
+            DebugHelper.Log($"[ThemeSelectionUI] Download completed from ThemeInfoUI: {themeId}");
+            // Atualizar grid para refletir o download concluído
+            RefreshGrid();
+            UpdateFooter();
+        }
+
+        private void OnThemeInfoPlayRequested(string themeId)
+        {
+            DebugHelper.Log($"[ThemeSelectionUI] Play requested from ThemeInfoUI: {themeId}");
+            SelectTheme(themeId);
+        }
+
+        private void OnThemeInfoClosed()
+        {
+            DebugHelper.Log("[ThemeSelectionUI] ThemeInfoUI closed");
+            // Atualizar grid para refletir possíveis mudanças
+            RefreshGrid();
         }
 
         #endregion

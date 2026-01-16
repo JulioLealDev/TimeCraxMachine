@@ -202,9 +202,9 @@ namespace TimeCrax.Themes
 
         private void OnCardClicked()
         {
-            if (isDownloaded && !isDownloading)
+            if (!isDownloading)
             {
-                DebugHelper.Log($"[ThemeCardUI] Theme selected: {themeId}");
+                DebugHelper.Log($"[ThemeCardUI] Theme clicked: {themeId}");
                 OnThemeSelected?.Invoke(themeId);
             }
         }
