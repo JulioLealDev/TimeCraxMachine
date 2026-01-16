@@ -43,6 +43,7 @@ namespace TimeCrax.Themes
         public string createdAt;
         public string resume;
         public string recommendation;
+        public int cardCount;
     }
 
     [Serializable]
