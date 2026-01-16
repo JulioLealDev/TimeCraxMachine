@@ -30,7 +30,6 @@ public class Menu : MonoBehaviour
         GameOver gameOver = FindFirstObjectByType<GameOver>();
 
         DebugHelper.Log("Entrou no AwaitCloseSuit");
-        //hudGame.SetActive(false);
         cameraController.GetComponent<Animator>().SetBool("enterMatch", false);
 
         DebugHelper.Log("exit? : "+gameOver.exitGame);
@@ -54,7 +53,6 @@ public class Menu : MonoBehaviour
                     }
                     else
                     {
-                        //DebugHelper.Log("Ativando Mesh dos objeto: " + suitTop[i].name);
                         suitTop[i].tag = "Selectable";
                         suitTop[i].GetComponent<MeshCollider>().enabled = true;
 

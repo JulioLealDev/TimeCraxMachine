@@ -208,15 +208,6 @@ public class DeckEvent : MonoBehaviourPunCallbacks
             }
 
         }
-
-        //foreach (var eventCard in eventCards)
-        //{
-        //    eventCard.GetComponent<Animator>().SetBool("drawingEventCard", false);
-        //    eventCard.GetComponent<Animator>().SetBool("wrongSlot", false);
-        //    eventCard.GetComponent<Animator>().SetInteger("slotClicked", 0);
-        //}
-
-
     }
 
 }

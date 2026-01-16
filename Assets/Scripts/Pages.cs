@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TimeCrax.Core;
@@ -14,7 +12,6 @@ public class Pages : MonoBehaviour
     [SerializeField] private Button nextPageButton;
     [SerializeField] private Button previousPageButton;
     [SerializeField] private Button backToMenuButton;
-    //[SerializeField] private Canvas inputName;
     [SerializeField] private SoundEffects soundEffects;
     [SerializeField] private Menu menu;
 
@@ -86,8 +83,6 @@ public class Pages : MonoBehaviour
     public void Back()
     {
         DebugHelper.Log("Reset Tutorial");
-
-        //inputName.gameObject.SetActive(true);
         menu.EnableMenu();
 
         image.GetComponent<Image>().sprite = page01;

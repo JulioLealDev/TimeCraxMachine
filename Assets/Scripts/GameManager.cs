@@ -3,7 +3,6 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.EventSystems;
 using System.Linq;
 using System;
 using System.Collections;
@@ -48,9 +47,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        //inputName.SetActive(false);
-        //PhotonNetwork.Instantiate("Player", new Vector3(7.224f, 1.01f, 0.83f), Quaternion.identity);
-        //playersList = new int[PhotonNetwork.PlayerList.Length];
     }
 
     void Update()

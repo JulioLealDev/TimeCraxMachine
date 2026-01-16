@@ -18,7 +18,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     // Flag para prevenir cliques múltiplos durante operações de rede
     private bool isProcessingRoomOperation = false;
-    //public TMPro.TextMeshProUGUI roomListScroll;
     public GameObject lobbyBackgroundScreen;
     public GameObject lobbyScreen;
     public GameObject roomScreen;
@@ -43,7 +42,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void ConnectingInServerAndLobby()
     {
-        //DebugHelper.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         sufix++;
         string name = "Players"+sufix.ToString();
         PhotonNetwork.LocalPlayer.NickName = name;

@@ -25,11 +25,9 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         var parent = gameObject.transform.parent;
         if (parent.name != "Enviroment")
         {
-            //DebugHelper.Log("parent: " + parent.name);
             Transform[] opcoes = parent.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < opcoes.Length; i++) 
+            for (int i = 0; i < opcoes.Length; i++)
             {
-                //DebugHelper.Log("opc: " + opc.name);
                 if (opcoes[i].GetComponent<Animator>() != null)
                 {
                     childrenWithanimator[count] = opcoes[i];
@@ -37,7 +35,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 }
                 else if (opcoes[i].CompareTag("Sparks"))
                 {
-                    //DebugHelper.Log("sparks: " + opc.name);
                     sparks = opcoes[i];
                 }
                 else if (opcoes[i].CompareTag("Smoke"))
@@ -53,10 +50,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             Transform[] childs = gameObject.GetComponentsInChildren<Transform>(true);
             foreach(var child in childs)
             {
-                //DebugHelper.Log("child: " + child.name);
                 if (child.CompareTag("Sparks"))
                 {
-                    //DebugHelper.Log("sparks: " + child.name);
                     sparks = child;
                 }
                 else if (child.CompareTag("Smoke"))
@@ -64,8 +59,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                     smoke = child;
                 }
             }
-            
-
         }
 
     }
@@ -227,33 +220,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
             sparks.gameObject.SetActive(true);
             soundEffects.PlayComponentExplosionSound();
-
-            //var parent = gameObject.transform.parent;
-            //if (parent.name != "Enviroment")
-            //{
-            //    //DebugHelper.Log("parent: " + parent.name);
-            //    Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
-            //    foreach (var opc in opcoes)
-            //    {
-            //        //DebugHelper.Log("opc: " + opc.name);
-            //        if (opc.GetComponent<Animator>() != null)
-            //        {
-            //            opc.GetComponent<Animator>().SetBool("malfunction", true);
-
-            //            //ParticleSystem effect = opc.GetComponentInChildren<ParticleSystem>(true);
-            //            sparks.gameObject.SetActive(true);
-            //            soundEffects.PlayComponentExplosionSound();
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    gameObject.GetComponent<Animator>().SetBool("malfunction", true);
-
-            //    //ParticleSystem effect = gameObject.GetComponentInChildren<ParticleSystem>(true);
-            //    sparks.gameObject.SetActive(true);
-            //    soundEffects.PlayComponentExplosionSound();
-            //}
         }
 
     }
@@ -271,53 +237,11 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         gameOver.transform.GetChild(0).gameObject.SetActive(true);
         gameManager.hud.SetActive(false);
         DebugHelper.Log("name ---> " + gameOver.name);
-
-
-        //Invoke("ReturningToMenu", 2f);
-
     }
-
-    //public void ReturningToMenu()
-    //{
-    //    gameOver.transform.GetChild(0).gameObject.SetActive(false);
-    //    var gameManager = FindFirstObjectByType<GameManager>();
-    //    gameManager.QuitGame();
-    //}
 
     [PunRPC]
     public void RemoveMalfunction()
     {
-        ////ativar anima��o
-        //var parent = gameObject.transform.parent;
-        //if (parent.name != "Enviroment")
-        //{
-        //    //DebugHelper.Log("parent: " + parent.name);
-        //    Transform[] opcoes = parent.GetComponentsInChildren<Transform>();
-        //    foreach (var opc in opcoes)
-        //    {
-        //       // DebugHelper.Log("opc: " + opc.name);
-        //        if (opc.GetComponent<Animator>() != null)
-        //        {
-        //            opc.GetComponent<Animator>().SetBool("malfunction", false);
-
-        //            soundEffects.PlayComponentRepairSound();
-
-        //            //ParticleSystem effect = opc.GetComponentInChildren<ParticleSystem>(true);
-        //            sparks.gameObject.SetActive(false);
-
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    gameObject.GetComponent<Animator>().SetBool("malfunction", false);
-
-        //    soundEffects.PlayComponentRepairSound();
-
-        //    //ParticleSystem effect = gameObject.GetComponentInChildren<ParticleSystem>(true);
-        //    sparks.gameObject.SetActive(false);
-        //}
-
         if (componentWithAnimator != null)
         {
             componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", false);

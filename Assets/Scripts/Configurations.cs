@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +7,6 @@ public class Configurations : MonoBehaviour
     public BackgroundMusic backgroundMusic;
     public GameObject soundEffectsSlider;
     public GameObject backgroundMusicSlider;
-    //public Canvas inputName;
     public Menu menu;
     private float soundEffectsSliderDefault;
     private float backgroundMusicSliderDefault;
@@ -25,8 +22,6 @@ public class Configurations : MonoBehaviour
 
         soundEffectsSlider.GetComponent<Slider>().value = soundEffectsSliderDefault;
         backgroundMusicSlider.GetComponent<Slider>().value = backgroundMusicSliderDefault;
-
-        //inputName.gameObject.SetActive(true);
         menu.EnableMenu();
         gameObject.SetActive(false);
     }
@@ -37,8 +32,6 @@ public class Configurations : MonoBehaviour
 
         soundEffects.GetComponent<AudioSource>().volume = soundEffectsSlider.GetComponent<Slider>().value;
         backgroundMusic.GetComponent<AudioSource>().volume = backgroundMusicSlider.GetComponent<Slider>().value;
-
-        //inputName.gameObject.SetActive(true);
         menu.EnableMenu();
         gameObject.SetActive(false);
     }

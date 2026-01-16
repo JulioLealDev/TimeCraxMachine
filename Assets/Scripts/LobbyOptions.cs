@@ -9,7 +9,6 @@ using TimeCrax.Themes;
 public class LobbyOptions : MonoBehaviourPunCallbacks
 {
     public GameObject lobbyBackgroundScreen;
-    //public GameObject lobbyBackgroundScreen02;
     public GameConnection gameConnection;
     public GameObject roomNameInput;
     public GameObject maxPlayersDropdown;
@@ -31,7 +30,6 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     public GameObject alreadyExistNameWarning;
     public BackgroundMusic backgroundMusic;
     public SoundEffects soundEffects;
-    //public GameObject passwordScreen;
 
     bool privateRoom = false;
 

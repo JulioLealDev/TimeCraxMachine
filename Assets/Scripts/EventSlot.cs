@@ -284,57 +284,17 @@ public class EventSlot : MonoBehaviourPunCallbacks
         soundEffects.PlayWrongSlotSound();
     }
 
-    //[PunRPC]
-    //public void ClickSlot()
-    //{
-    //    var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-    //    foreach (var card in eventCards)
-    //    {
-    //        if (card.CompareTag("Drew"))
-    //        {
-    //            SetUpSlots(false, "Undestructable");
-    //            //DebugHelper.Log("CardName: " + card.slotCount + " -- SlotName: " + slotNumber);
-    //            card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", slotNumber);
-
-    //            if (slotNumber == card.slotCount)
-    //            {
-    //                DebugHelper.Log("� igual!");
-    //                card.tag = "Disabled";
-    //                gameObject.tag = "Disabled";
-    //                var deckEvent = FindFirstObjectByType<DeckEvent>();
-    //                deckEvent.RemoveIndex(card.slotCount);
-    //                card.waitToDistance();
-    //                CheckIfWin();
-    //            }
-    //            else
-    //            {
-    //                var gameManager = FindFirstObjectByType<GameManager>();
-    //                gameManager.RandomComponentNumber();
-    //                card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
-    //                card.tag = "Undestructable";
-    //                DebugHelper.Log("No� igual!");
-    //                card.waitToDistance();
-    //            }
-    //        }
-    //    }
-    //}
-
     public void SetUpSlots(bool activateSlot, string tag)
     {
-        //DebugHelper.Log("SetUpSlots");
-
         var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
         foreach (var slot in slots)
         {
-            //DebugHelper.Log("slot "+slot.slotNumber+" -- tag: "+slot.tag);
             if (!slot.CompareTag("Disabled"))
             {
                 slot.tag = tag;
                 slot.GetComponentInChildren<MeshCollider>().enabled = activateSlot;
             }
-
         }
-
     }
 
     public void CheckIfWin()
@@ -343,18 +303,13 @@ public class EventSlot : MonoBehaviourPunCallbacks
         int slotsFilled = 0;
         foreach (var slot in slots)
         {
-            //DebugHelper.Log("slot " + slot.slotNumber + " -- tag: " + slot.tag);
             if (slot.CompareTag("Disabled"))
             {
                 slotsFilled++;
             }
-
         }
         if (slotsFilled == 7)
         {
-            //GameOver gameOver = FindFirstObjectByType<GameOver>();
-            //gameOver.gameIsOver = true;
-
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
             gameManager.ResetAllPlatenames();
@@ -367,13 +322,5 @@ public class EventSlot : MonoBehaviourPunCallbacks
         victory.transform.GetChild(0).gameObject.SetActive(true);
         gameManager.hud.SetActive(false);
         backgroundMusic.PlayVictorySound();
-        //Invoke("ReturningToMenu", 2f);
     }
-
-    //public void ReturningToMenu()
-    //{
-    //    victory.transform.GetChild(0).gameObject.SetActive(false);
-    //    var gameManager = FindFirstObjectByType<GameManager>();
-    //    gameManager.QuitGame();
-    //}
 }
