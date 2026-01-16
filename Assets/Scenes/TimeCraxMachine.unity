@@ -120462,6 +120462,7 @@ RectTransform:
   - {fileID: 938021930}
   - {fileID: 1787893916}
   - {fileID: 1940945135}
+  - {fileID: 2114030864}
   - {fileID: 1919663153}
   - {fileID: 717967380}
   - {fileID: 1694962773}
@@ -126702,7 +126703,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1037.1597, y: 45.589966}
+  m_AnchoredPosition: {x: 1025, y: 105}
   m_SizeDelta: {x: 64.6223, y: 46.455}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1881207224
@@ -134201,7 +134202,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.64398193, y: 0.07147217}
+  m_AnchoredPosition: {x: -0.64404297, y: 0.0715332}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &2022939538
@@ -140553,11 +140554,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1818767651}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 572.87, y: 479}
+  m_AnchoredPosition: {x: -387, y: -64}
   m_SizeDelta: {x: 290.74, y: 90.371}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2114030865
@@ -143298,7 +143299,6 @@ MonoBehaviour:
   themeDropdown: {fileID: 68022210}
   passwordInput: {fileID: 1618998388}
   passwordLabel: {fileID: 0}
-  loading: {fileID: 952423955}
   gameManager: {fileID: 1891373290}
   createRoom: {fileID: 1818767650}
   roomScreen: {fileID: 8378379566945254124}
@@ -150846,7 +150846,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82d506cf293766f4ab51c054df752213, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputName: {fileID: 0}
   soundEffects: {fileID: 751731491}
   menu: {fileID: 3469287836622715187}
   configurations: {fileID: 590464765}
@@ -151800,4 +151799,3 @@ SceneRoots:
   - {fileID: 1247652538}
   - {fileID: 1865630400}
   - {fileID: 336008438}
-  - {fileID: 2114030864}
