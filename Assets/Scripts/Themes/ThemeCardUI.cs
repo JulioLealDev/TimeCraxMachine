@@ -67,7 +67,17 @@ namespace TimeCrax.Themes
                 creatorText.text = theme.creatorName ?? "Autor desconhecido";
 
             if (cardCountText != null)
-                cardCountText.text = theme.cardCount.ToString();
+            {
+                // Tentar pegar cardCount do tema local (se baixado) ou da API
+                int count = theme.cardCount;
+                if (isDownloaded)
+                {
+                    var localTheme = ThemeStorage.GetTheme(theme.id);
+                    if (localTheme != null && localTheme.cardCount > 0)
+                        count = localTheme.cardCount;
+                }
+                cardCountText.text = count > 0 ? count.ToString() : "";
+            }
 
             if (readyToPlayText != null)
                 readyToPlayText.text = isDownloaded ? "Ready" : "";
