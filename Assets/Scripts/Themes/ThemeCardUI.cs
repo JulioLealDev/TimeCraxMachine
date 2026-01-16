@@ -24,9 +24,7 @@ namespace TimeCrax.Themes
 
         [Header("Status")]
         [SerializeField] private Slider downloadProgress;
-        [SerializeField] private GameObject selectedIcon;
-        [SerializeField] private GameObject downloadedBadge;
-        [SerializeField] private GameObject notReadyOverlay;
+        [SerializeField] private TextMeshProUGUI readyToPlayText;
 
         private ThemeListItem themeData;
         private bool isDownloaded;
@@ -69,7 +67,10 @@ namespace TimeCrax.Themes
                 creatorText.text = theme.creatorName ?? "Autor desconhecido";
 
             if (cardCountText != null)
-                cardCountText.text = theme.readyToPlay ? "Pronto" : "Incompleto";
+                cardCountText.text = theme.cardCount.ToString();
+
+            if (readyToPlayText != null)
+                readyToPlayText.text = isDownloaded ? "Ready" : "";
 
             // Atualizar estado visual
             UpdateVisualState(selected);
@@ -128,14 +129,6 @@ namespace TimeCrax.Themes
 
         private void UpdateVisualState(bool selected)
         {
-            // Badge de baixado
-            if (downloadedBadge != null)
-                downloadedBadge.SetActive(isDownloaded);
-
-            // Icone de selecionado
-            if (selectedIcon != null)
-                selectedIcon.SetActive(selected && isDownloaded);
-
             // Botão de download
             if (downloadButton != null)
             {
@@ -151,15 +144,14 @@ namespace TimeCrax.Themes
                 downloadProgress.value = 0;
             }
 
-            // Overlay de não pronto (tema incompleto na API)
-            if (notReadyOverlay != null)
-                notReadyOverlay.SetActive(!themeData.readyToPlay && !isDownloaded);
+            // Texto Ready to Play
+            if (readyToPlayText != null)
+                readyToPlayText.text = isDownloaded ? "Ready" : "";
         }
 
         public void SetSelected(bool selected)
         {
-            if (selectedIcon != null)
-                selectedIcon.SetActive(selected && isDownloaded);
+            // No visual change for selection
         }
 
         public void StartDownload()
@@ -192,11 +184,9 @@ namespace TimeCrax.Themes
 
             if (success)
             {
-                if (downloadedBadge != null)
-                    downloadedBadge.SetActive(true);
-
-                if (notReadyOverlay != null)
-                    notReadyOverlay.SetActive(false);
+                // Atualizar texto Ready
+                if (readyToPlayText != null)
+                    readyToPlayText.text = "Ready";
 
                 // Recarregar imagem local
                 if (themeData != null)
