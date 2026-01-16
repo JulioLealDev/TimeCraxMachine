@@ -154,10 +154,6 @@ namespace TimeCrax.Themes
             // Overlay de não pronto (tema incompleto na API)
             if (notReadyOverlay != null)
                 notReadyOverlay.SetActive(!themeData.readyToPlay && !isDownloaded);
-
-            // Botão do card (só clicável se baixado)
-            if (cardButton != null)
-                cardButton.interactable = isDownloaded;
         }
 
         public void SetSelected(bool selected)
@@ -198,9 +194,6 @@ namespace TimeCrax.Themes
             {
                 if (downloadedBadge != null)
                     downloadedBadge.SetActive(true);
-
-                if (cardButton != null)
-                    cardButton.interactable = true;
 
                 if (notReadyOverlay != null)
                     notReadyOverlay.SetActive(false);
