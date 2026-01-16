@@ -11,7 +11,7 @@ public class DeckRepair : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
-        
+
         if (gameObject.CompareTag("Disabled"))
         {
             photonView.RPC("ClickDraw", RpcTarget.All, 1);
@@ -23,11 +23,11 @@ public class DeckRepair : MonoBehaviourPunCallbacks
                 {
                     if (player.GetNumberOfRepairsCards() == 5)
                     {
-                        DebugHelper.Log("Voc� j� possui 5 cartas");
+                        DebugHelper.Log("Você já possui 5 cartas");
                     }
                     else
                     {
-                        DebugHelper.Log("Voc� j� realizou uma a��o neste turno");
+                        DebugHelper.Log("Você já realizou uma ação neste turno");
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
                         gameInfo.gameObject.SetActive(true);
@@ -50,17 +50,55 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         }
         else
         {
-            if (photonView.IsMine)
-            {
-                photonView.RPC("ClickDraw", RpcTarget.All, 2);
-
-                PhotonNetwork.Instantiate("repairCard", new Vector3(0.604300022f, 0.0707999989f, 0.280999988f), Quaternion.identity);
-            }
-
-            gameManager.BlockActions();
-
+            // Enviar requisição ao MasterClient para processar a compra
+            photonView.RPC("RequestDrawRepairCard", RpcTarget.MasterClient);
         }
 
+    }
+
+    /// <summary>
+    /// RPC enviado ao MasterClient para processar a compra de carta de reparo
+    /// </summary>
+    [PunRPC]
+    public void RequestDrawRepairCard()
+    {
+        // Apenas MasterClient processa e sincroniza para todos
+        if (PhotonNetwork.IsMasterClient)
+        {
+            DebugHelper.Log("[DeckRepair] MasterClient processando compra de repairCard");
+
+            // Sincronizar para todos os clientes
+            photonView.RPC("ExecuteDrawRepairCard", RpcTarget.All);
+        }
+    }
+
+    /// <summary>
+    /// RPC executado em todos os clientes para comprar a carta
+    /// </summary>
+    [PunRPC]
+    public void ExecuteDrawRepairCard()
+    {
+        DebugHelper.Log("[DeckRepair] ExecuteDrawRepairCard");
+
+        // Tocar som
+        soundEffects.PlayDrawCardSound();
+
+        // Bloquear ações em todos os clientes
+        gameManager.BlockActions();
+
+        // Desabilitar botão FinishTurn temporariamente (será reativado após animação)
+        gameManager.ActivateFinishButton(false);
+
+        // Apenas o jogador da vez instancia a carta
+        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        foreach (var player in players)
+        {
+            if (player.GetYourTurn() && player.photonView.IsMine)
+            {
+                PhotonNetwork.Instantiate("repairCard", new Vector3(0.604300022f, 0.0707999989f, 0.280999988f), Quaternion.identity);
+                break;
+            }
+        }
     }
 
     [PunRPC]

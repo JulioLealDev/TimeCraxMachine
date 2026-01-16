@@ -15,6 +15,9 @@ public class GameConnection : MonoBehaviourPunCallbacks
     List<RoomInfo> closedRooms = new List<RoomInfo>();
 
     private int sufix = 0;
+
+    // Flag para prevenir cliques múltiplos durante operações de rede
+    private bool isProcessingRoomOperation = false;
     //public TMPro.TextMeshProUGUI roomListScroll;
     public GameObject lobbyBackgroundScreen;
     public GameObject lobbyScreen;
@@ -99,8 +102,13 @@ public class GameConnection : MonoBehaviourPunCallbacks
         lobbyBackgroundScreen.SetActive(true);
         lobbyScreen.SetActive(true);
         roomList.GetComponent<RoomList>().GetRoomsList(rooms);
-        //ListRooms();
 
+        // Garantir que os botões do lobby estejam ativados
+        var lobbyOptions = FindFirstObjectByType<LobbyOptions>();
+        if (lobbyOptions != null)
+        {
+            lobbyOptions.ActivateButtons(true);
+        }
     }
 
     public void CreateRoom()
@@ -185,7 +193,14 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        chatLog.text = null;
+        DebugHelper.Log($"[GameConnection] OnJoinRoomFailed: {returnCode} - {message}");
+
+        // Resetar flag de operação
+        isProcessingRoomOperation = false;
+
+        if (chatLog != null)
+            chatLog.text = null;
+
         lobbyScreen.SetActive(false);
         fullGameScreen.SetActive(true);
         this.DelayedCall(4f, ReturnigToMenu);
@@ -197,27 +212,74 @@ public class GameConnection : MonoBehaviourPunCallbacks
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        DebugHelper.Log($"[GameConnection] OnPlayerEnteredRoom: {newPlayer.NickName}");
 
-        chatLog.text += "\n" + newPlayer.NickName + " entrou na sala";
+        // Atualizar chat e lista localmente
+        if (chatLog != null)
+        {
+            chatLog.text += "\n" + newPlayer.NickName + " entrou na sala";
+        }
+        ListPlayersInRoom();
+
+        // Se sou MasterClient, sincronizar a mensagem de chat para TODOS (incluindo quem acabou de entrar)
+        if (PhotonNetwork.IsMasterClient && photonView != null)
+        {
+            photonView.RPC("SyncPlayerEnteredMessage", RpcTarget.All, newPlayer.NickName);
+        }
+    }
+
+    /// <summary>
+    /// RPC para sincronizar mensagem de entrada de jogador em todos os clientes
+    /// </summary>
+    [PunRPC]
+    public void SyncPlayerEnteredMessage(string playerName)
+    {
+        DebugHelper.Log($"[GameConnection] SyncPlayerEnteredMessage: {playerName}");
+
+        // Atualizar lista de jogadores em todos os clientes
         ListPlayersInRoom();
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        DebugHelper.Log("Client saiu da sala");
-        chatLog.text += "\n" + otherPlayer.NickName + " saiu na sala";
+        DebugHelper.Log($"[GameConnection] OnPlayerLeftRoom: {otherPlayer.NickName}");
+
+        if (chatLog != null)
+        {
+            chatLog.text += "\n" + otherPlayer.NickName + " saiu da sala";
+        }
         ListPlayersInRoom();
-        //CheckIfIsMaster();
-        //DisconectAndReconect();
+
+        // Se sou MasterClient, sincronizar para todos
+        if (PhotonNetwork.IsMasterClient && photonView != null)
+        {
+            photonView.RPC("SyncPlayerLeftMessage", RpcTarget.All, otherPlayer.NickName);
+        }
+    }
+
+    /// <summary>
+    /// RPC para sincronizar mensagem de saída de jogador em todos os clientes
+    /// </summary>
+    [PunRPC]
+    public void SyncPlayerLeftMessage(string playerName)
+    {
+        DebugHelper.Log($"[GameConnection] SyncPlayerLeftMessage: {playerName}");
+
+        // Atualizar lista de jogadores em todos os clientes
+        ListPlayersInRoom();
     }
 
     public override void OnLeftRoom()
     {
-        //Rooms.Clear();
-        DebugHelper.Log("Master saiu da Sala");
+        DebugHelper.Log("[GameConnection] OnLeftRoom");
+
+        // Resetar flag de operação
+        isProcessingRoomOperation = false;
+
         ListPlayersInRoom();
-        chatLog.text = null;
-        //DisconectAndReconect();
+
+        if (chatLog != null)
+            chatLog.text = null;
     }
 
     public void DisconectAndReconect()
@@ -275,7 +337,15 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void JoinRoomInList(string roomName)
     {
+        // Prevenir cliques múltiplos
+        if (isProcessingRoomOperation)
+        {
+            DebugHelper.Log("[GameConnection] Operação em andamento, ignorando clique duplicado");
+            return;
+        }
+
         DebugHelper.Log("Entrando na sala: " + roomName);
+        isProcessingRoomOperation = true;
 
         // Verificar se está conectado ao Master Server e pronto para operações
         if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby)
@@ -300,11 +370,40 @@ public class GameConnection : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(roomName);
     }
 
+    /// <summary>
+    /// Verifica se uma operação de sala está em andamento
+    /// </summary>
+    public bool IsProcessingRoomOperation()
+    {
+        return isProcessingRoomOperation;
+    }
+
+    /// <summary>
+    /// Reseta a flag de operação (usado quando a operação termina ou é cancelada)
+    /// </summary>
+    public void ResetRoomOperation()
+    {
+        isProcessingRoomOperation = false;
+    }
+
+    /// <summary>
+    /// Limpa operações pendentes (usado ao cancelar entrada em sala)
+    /// </summary>
+    public void ClearPendingOperations()
+    {
+        DebugHelper.Log("[GameConnection] Limpando operações pendentes");
+        pendingJoinRoomName = null;
+        pendingRoomData = null;
+    }
+
     // Nome da sala pendente para entrar após reconexão
     private string pendingJoinRoomName;
     public override void OnJoinedRoom()
     {
-        DebugHelper.Log("Entrou na sala");
+        DebugHelper.Log($"[GameConnection] OnJoinedRoom - Jogador: {PhotonNetwork.LocalPlayer.NickName}");
+
+        // Resetar flag de operação - entrada na sala foi bem sucedida
+        isProcessingRoomOperation = false;
 
         createRoom.SetActive(false);
         lobbyScreen.SetActive(false);
@@ -319,36 +418,70 @@ public class GameConnection : MonoBehaviourPunCallbacks
         // Depois verifica se é MasterClient para habilitar
         CheckIfIsMaster();
 
-        roomNameTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Name;
-        maxPlayersTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
-        themeTitle.GetComponent<TextMeshProUGUI>().text = "Theme: " + PhotonNetwork.CurrentRoom.CustomProperties["the"];
-        difficultyTitle.GetComponent<TextMeshProUGUI>().text = "" + PhotonNetwork.CurrentRoom.CustomProperties["dif"];
-        passwordTitle.GetComponent<TextMeshProUGUI>().text = "" + PhotonNetwork.CurrentRoom.CustomProperties["pass"];
+        // Atualizar informações da sala
+        if (roomNameTitle != null)
+            roomNameTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Name;
+
+        if (maxPlayersTitle != null)
+            maxPlayersTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
+
+        if (themeTitle != null)
+            themeTitle.GetComponent<TextMeshProUGUI>().text = "Theme: " + PhotonNetwork.CurrentRoom.CustomProperties["the"];
+
+        if (difficultyTitle != null)
+            difficultyTitle.GetComponent<TextMeshProUGUI>().text = "" + PhotonNetwork.CurrentRoom.CustomProperties["dif"];
+
+        if (passwordTitle != null)
+            passwordTitle.GetComponent<TextMeshProUGUI>().text = "" + PhotonNetwork.CurrentRoom.CustomProperties["pass"];
+
+        // Atualizar lista de jogadores
         ListPlayersInRoom();
 
-        chatLog.text += "Você entrou na sala";
+        // Atualizar chat
+        if (chatLog != null)
+        {
+            // Limpar chat ao entrar e mostrar todos os jogadores na sala
+            chatLog.text = "Você entrou na sala";
 
-        //maxPlayers.text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
+
+        }
+
+        DebugHelper.Log($"[GameConnection] OnJoinedRoom - Jogadores na sala: {PhotonNetwork.CurrentRoom.PlayerCount}");
     }
 
     public void ListPlayersInRoom()
     {
-        players.text = null;
+        DebugHelper.Log("[GameConnection] ListPlayersInRoom");
+
+        if (players != null)
+        {
+            players.text = null;
+        }
+        else
+        {
+            DebugHelper.Log("[GameConnection] AVISO: players é null!");
+            return;
+        }
 
         if (PhotonNetwork.CurrentRoom != null)
         {
-            //maxPlayers.text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
-            maxPlayersTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
+            DebugHelper.Log($"[GameConnection] Jogadores na sala: {PhotonNetwork.CurrentRoom.PlayerCount}");
+
+            if (maxPlayersTitle != null)
+            {
+                maxPlayersTitle.GetComponent<TextMeshProUGUI>().text = PhotonNetwork.CurrentRoom.Players.Count + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
+            }
+
             foreach (int key in PhotonNetwork.CurrentRoom.Players.Keys)
             {
                 players.text += " " + PhotonNetwork.CurrentRoom.Players[key].NickName + "\n";
+                DebugHelper.Log($"[GameConnection] - {PhotonNetwork.CurrentRoom.Players[key].NickName}");
             }
         }
         else
         {
-
+            DebugHelper.Log("[GameConnection] CurrentRoom é null");
         }
-        
     }
 
     public bool CheckPassword(string nameRoom, string password)

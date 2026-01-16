@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using TimeCrax.Core;
 using TimeCrax.Themes;
 
 public class Room : MonoBehaviour
@@ -22,8 +23,16 @@ public class Room : MonoBehaviour
 
     public void JoinRoom()
     {
+        GameConnection gameConnection = FindFirstObjectByType<GameConnection>();
         PasswordScreen passwordScreen = FindFirstObjectByType<PasswordScreen>(FindObjectsInactive.Include);
         LobbyOptions lobbyOptions = FindFirstObjectByType<LobbyOptions>(FindObjectsInactive.Include);
+
+        // Prevenir cliques múltiplos
+        if (gameConnection != null && gameConnection.IsProcessingRoomOperation())
+        {
+            DebugHelper.Log("[Room] Operação em andamento, ignorando clique duplicado");
+            return;
+        }
 
         // Verificar se é um tema da API e se o jogador possui
         if (!string.IsNullOrEmpty(themeId))
@@ -53,7 +62,7 @@ public class Room : MonoBehaviour
         }
         else
         {
-            GameObject.Find("GameConnection").GetComponent<GameConnection>().JoinRoomInList(gameObject.name);
+            gameConnection.JoinRoomInList(gameObject.name);
         }
     }
 }

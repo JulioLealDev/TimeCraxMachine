@@ -38,9 +38,12 @@ public class PasswordScreen : MonoBehaviour
 
         if (correctPass)
         {
+            // Reativar botões do lobby antes de entrar na sala
+            lobbyOptions.ActivateButtons(true);
+
             ActivateBackground(false);
             gameObject.SetActive(false);
-            GameObject.Find("GameConnection").GetComponent<GameConnection>().JoinRoomInList(roomName);
+            gameConnection.JoinRoomInList(roomName);
             passwordInput.GetComponent<TMP_InputField>().text = " ";
         }
         else

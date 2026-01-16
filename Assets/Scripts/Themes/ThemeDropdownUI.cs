@@ -112,13 +112,63 @@ namespace TimeCrax.Themes
 
         public void ToggleDropdown()
         {
-            if (isOpen)
-                CloseDropdown();
-            else
-                OpenDropdown();
+            // Abrir painel de seleção de temas (apenas baixados + legados)
+            OpenThemePicker();
         }
 
-        public void OpenDropdown()
+        /// <summary>
+        /// Abre o painel de seleção de temas disponíveis (baixados + legados)
+        /// </summary>
+        public void OpenThemePicker()
+        {
+            if (soundEffects != null)
+                soundEffects.PressHudButtonSound();
+
+            // Usar ThemePickerUI para mostrar painel de seleção
+            if (ThemePickerUI.Instance != null)
+            {
+                ThemePickerUI.Instance.gameObject.SetActive(true);
+                ThemePickerUI.Instance.Show();
+
+                // Registrar callbacks
+                ThemePickerUI.Instance.OnPanelClosed -= OnThemePickerClosed;
+                ThemePickerUI.Instance.OnPanelClosed += OnThemePickerClosed;
+
+                ThemePickerUI.Instance.OnThemeSelected -= OnThemePickerSelected;
+                ThemePickerUI.Instance.OnThemeSelected += OnThemePickerSelected;
+
+                DebugHelper.Log("[ThemeDropdownUI] Abrindo painel de seleção de temas");
+            }
+            else
+            {
+                DebugHelper.Log("[ThemeDropdownUI] ThemePickerUI.Instance não encontrado! Usando dropdown legado.");
+                // Fallback para dropdown antigo
+                OpenDropdownLegacy();
+            }
+        }
+
+        private void OnThemePickerSelected(string themeId, string themeName)
+        {
+            // Atualizar texto do dropdown
+            UpdateSelectedText(themeName);
+
+            // Disparar evento
+            OnThemeSelected?.Invoke(themeId, themeName);
+        }
+
+        private void OnThemePickerClosed()
+        {
+            // Atualizar texto do tema selecionado (caso tenha mudado)
+            if (ThemeManager.Instance != null && ThemeManager.Instance.HasSelectedTheme)
+            {
+                UpdateSelectedText(ThemeManager.Instance.SelectedTheme.name);
+            }
+        }
+
+        /// <summary>
+        /// Método legado para abrir dropdown (fallback)
+        /// </summary>
+        private void OpenDropdownLegacy()
         {
             if (dropdownPanel == null) return;
 
@@ -149,6 +199,12 @@ namespace TimeCrax.Themes
             }
 
             DebugHelper.Log($"[ThemeDropdownUI] Dropdown aberto, {themeItems.Count} itens");
+        }
+
+        [System.Obsolete("Use OpenThemePicker() instead")]
+        public void OpenDropdown()
+        {
+            OpenThemePicker();
         }
 
         private System.Collections.IEnumerator ForceLayoutRebuildDelayed()

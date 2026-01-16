@@ -79,11 +79,30 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
     public void AllVerifyed()
     {
-        soundEffects.PressHudButtonSound();
+        if (soundEffects != null)
+            soundEffects.PressHudButtonSound();
 
-        string maxPlayers = maxPlayersDropdown.GetComponent<TextMeshProUGUI>().text;
-        string difficulty = difficultyDropdown.GetComponent<TextMeshProUGUI>().text;
-        string password = passwordInput != null ? passwordInput.GetComponent<TMP_InputField>().text : "";
+        string maxPlayers = "2";
+        string difficulty = "Normal";
+        string password = "";
+
+        if (maxPlayersDropdown != null)
+        {
+            var tmp = maxPlayersDropdown.GetComponent<TextMeshProUGUI>();
+            if (tmp != null) maxPlayers = tmp.text;
+        }
+
+        if (difficultyDropdown != null)
+        {
+            var tmp = difficultyDropdown.GetComponent<TextMeshProUGUI>();
+            if (tmp != null) difficulty = tmp.text;
+        }
+
+        if (passwordInput != null)
+        {
+            var tmp = passwordInput.GetComponent<TMP_InputField>();
+            if (tmp != null) password = tmp.text;
+        }
 
         // Verificar se há tema da API selecionado
         string theme;
@@ -98,8 +117,23 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         }
         else
         {
-            // Tema legado do dropdown
-            theme = themeDropdown != null ? themeDropdown.GetComponent<TextMeshProUGUI>().text : "World History";
+            // Tema legado - pegar do ThemeDropdownUI
+            var dropdownUI = FindFirstObjectByType<ThemeDropdownUI>();
+            if (dropdownUI != null)
+            {
+                theme = dropdownUI.GetSelectedThemeName();
+                if (string.IsNullOrEmpty(theme))
+                    theme = "World History";
+            }
+            else if (themeDropdown != null)
+            {
+                var tmp = themeDropdown.GetComponent<TextMeshProUGUI>();
+                theme = tmp != null ? tmp.text : "World History";
+            }
+            else
+            {
+                theme = "World History";
+            }
             DebugHelper.Log($"[LobbyOptions] Usando tema legado: {theme}");
         }
 
@@ -128,6 +162,14 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         soundEffects.PressHudButtonSound();
 
         DebugHelper.Log("CancelRoomScreen clicked");
+
+        // Resetar flag de operação e limpar operações pendentes
+        if (gameConnection != null)
+        {
+            gameConnection.ResetRoomOperation();
+            gameConnection.ClearPendingOperations();
+        }
+
         roomScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
 
@@ -169,6 +211,13 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log("BackLobbyScreen clicked");
         soundEffects.PressHudButtonSound();
+
+        // Resetar flag de operação e limpar operações pendentes
+        if (gameConnection != null)
+        {
+            gameConnection.ResetRoomOperation();
+            gameConnection.ClearPendingOperations();
+        }
 
         DestroyRooms();
 

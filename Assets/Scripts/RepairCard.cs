@@ -32,6 +32,9 @@ public class RepairCard : MonoBehaviourPunCallbacks
                 ShowRepairCardOnHand(player.GetNumberOfRepairsCards());
             }
         }
+
+        // Reativar o botão FinishTurn após a carta ser adicionada à mão
+        ActivateEndButton();
     }
 
     public void ShowRepairCardOnHand(int numberOfRepairCards)
@@ -100,5 +103,16 @@ public class RepairCard : MonoBehaviourPunCallbacks
         }
 
         ShowRepairCards(owner.GetNumberOfRepairsCards());
+    }
+
+    /// <summary>
+    /// Chamado via Animation Event após a animação de compra terminar.
+    /// Reativa o botão FinishTurn para o jogador no turno.
+    /// </summary>
+    public void ActivateEndButton()
+    {
+        DebugHelper.Log("[RepairCard] ActivateEndButton");
+        var gameManager = FindFirstObjectByType<GameManager>();
+        gameManager.ActivateEnd();
     }
 }
