@@ -38,7 +38,7 @@ namespace TimeCrax.Themes
         [SerializeField] private TextMeshProUGUI selectedThemeText;
 
         [Header("Settings")]
-        private const int cardsPerPage = 6;
+        private const int cardsPerPage = 8;
         [SerializeField] private float fadeInDuration = 0.3f;
         [SerializeField] private float fadeOutDuration = 0.2f;
 
