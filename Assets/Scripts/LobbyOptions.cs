@@ -16,8 +16,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     public GameObject privateDropdown;
     public GameObject themeDropdown;
     public GameObject passwordInput;
-    public GameObject passwordLabel;    
-    public Canvas loading;
+    public GameObject passwordLabel;
     public GameManager gameManager;
     public GameObject createRoom;
     public GameObject roomScreen;
