@@ -25,6 +25,7 @@ namespace TimeCrax.Themes
         private ThemeListItem currentTheme;
         private bool isDownloaded;
         private bool isDownloading;
+        private GameObject backgroundCloseButton;
 
         // Referências do prefab instanciado
         private Button downloadButton;
@@ -133,6 +134,9 @@ namespace TimeCrax.Themes
             currentInfoInstance = Instantiate(themeInfoPrefab, infoContainer);
             currentInfoInstance.SetActive(true);
 
+            // Criar botão de fundo para fechar ao clicar fora (dentro do prefab instanciado)
+            CreateBackgroundCloseButton();
+
             // Preencher dados
             PopulateThemeInfo(theme, downloaded);
 
@@ -185,9 +189,22 @@ namespace TimeCrax.Themes
                             Destroy(currentInfoInstance);
                             currentInfoInstance = null;
                         }
-                        downloadButton = null;
+                        if (backgroundCloseButton != null)
+                        {
+                            Destroy(backgroundCloseButton);
+                            backgroundCloseButton = null;
+                        }
+                        if (downloadButton != null)
+                        {
+                            Destroy(downloadButton.gameObject);
+                            downloadButton = null;
+                        }
+                        if (downloadProgress != null)
+                        {
+                            Destroy(downloadProgress.gameObject);
+                            downloadProgress = null;
+                        }
                         playButton = null;
-                        downloadProgress = null;
                         readyToPlayText = null;
                         OnClose?.Invoke();
                     });
@@ -200,9 +217,22 @@ namespace TimeCrax.Themes
                     Destroy(currentInfoInstance);
                     currentInfoInstance = null;
                 }
-                downloadButton = null;
+                if (backgroundCloseButton != null)
+                {
+                    Destroy(backgroundCloseButton);
+                    backgroundCloseButton = null;
+                }
+                if (downloadButton != null)
+                {
+                    Destroy(downloadButton.gameObject);
+                    downloadButton = null;
+                }
+                if (downloadProgress != null)
+                {
+                    Destroy(downloadProgress.gameObject);
+                    downloadProgress = null;
+                }
                 playButton = null;
-                downloadProgress = null;
                 readyToPlayText = null;
                 OnClose?.Invoke();
             }
@@ -293,6 +323,9 @@ namespace TimeCrax.Themes
                             downloadProgress = progress;
                             downloadProgress.gameObject.SetActive(false);
                             downloadProgress.value = 0;
+                            // Mover para frente do backgroundCloseButton
+                            downloadProgress.transform.SetParent(themeInfoScreen.transform, true);
+                            downloadProgress.transform.SetAsLastSibling();
                         }
                         break;
 
@@ -301,9 +334,13 @@ namespace TimeCrax.Themes
                         if (downloadBtn != null)
                         {
                             downloadButton = downloadBtn;
-                            downloadButton.gameObject.SetActive(!downloaded && theme.readyToPlay);
                             downloadButton.onClick.RemoveAllListeners();
                             downloadButton.onClick.AddListener(OnDownloadClicked);
+                            // Mover para frente do backgroundCloseButton
+                            downloadButton.transform.SetParent(themeInfoScreen.transform, true);
+                            downloadButton.transform.SetAsLastSibling();
+                            // Mostrar apenas se não foi baixado e está pronto para jogar
+                            downloadButton.gameObject.SetActive(!downloaded && theme.readyToPlay);
                         }
                         break;
 
@@ -462,5 +499,47 @@ namespace TimeCrax.Themes
         }
 
         public bool IsOpen => themeInfoScreen != null && themeInfoScreen.activeSelf;
+
+        private void CreateBackgroundCloseButton()
+        {
+            DebugHelper.Log("[ThemeInfoUI] CreateBackgroundCloseButton called");
+
+            // Remover botão anterior se existir
+            if (backgroundCloseButton != null)
+            {
+                Destroy(backgroundCloseButton);
+                backgroundCloseButton = null;
+            }
+
+            if (themeInfoScreen == null)
+            {
+                DebugHelper.Log("[ThemeInfoUI] themeInfoScreen is null!");
+                return;
+            }
+
+            // Criar GameObject para o botão de fundo dentro do themeInfoScreen (cobre toda a tela)
+            backgroundCloseButton = new GameObject("BackgroundCloseButton");
+            backgroundCloseButton.transform.SetParent(themeInfoScreen.transform, false);
+            backgroundCloseButton.transform.SetAsLastSibling(); // Ficar na frente de tudo
+
+            // Adicionar RectTransform que cobre toda a tela
+            var rectTransform = backgroundCloseButton.AddComponent<RectTransform>();
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+
+            // Adicionar Image transparente para receber raycasts
+            var image = backgroundCloseButton.AddComponent<Image>();
+            image.color = new Color(0, 0, 0, 0); // Totalmente transparente
+            image.raycastTarget = true;
+
+            // Adicionar Button e configurar onClick
+            var button = backgroundCloseButton.AddComponent<Button>();
+            button.transition = Selectable.Transition.None;
+            button.onClick.AddListener(Close);
+
+            DebugHelper.Log("[ThemeInfoUI] BackgroundCloseButton created successfully");
+        }
     }
 }

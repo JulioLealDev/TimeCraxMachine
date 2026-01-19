@@ -9,14 +9,35 @@ public class FinishTurn : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        // Verificar se é o turno do jogador local antes de processar
+        if (!IsMyTurn())
+        {
+            DebugHelper.Log("[FinishTurn] Não é meu turno, ignorando clique");
+            return;
+        }
+
         DebugHelper.Log("Clicou no Finish");
         gameObject.GetComponent<MeshCollider>().enabled = false;
         photonView.RPC("ClickFinish", RpcTarget.All);
 
         animator.SetBool("finishTurn", true);
-        //chamar um texto pedindo confirma��o
         this.DelayedCall(0.5f, Finish);
+    }
 
+    /// <summary>
+    /// Verifica se é o turno do jogador local
+    /// </summary>
+    private bool IsMyTurn()
+    {
+        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        foreach (var player in players)
+        {
+            if (player.photonView.IsMine && player.GetYourTurn())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     [PunRPC]

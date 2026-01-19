@@ -211,6 +211,12 @@ namespace TimeCrax.Themes
 
         private void OnDownloadClicked()
         {
+            if (themeData == null)
+            {
+                DebugHelper.Log("[ThemeCardUI] ERRO: themeData é null no OnDownloadClicked");
+                return;
+            }
+
             if (!isDownloaded && !isDownloading && themeData.readyToPlay)
             {
                 DebugHelper.Log($"[ThemeCardUI] Download requested: {themeId}");

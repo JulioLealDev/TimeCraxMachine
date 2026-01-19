@@ -83,7 +83,24 @@ namespace TimeCrax.Themes
         public static bool IsThemeDownloaded(string themeId)
         {
             var manifest = LoadManifest();
-            return manifest.themes.Any(t => t.id == themeId);
+            var themeInManifest = manifest.themes.Any(t => t.id == themeId);
+
+            if (!themeInManifest)
+                return false;
+
+            // Verificar se a pasta do tema realmente existe
+            var themeFolderPath = GetThemeFolderPath(themeId);
+            var folderExists = Directory.Exists(themeFolderPath);
+
+            if (!folderExists)
+            {
+                // Tema está no manifesto mas pasta não existe - remover do manifesto
+                DebugHelper.Log($"[ThemeStorage] Tema {themeId} está no manifesto mas pasta não existe. Removendo do manifesto.");
+                RemoveTheme(themeId);
+                return false;
+            }
+
+            return true;
         }
 
         public static bool IsThemeUpToDate(string themeId, string serverVersion)
@@ -91,6 +108,17 @@ namespace TimeCrax.Themes
             var theme = GetTheme(themeId);
             if (theme == null) return false;
             return theme.version == serverVersion;
+        }
+
+        /// <summary>
+        /// Remove tema apenas do manifesto (sem deletar arquivos)
+        /// </summary>
+        public static void RemoveTheme(string themeId)
+        {
+            var manifest = LoadManifest();
+            manifest.themes.RemoveAll(t => t.id == themeId);
+            SaveManifest(manifest);
+            DebugHelper.Log($"[ThemeStorage] Theme removed from manifest: {themeId}");
         }
 
         public static void SaveTheme(ThemeData theme)

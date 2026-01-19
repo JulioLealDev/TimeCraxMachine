@@ -473,6 +473,60 @@ namespace TimeCrax.Themes
 
         #endregion
 
+        #region Get Theme Info
+
+        /// <summary>
+        /// Busca informações de um tema específico da API (sem baixar)
+        /// </summary>
+        public void GetThemeInfo(string themeId, Action<ThemeListItem> onComplete)
+        {
+            StartCoroutine(GetThemeInfoCoroutine(themeId, onComplete));
+        }
+
+        private IEnumerator GetThemeInfoCoroutine(string themeId, Action<ThemeListItem> onComplete)
+        {
+            if (!TokenManager.IsLoggedIn)
+            {
+                onComplete?.Invoke(null);
+                yield break;
+            }
+
+            // Busca na lista de temas (página 1, muitos itens para aumentar chance de encontrar)
+            string url = $"{AuthService.Instance.ApiBaseUrl}/themes/storage?page=1&pageSize=100";
+
+            if (logRequests)
+                DebugHelper.Log($"[ThemeDownloader] GET {url} (searching for theme {themeId})");
+
+            using (UnityWebRequest www = UnityWebRequest.Get(url))
+            {
+                www.SetRequestHeader("Authorization", TokenManager.GetAuthorizationHeader());
+                www.timeout = 15;
+
+                yield return www.SendWebRequest();
+
+                if (www.responseCode == 200)
+                {
+                    try
+                    {
+                        var response = JsonUtility.FromJson<ThemeStorageResponse>(www.downloadHandler.text);
+                        var theme = response.items?.Find(t => t.id == themeId);
+                        onComplete?.Invoke(theme);
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugHelper.Log($"[ThemeDownloader] GetThemeInfo parse error: {ex.Message}");
+                        onComplete?.Invoke(null);
+                    }
+                }
+                else
+                {
+                    onComplete?.Invoke(null);
+                }
+            }
+        }
+
+        #endregion
+
         #region Check for Updates
 
         public void CheckThemeUpdate(string themeId, Action<bool, string> onComplete)

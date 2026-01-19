@@ -26,6 +26,9 @@ namespace TimeCrax.Themes
         [SerializeField] private string[] legacyThemeNames = { "World History", "World War 2" };
         [SerializeField] private Sprite defaultLegacySprite;
 
+        [Header("Search")]
+        [SerializeField] private TMP_InputField searchInput;
+
         [Header("Animation")]
         [SerializeField] private float fadeInDuration = 0.2f;
         [SerializeField] private float fadeOutDuration = 0.15f;
@@ -41,6 +44,12 @@ namespace TimeCrax.Themes
         private bool isOpen = false;
         private List<GameObject> themeCards = new List<GameObject>();
         private CanvasGroup canvasGroup;
+        private string currentSearchText = "";
+
+        // Dados dos temas para filtro
+        private List<ThemeData> allDownloadedThemes = new List<ThemeData>();
+        private List<ThemeData> filteredDownloadedThemes = new List<ThemeData>();
+        private List<string> filteredLegacyThemes = new List<string>();
 
         // Singleton
         private static ThemePickerUI _instance;
@@ -67,6 +76,9 @@ namespace TimeCrax.Themes
             if (closeButton != null)
                 closeButton.onClick.AddListener(Close);
 
+            if (searchInput != null)
+                searchInput.onValueChanged.AddListener(OnSearchChanged);
+
             // Fechar ao clicar no background
             if (backgroundOverlay != null)
             {
@@ -81,6 +93,9 @@ namespace TimeCrax.Themes
         {
             if (_instance == this)
                 _instance = null;
+
+            if (searchInput != null)
+                searchInput.onValueChanged.RemoveListener(OnSearchChanged);
         }
 
         #region Public Methods
@@ -98,7 +113,16 @@ namespace TimeCrax.Themes
             isOpen = true;
             pickerCanvas.SetActive(true);
 
-            // Popular cards
+            // Resetar busca
+            currentSearchText = "";
+            if (searchInput != null)
+                searchInput.text = "";
+
+            // Carregar dados dos temas
+            LoadThemeData();
+
+            // Aplicar filtro e popular cards
+            ApplyFilter();
             PopulateThemeCards();
 
             // Fade in
@@ -116,6 +140,51 @@ namespace TimeCrax.Themes
             }
 
             DebugHelper.Log($"[ThemePickerUI] Painel aberto com {themeCards.Count} cards");
+        }
+
+        private void LoadThemeData()
+        {
+            allDownloadedThemes.Clear();
+
+            if (ThemeManager.Instance != null)
+            {
+                allDownloadedThemes = new List<ThemeData>(ThemeManager.Instance.DownloadedThemes);
+            }
+        }
+
+        private void OnSearchChanged(string searchText)
+        {
+            currentSearchText = searchText;
+            ApplyFilter();
+            PopulateThemeCards();
+        }
+
+        private void ApplyFilter()
+        {
+            if (string.IsNullOrWhiteSpace(currentSearchText))
+            {
+                // Sem filtro - mostrar todos
+                filteredDownloadedThemes = new List<ThemeData>(allDownloadedThemes);
+                filteredLegacyThemes = new List<string>(legacyThemeNames);
+            }
+            else
+            {
+                string searchLower = currentSearchText.ToLower().Trim();
+
+                // Filtrar temas baixados
+                filteredDownloadedThemes = allDownloadedThemes.FindAll(theme =>
+                    (theme.name != null && theme.name.ToLower().Contains(searchLower)) ||
+                    (theme.creatorName != null && theme.creatorName.ToLower().Contains(searchLower))
+                );
+
+                // Filtrar temas legados
+                filteredLegacyThemes = new List<string>();
+                foreach (var legacyName in legacyThemeNames)
+                {
+                    if (legacyName.ToLower().Contains(searchLower))
+                        filteredLegacyThemes.Add(legacyName);
+                }
+            }
         }
 
         /// <summary>
@@ -168,20 +237,16 @@ namespace TimeCrax.Themes
                 return;
             }
 
-            // Adicionar temas baixados da API
-            if (ThemeManager.Instance != null)
+            // Adicionar temas baixados filtrados
+            foreach (var theme in filteredDownloadedThemes)
             {
-                var downloadedThemes = ThemeManager.Instance.DownloadedThemes;
-                foreach (var theme in downloadedThemes)
-                {
-                    CreateThemeCard(theme.id, theme.name, theme.creatorName, false, theme);
-                }
+                CreateThemeCard(theme.id, theme.name, theme.creatorName, false, theme);
             }
 
-            // Adicionar temas legados
+            // Adicionar temas legados filtrados
             if (includeLegacyThemes)
             {
-                foreach (var legacyName in legacyThemeNames)
+                foreach (var legacyName in filteredLegacyThemes)
                 {
                     CreateThemeCard("", legacyName, "TimeCrax", true, null);
                 }
@@ -193,7 +258,7 @@ namespace TimeCrax.Themes
                 CreateEmptyMessage();
             }
 
-            DebugHelper.Log($"[ThemePickerUI] {themeCards.Count} cards criados");
+            DebugHelper.Log($"[ThemePickerUI] {themeCards.Count} cards criados (filtro: '{currentSearchText}')");
         }
 
         private void CreateThemeCard(string themeId, string themeName, string creatorName, bool isLegacy, ThemeData themeData)
