@@ -412,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ef8d4b1a88c3cc41a6b4d021a880494, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeCrax.Auth.AuthService
-  apiBaseUrl: http://localhost:5139
+  apiBaseUrl: https://timecrax-backend-production.up.railway.app
   logRequests: 1
 --- !u!4 &195936466
 Transform:
