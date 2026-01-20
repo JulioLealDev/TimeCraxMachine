@@ -85,13 +85,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
             pendingJoinRoomName = null;
         }
     }
-    public void Start()
-    {
-        //PhotonNetwork.LocalPlayer.NickName = PlayerPrefs.GetString("nickname");
-        //RoomOptions room = new RoomOptions { MaxPlayers = (byte)PlayerPrefs.GetInt("numberOfPlayers"), EmptyRoomTtl = 0 };
-        //PhotonNetwork.JoinOrCreateRoom("TimeCrax", room, null);
-
-    }
 
     public void Lobby()
     {
@@ -119,8 +112,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void CreatedRoom(string nameRoom, int maxPlayers, string difficulty, string theme, string password, string themeId = "")
     {
-        //DebugHelper.Log("password: " + password + " --- isnullorwhite: " + string.IsNullOrWhiteSpace(password));
-        DebugHelper.Log("Entrou na Sala Criada");
+                DebugHelper.Log("Entrou na Sala Criada");
 
         // Verificar se está conectado ao Master Server e pronto para operações
         if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby)

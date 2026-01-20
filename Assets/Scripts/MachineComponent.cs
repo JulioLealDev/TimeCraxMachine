@@ -140,7 +140,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     }
     public void HideRepairInfo()
     {
-        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -153,7 +152,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     }
     public void HideActionInfo()
     {
-        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {

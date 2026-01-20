@@ -49,7 +49,6 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsOpen = false;
         roomScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
-        //gameManager.SetActive(true);
         gameManager.StartNewGame();
     }
     public void EnablePassword()

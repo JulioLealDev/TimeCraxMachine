@@ -43,7 +43,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
         if (randomNumberList.Contains(randomNumber))
         {
-            //DebugHelper.Log("ja existe!!");
             RandomMaterialIdList(materialListLenght);
         }
         else
@@ -76,18 +75,11 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
                 break;
         }
 
-        //DebugHelper.Log("tamanho da lista de materiais: " + length);
-
         count = 0;
         while (count < 7)
         {
             RandomMaterialIdList(length);
         };
-
-        for(int i = 0;i < randomNumberList.Length; i++)
-        {
-            //DebugHelper.Log("random number ["+i+"]: "+randomNumberList[i]);
-        }
 
         photonView.RPC("SetAllValues", RpcTarget.All, theme, randomNumberList);
 
@@ -99,8 +91,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
         eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
-        //DebugHelper.Log("Theme 3: " + theme.ToUpper());
-
         switch (theme.ToUpper())
         {
 
@@ -110,18 +100,12 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
                 for (int i = 0; i < eventCards.Length; i++)
                 {
-
                     SetMaterialsToEventCards(i, whMaterialList, randomNumberList);
                 }
 
                 Array.Sort(selectedYears);
-
-                //photonView.RPC("SetSlotCounts", RpcTarget.All);
                 SetSlotCounts();
-
-                //photonView.RPC("SetTimelineYears", RpcTarget.All);
                 SetTimelineYears();
-
                 break;
 
             case "WORLD WAR 2":
@@ -134,62 +118,39 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
                 }
 
                 Array.Sort(selectedYears);
-
-                //photonView.RPC("SetSlotCounts", RpcTarget.All);
                 SetSlotCounts();
-
-                //photonView.RPC("SetTimelineYears", RpcTarget.All);
                 SetTimelineYears();
-
-
-                break;
-
-            case "WORLD SCIENCE":
-                // code block
                 break;
         }
     }
 
-    //[PunRPC]
     public void SetMaterialsToEventCards(int i, EventCardContent[] materialList, int[] randomNumberList)
     {
-        //DebugHelper.Log("carta [" + i + "] recebendo materia: " +materialList[randomNumberList[i]].material.name);
-        //DebugHelper.Log("carta [" + i + "] recebendo ano: " + materialList[randomNumberList[i]].year);
         eventCards[i].GetComponent<Renderer>().material = materialList[randomNumberList[i]].material;
         eventCards[i].slotYear = materialList[randomNumberList[i]].year;
         selectedYears[i] = materialList[randomNumberList[i]].year;
-
     }
 
-    //[PunRPC]
     public void SetSlotCounts()
     {
         for (int i = 0; i < eventCardsLength; i++)
         {
-
             for (int y = 0; y < selectedYears.Length; y++)
             {
-                //DebugHelper.Log("eventCards.slotYear: "+ eventCards[i].slotYear+"  == selectedYears"+ selectedYears[y]);
                 if (eventCards[i].slotYear == selectedYears[y])
                 {
                     eventCards[i].slotCount = y + 1;
-                    //DebugHelper.Log("carta index: " + i + " recebe valor: " + (y+1));
                 }
             }
-
         }
     }
 
-    //[PunRPC]
     public void SetTimelineYears()
     {
-
         timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
 
-        //DebugHelper.Log("Entrou no SetTime");
         for (int i = 0; i < timelineTearsList.Length; i++)
         {
-            //DebugHelper.Log("--- " + timelineTearsList[i].name);
             timelineTearsList[i].text = selectedYears[i].ToString();
         }
     }

@@ -114,7 +114,6 @@ public class GiveCards : MonoBehaviour
 
     public void HideFiveInfo()
     {
-        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -128,7 +127,6 @@ public class GiveCards : MonoBehaviour
 
     public void HideActionInfo()
     {
-        //DebugHelper.Log("HideRoundInfo()");
         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
         foreach (var info in infos)
         {
@@ -155,7 +153,6 @@ public class GiveCards : MonoBehaviour
 
     public void DisableGameInfo()
     {
-        //DebugHelper.Log("DisableGameInfo()");
         gameInfo.gameObject.SetActive(false);
     }
 }

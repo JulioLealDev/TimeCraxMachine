@@ -43,12 +43,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GameObject playerLeftBackground;
     public RandomMaterial randomMaterial;
 
-
-
-    private void Awake()
-    {
-    }
-
     void Update()
     {
         if (gameIsOn && PhotonNetwork.IsMasterClient)
