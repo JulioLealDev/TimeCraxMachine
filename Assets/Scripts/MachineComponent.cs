@@ -16,11 +16,19 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     private Transform componentWithAnimator = null;
     private Transform[] childrenWithanimator = new Transform[4] {null,null,null,null};
     private int count;
+
+    // Componentes cacheados para evitar GetComponent repetido
+    private MeshCollider cachedMeshCollider;
+    private Animator cachedAnimator;
+    private Animator[] cachedChildAnimators = new Animator[4];
     void Start()
     {
         soundEffects = FindFirstObjectByType<SoundEffects>();
         gameOver = FindFirstObjectByType<GameOver>();
         count = 0;
+
+        // Cache do MeshCollider
+        cachedMeshCollider = GetComponent<MeshCollider>();
 
         var parent = gameObject.transform.parent;
         if (parent.name != "Enviroment")
@@ -28,9 +36,11 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             Transform[] opcoes = parent.GetComponentsInChildren<Transform>(true);
             for (int i = 0; i < opcoes.Length; i++)
             {
-                if (opcoes[i].GetComponent<Animator>() != null)
+                Animator anim = opcoes[i].GetComponent<Animator>();
+                if (anim != null)
                 {
                     childrenWithanimator[count] = opcoes[i];
+                    cachedChildAnimators[count] = anim; // Cache do Animator
                     count++;
                 }
                 else if (opcoes[i].CompareTag("Sparks"))
@@ -46,6 +56,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         else
         {
             componentWithAnimator = gameObject.GetComponent<Transform>();
+            cachedAnimator = GetComponent<Animator>(); // Cache do Animator principal
 
             Transform[] childs = gameObject.GetComponentsInChildren<Transform>(true);
             foreach(var child in childs)
@@ -202,18 +213,21 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             DebugHelper.Log("----> NOT EndGame");
             if (componentWithAnimator != null)
             {
-                componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
+                if (cachedAnimator != null)
+                {
+                    cachedAnimator.SetBool("malfunction", true);
+                }
             }
             else
             {
-                foreach (var child in childrenWithanimator)
+                for (int i = 0; i < cachedChildAnimators.Length; i++)
                 {
-                    if(child != null)
+                    if (cachedChildAnimators[i] != null)
                     {
-                        child.gameObject.GetComponent<Animator>().SetBool("malfunction", true);
+                        cachedChildAnimators[i].SetBool("malfunction", true);
                     }
                 }
-                
+
             }
 
             sparks.gameObject.SetActive(true);
@@ -242,15 +256,18 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     {
         if (componentWithAnimator != null)
         {
-            componentWithAnimator.gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+            if (cachedAnimator != null)
+            {
+                cachedAnimator.SetBool("malfunction", false);
+            }
         }
         else
         {
-            foreach (var child in childrenWithanimator)
+            for (int i = 0; i < cachedChildAnimators.Length; i++)
             {
-                if (child != null)
+                if (cachedChildAnimators[i] != null)
                 {
-                    child.gameObject.GetComponent<Animator>().SetBool("malfunction", false);
+                    cachedChildAnimators[i].SetBool("malfunction", false);
                 }
             }
 
@@ -261,10 +278,16 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         soundEffects.PlayComponentRepairSound();
 
         malfunctions--;
-        gameObject.GetComponent<MeshCollider>().enabled = false;
+        if (cachedMeshCollider != null)
+        {
+            cachedMeshCollider.enabled = false;
+        }
 
         var gameManager = FindFirstObjectByType<GameManager>();
-        gameManager.BlockActions();
+        if (gameManager != null)
+        {
+            gameManager.BlockActions();
+        }
     }
 
 

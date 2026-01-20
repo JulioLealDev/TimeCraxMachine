@@ -253,5 +253,32 @@ namespace TimeCrax.Quiz
         }
 
         #endregion
+
+        #region Cleanup
+
+        private void OnDestroy()
+        {
+            // Limpar eventos para evitar memory leaks
+            OnQuizCompleted = null;
+            OnQuizStarted = null;
+            OnTimerUpdated = null;
+
+            // Limpar referência singleton se este for o instance
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            // Garantir limpeza ao sair da aplicação
+            OnQuizCompleted = null;
+            OnQuizStarted = null;
+            OnTimerUpdated = null;
+            _instance = null;
+        }
+
+        #endregion
     }
 }

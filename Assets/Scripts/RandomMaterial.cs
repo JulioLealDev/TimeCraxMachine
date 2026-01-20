@@ -126,20 +126,34 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
     public void SetMaterialsToEventCards(int i, EventCardContent[] materialList, int[] randomNumberList)
     {
-        eventCards[i].GetComponent<Renderer>().material = materialList[randomNumberList[i]].material;
-        eventCards[i].slotYear = materialList[randomNumberList[i]].year;
-        selectedYears[i] = materialList[randomNumberList[i]].year;
+        // Verificações de bounds
+        if (eventCards == null || i >= eventCards.Length || eventCards[i] == null) return;
+        if (materialList == null || randomNumberList == null) return;
+        if (i >= randomNumberList.Length || randomNumberList[i] >= materialList.Length) return;
+        if (i >= selectedYears.Length) return;
+
+        var material = materialList[randomNumberList[i]];
+        if (material == null) return;
+
+        eventCards[i].GetComponent<Renderer>().material = material.material;
+        eventCards[i].slotYear = material.year;
+        selectedYears[i] = material.year;
     }
 
     public void SetSlotCounts()
     {
-        for (int i = 0; i < eventCardsLength; i++)
+        if (eventCards == null) return;
+
+        for (int i = 0; i < eventCardsLength && i < eventCards.Length; i++)
         {
+            if (eventCards[i] == null) continue;
+
             for (int y = 0; y < selectedYears.Length; y++)
             {
                 if (eventCards[i].slotYear == selectedYears[y])
                 {
                     eventCards[i].slotCount = y + 1;
+                    break;
                 }
             }
         }
@@ -147,11 +161,16 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
     public void SetTimelineYears()
     {
+        if (timeline == null) return;
+
         timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
 
-        for (int i = 0; i < timelineTearsList.Length; i++)
+        for (int i = 0; i < timelineTearsList.Length && i < selectedYears.Length; i++)
         {
-            timelineTearsList[i].text = selectedYears[i].ToString();
+            if (timelineTearsList[i] != null)
+            {
+                timelineTearsList[i].text = selectedYears[i].ToString();
+            }
         }
     }
 
@@ -322,12 +341,16 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     /// </summary>
     private void SetSlotCountsFromTheme()
     {
+        if (eventCards == null || selectedCards == null) return;
+
         // selectedCards já está ordenado por ano
         for (int i = 0; i < eventCards.Length; i++)
         {
+            if (eventCards[i] == null) continue;
+
             for (int y = 0; y < selectedCards.Count; y++)
             {
-                if (eventCards[i].slotYear == selectedCards[y].year)
+                if (selectedCards[y] != null && eventCards[i].slotYear == selectedCards[y].year)
                 {
                     eventCards[i].slotCount = y + 1;
                     break;

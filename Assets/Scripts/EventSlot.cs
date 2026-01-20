@@ -49,7 +49,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
         foreach (var card in eventCards)
         {
-            if (card.CompareTag("Drew"))
+            if (card != null && card.CompareTag("Drew"))
             {
                 // Enviar requisição ao MasterClient para processar o clique no slot
                 photonView.RPC("RequestSlotClick", RpcTarget.MasterClient, card.slotCount, slotNumber);
@@ -208,7 +208,10 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
     public void RandomComponent()
     {
-        gameManager.RandomComponentNumber();
+        if (gameManager != null)
+        {
+            gameManager.RandomComponentNumber();
+        }
     }
 
     // Armazena o slotNumber do slot que foi clicado para quiz
@@ -303,12 +306,12 @@ public class EventSlot : MonoBehaviourPunCallbacks
         int slotsFilled = 0;
         foreach (var slot in slots)
         {
-            if (slot.CompareTag("Disabled"))
+            if (slot != null && slot.CompareTag("Disabled"))
             {
                 slotsFilled++;
             }
         }
-        if (slotsFilled == 7)
+        if (slotsFilled == 7 && gameManager != null)
         {
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
@@ -319,8 +322,17 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
     public void Victory()
     {
-        victory.transform.GetChild(0).gameObject.SetActive(true);
-        gameManager.hud.SetActive(false);
-        backgroundMusic.PlayVictorySound();
+        if (victory != null)
+        {
+            victory.transform.GetChild(0).gameObject.SetActive(true);
+        }
+        if (gameManager != null)
+        {
+            gameManager.hud.SetActive(false);
+        }
+        if (backgroundMusic != null)
+        {
+            backgroundMusic.PlayVictorySound();
+        }
     }
 }

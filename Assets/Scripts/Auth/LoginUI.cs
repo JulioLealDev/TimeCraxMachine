@@ -332,5 +332,22 @@ namespace TimeCrax.Auth
         }
 
         #endregion
+
+        #region Cleanup
+
+        private void OnDestroy()
+        {
+            // Remover listeners para evitar memory leaks
+            if (loginButton != null)
+                loginButton.onClick.RemoveListener(OnLoginClicked);
+
+            if (registerButton != null)
+                registerButton.onClick.RemoveListener(OnRegisterClicked);
+
+            if (passwordInput != null)
+                passwordInput.onSubmit.RemoveAllListeners();
+        }
+
+        #endregion
     }
 }

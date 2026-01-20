@@ -80,7 +80,10 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         gameManager.ActivateFinishButton(false);
 
         var timeline = FindFirstObjectByType<Timeline>();
-        timeline.ActiveTimeline(false);
+        if (timeline != null)
+        {
+            timeline.ActiveTimeline(false);
+        }
 
         // Comprar a carta (local, pois já estamos dentro de um RPC sincronizado)
         var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
