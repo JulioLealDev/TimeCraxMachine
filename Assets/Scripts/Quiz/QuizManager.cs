@@ -44,6 +44,10 @@ namespace TimeCrax.Quiz
         // Referência ao UI
         private QuizUI quizUI;
 
+        // Sistema de rotação de quizzes - rastreia quais tipos já foram usados por carta
+        // Key: slotCount da carta, Value: lista de tipos de quiz já usados
+        private Dictionary<int, List<QuizType>> usedQuizTypesByCard = new Dictionary<int, List<QuizType>>();
+
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -82,18 +86,47 @@ namespace TimeCrax.Quiz
         /// </summary>
         public void StartQuiz(ThemeCard card, int slotCount)
         {
-            if (card == null || !card.quizData.HasQuiz)
+            DebugHelper.Log($"[QuizManager] StartQuiz chamado - card={card != null}, slotCount={slotCount}");
+
+            if (card == null)
             {
-                DebugHelper.Log("[QuizManager] Carta sem quiz, completando diretamente");
+                DebugHelper.Log("[QuizManager] ERRO: card é null!");
+                OnQuizCompleted?.Invoke(true);
+                return;
+            }
+
+            if (card.quizData == null)
+            {
+                DebugHelper.Log("[QuizManager] ERRO: card.quizData é null!");
+                OnQuizCompleted?.Invoke(true);
+                return;
+            }
+
+            if (!card.quizData.HasQuiz)
+            {
+                DebugHelper.Log("[QuizManager] Carta sem quiz (HasQuiz=false), completando diretamente");
                 OnQuizCompleted?.Invoke(true);
                 return;
             }
 
             currentCard = card;
             currentSlotCount = slotCount;
-            currentQuizType = card.quizData.GetAvailableQuizType();
 
-            DebugHelper.Log($"[QuizManager] Iniciando quiz tipo {currentQuizType} para slot {slotCount}");
+            // Selecionar tipo de quiz usando o sistema de rotação
+            currentQuizType = GetNextAvailableQuizType(card, slotCount);
+
+            if (currentQuizType == QuizType.None)
+            {
+                DebugHelper.Log("[QuizManager] Nenhum quiz disponível após rotação, completando diretamente");
+                OnQuizCompleted?.Invoke(true);
+                return;
+            }
+
+            // Marcar este tipo como usado para esta carta
+            MarkQuizTypeAsUsed(slotCount, currentQuizType);
+
+            DebugHelper.Log($"[QuizManager] Iniciando quiz tipo {currentQuizType} para slot {slotCount} (selecionado com rotação)");
+            DebugHelper.Log($"[QuizManager] Enviando RPC_StartQuiz para todos os jogadores...");
 
             // Sincronizar início do quiz com todos os jogadores
             photonView.RPC("RPC_StartQuiz", RpcTarget.All, slotCount, (int)currentQuizType);
@@ -193,11 +226,112 @@ namespace TimeCrax.Quiz
 
         #endregion
 
+        #region Quiz Rotation System
+
+        /// <summary>
+        /// Obtém o próximo tipo de quiz disponível para uma carta, usando o sistema de rotação.
+        /// Exclui tipos já usados até que todos sejam usados, então reseta.
+        /// </summary>
+        private QuizType GetNextAvailableQuizType(ThemeCard card, int slotCount)
+        {
+            if (card?.quizData == null) return QuizType.None;
+
+            // Obter todos os tipos de quiz disponíveis para esta carta
+            var allAvailableTypes = card.quizData.GetAllAvailableQuizTypes();
+
+            if (allAvailableTypes.Count == 0)
+            {
+                DebugHelper.Log($"[QuizManager] Carta {slotCount} não tem quizzes disponíveis");
+                return QuizType.None;
+            }
+
+            // Obter lista de tipos já usados para esta carta
+            if (!usedQuizTypesByCard.TryGetValue(slotCount, out var usedTypes))
+            {
+                usedTypes = new List<QuizType>();
+                usedQuizTypesByCard[slotCount] = usedTypes;
+            }
+
+            // Filtrar tipos não usados
+            var unusedTypes = new List<QuizType>();
+            foreach (var type in allAvailableTypes)
+            {
+                if (!usedTypes.Contains(type))
+                {
+                    unusedTypes.Add(type);
+                }
+            }
+
+            DebugHelper.Log($"[QuizManager] Carta {slotCount}: total={allAvailableTypes.Count}, usados={usedTypes.Count}, disponíveis={unusedTypes.Count}");
+
+            // Se todos foram usados, resetar a lista
+            if (unusedTypes.Count == 0)
+            {
+                DebugHelper.Log($"[QuizManager] Todos os quizzes da carta {slotCount} foram usados, resetando rotação");
+                usedTypes.Clear();
+                unusedTypes.AddRange(allAvailableTypes);
+            }
+
+            // Selecionar aleatoriamente entre os não usados
+            if (unusedTypes.Count > 0)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, unusedTypes.Count);
+                var selectedType = unusedTypes[randomIndex];
+                DebugHelper.Log($"[QuizManager] Quiz selecionado para carta {slotCount}: {selectedType}");
+                return selectedType;
+            }
+
+            return QuizType.None;
+        }
+
+        /// <summary>
+        /// Marca um tipo de quiz como usado para uma carta específica
+        /// </summary>
+        private void MarkQuizTypeAsUsed(int slotCount, QuizType quizType)
+        {
+            if (!usedQuizTypesByCard.TryGetValue(slotCount, out var usedTypes))
+            {
+                usedTypes = new List<QuizType>();
+                usedQuizTypesByCard[slotCount] = usedTypes;
+            }
+
+            if (!usedTypes.Contains(quizType))
+            {
+                usedTypes.Add(quizType);
+                DebugHelper.Log($"[QuizManager] Quiz {quizType} marcado como usado para carta {slotCount}. Total usados: {usedTypes.Count}");
+            }
+        }
+
+        /// <summary>
+        /// Reseta os quizzes usados para uma carta específica (útil quando a carta volta ao deck)
+        /// </summary>
+        public void ResetUsedQuizTypes(int slotCount)
+        {
+            if (usedQuizTypesByCard.ContainsKey(slotCount))
+            {
+                usedQuizTypesByCard[slotCount].Clear();
+                DebugHelper.Log($"[QuizManager] Quizzes usados resetados para carta {slotCount}");
+            }
+        }
+
+        /// <summary>
+        /// Reseta todos os quizzes usados de todas as cartas
+        /// </summary>
+        public void ResetAllUsedQuizTypes()
+        {
+            usedQuizTypesByCard.Clear();
+            DebugHelper.Log("[QuizManager] Todos os quizzes usados foram resetados");
+        }
+
+        #endregion
+
         #region RPCs
 
         [PunRPC]
         public void RPC_StartQuiz(int slotCount, int quizType)
         {
+            DebugHelper.Log($"[QuizManager] RPC_StartQuiz RECEBIDO - slotCount={slotCount}, quizType={quizType}");
+
             currentSlotCount = slotCount;
             currentQuizType = (QuizType)quizType;
             isQuizActive = true;
@@ -205,33 +339,46 @@ namespace TimeCrax.Quiz
 
             // Buscar dados da carta no RandomMaterial
             var randomMaterial = FindFirstObjectByType<RandomMaterial>();
+            DebugHelper.Log($"[QuizManager] randomMaterial={randomMaterial != null}");
+
             if (randomMaterial != null)
             {
                 var selectedCards = randomMaterial.GetSelectedCards();
+                DebugHelper.Log($"[QuizManager] selectedCards={selectedCards != null}, count={selectedCards?.Count ?? 0}");
+
                 if (selectedCards != null)
                 {
                     // Encontrar a carta pelo slotCount
                     var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
+                    DebugHelper.Log($"[QuizManager] eventCards count={eventCards.Length}");
+
                     foreach (var eventCard in eventCards)
                     {
                         if (eventCard.slotCount == slotCount)
                         {
                             currentCard = eventCard.GetThemeCard();
+                            DebugHelper.Log($"[QuizManager] currentCard encontrado: {currentCard != null}, quizData={currentCard?.quizData != null}");
                             break;
                         }
                     }
                 }
             }
 
-            DebugHelper.Log($"[QuizManager] RPC_StartQuiz - Slot: {slotCount}, Tipo: {currentQuizType}");
+            DebugHelper.Log($"[QuizManager] RPC_StartQuiz - Slot: {slotCount}, Tipo: {currentQuizType}, currentCard={currentCard != null}");
 
             // Notificar UI e listeners
             OnQuizStarted?.Invoke(currentCard, currentQuizType);
 
             // Mostrar UI do quiz
+            DebugHelper.Log($"[QuizManager] quizUI={quizUI != null}");
             if (quizUI != null)
             {
+                DebugHelper.Log("[QuizManager] Chamando quizUI.ShowQuiz()...");
                 quizUI.ShowQuiz(currentCard, currentQuizType);
+            }
+            else
+            {
+                DebugHelper.Log("[QuizManager] ERRO: quizUI é null! Quiz não será exibido.");
             }
         }
 
@@ -263,6 +410,9 @@ namespace TimeCrax.Quiz
             OnQuizStarted = null;
             OnTimerUpdated = null;
 
+            // Limpar dicionário de quizzes usados
+            usedQuizTypesByCard.Clear();
+
             // Limpar referência singleton se este for o instance
             if (_instance == this)
             {
@@ -276,6 +426,7 @@ namespace TimeCrax.Quiz
             OnQuizCompleted = null;
             OnQuizStarted = null;
             OnTimerUpdated = null;
+            usedQuizTypesByCard?.Clear();
             _instance = null;
         }
 

@@ -9,50 +9,61 @@ namespace TimeCrax.Quiz
 {
     /// <summary>
     /// Interface do usuário para o sistema de quiz.
-    /// Gerencia os 4 painéis de quiz e feedback visual.
+    /// Gerencia a instanciação de prefabs de quiz e feedback visual.
     /// </summary>
     public class QuizUI : MonoBehaviour
     {
-        [Header("Main Canvas")]
+        [Header("Quiz Canvas")]
         [SerializeField] private GameObject quizCanvas;
         [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private Image blocker;
+        [SerializeField] private Image backgroundImage;
+        [SerializeField] private TextMeshProUGUI quizTypeLabel;
+        [SerializeField] private Transform container;
 
-        [Header("Common Elements")]
-        [SerializeField] private TextMeshProUGUI questionText;
-        [SerializeField] private Image timerBar;
-        [SerializeField] private GameObject resultFeedback;
-        [SerializeField] private TextMeshProUGUI resultText;
-        [SerializeField] private Image resultIcon;
-
-        [Header("Image Quiz Panel")]
-        [SerializeField] private GameObject imageQuizPanel;
-        [SerializeField] private List<Button> imageOptionButtons;
-        [SerializeField] private List<RawImage> imageOptionImages;
-
-        [Header("Text Quiz Panel")]
-        [SerializeField] private GameObject textQuizPanel;
-        [SerializeField] private List<Button> textOptionButtons;
-        [SerializeField] private List<TextMeshProUGUI> textOptionLabels;
-
-        [Header("True/False Panel")]
-        [SerializeField] private GameObject trueFalsePanel;
-        [SerializeField] private Button trueButton;
-        [SerializeField] private Button falseButton;
-        [SerializeField] private TextMeshProUGUI statementText;
-
-        [Header("Correlation Panel")]
-        [SerializeField] private GameObject correlationPanel;
-        [SerializeField] private List<RawImage> correlationImages;
-        [SerializeField] private List<TextMeshProUGUI> correlationTexts;
+        [Header("Quiz Prefabs")]
+        [SerializeField] private GameObject textQuizPrefab;
+        [SerializeField] private GameObject imageQuizPrefab;
+        [SerializeField] private GameObject trueOrFalseQuizPrefab;
+        [SerializeField] private GameObject correlationQuizPrefab;
 
         [Header("Feedback Settings")]
         [SerializeField] private Color correctColor = new Color(0.2f, 0.8f, 0.2f);
         [SerializeField] private Color wrongColor = new Color(0.8f, 0.2f, 0.2f);
         [SerializeField] private float feedbackDuration = 2f;
 
+        [Header("Audio")]
+        [SerializeField] private SoundEffects soundEffects;
+
+        [Header("Correlation Number Sprites")]
+        [SerializeField] private Sprite emptyNumberSprite;
+        [SerializeField] private Sprite number1Sprite;
+        [SerializeField] private Sprite number2Sprite;
+        [SerializeField] private Sprite number3Sprite;
+
+        // Referências do quiz instanciado
+        private GameObject currentQuizInstance;
         private QuizManager quizManager;
-        private List<int> correlationOrder;
         private bool isInteractable = true;
+
+        // Referências cacheadas do quiz atual
+        private TextMeshProUGUI questionText;
+        private List<Button> optionButtons = new List<Button>();
+        private List<TextMeshProUGUI> optionTexts = new List<TextMeshProUGUI>();
+        private List<RawImage> optionImages = new List<RawImage>();
+        private Button trueButton;
+        private Button falseButton;
+
+        // Correlação
+        private List<int> correlationOrder;
+        private List<RawImage> correlationImages = new List<RawImage>();
+        private List<TextMeshProUGUI> correlationTexts = new List<TextMeshProUGUI>();
+
+        // Novo sistema de correlação com botões de número
+        private int[] playerSelections = new int[3]; // Valores selecionados pelo jogador (0=vazio, 1, 2, 3)
+        private int[] correctValues = new int[3]; // Valores corretos para cada imagem
+        private List<Image> numberImageComponents = new List<Image>(); // Imagens de número nos botões
+        private List<Button> correlationButtons = new List<Button>(); // Botões de seleção
 
         private void Start()
         {
@@ -63,11 +74,7 @@ namespace TimeCrax.Quiz
                 quizManager.OnTimerUpdated += UpdateTimer;
             }
 
-            // Configurar botões
-            SetupButtons();
-
             // Inicialmente escondido
-            HideAllPanels();
             if (quizCanvas != null)
                 quizCanvas.SetActive(false);
         }
@@ -78,34 +85,13 @@ namespace TimeCrax.Quiz
             {
                 quizManager.OnTimerUpdated -= UpdateTimer;
             }
-        }
 
-        #region Setup
-
-        private void SetupButtons()
-        {
-            // Image Quiz buttons
-            for (int i = 0; i < imageOptionButtons.Count; i++)
+            // Limpar instância atual se existir
+            if (currentQuizInstance != null)
             {
-                int index = i;
-                imageOptionButtons[i].onClick.AddListener(() => OnImageOptionClicked(index));
+                Destroy(currentQuizInstance);
             }
-
-            // Text Quiz buttons
-            for (int i = 0; i < textOptionButtons.Count; i++)
-            {
-                int index = i;
-                textOptionButtons[i].onClick.AddListener(() => OnTextOptionClicked(index));
-            }
-
-            // True/False buttons
-            if (trueButton != null)
-                trueButton.onClick.AddListener(() => OnTrueFalseClicked(true));
-            if (falseButton != null)
-                falseButton.onClick.AddListener(() => OnTrueFalseClicked(false));
         }
-
-        #endregion
 
         #region Public Methods
 
@@ -118,29 +104,39 @@ namespace TimeCrax.Quiz
 
             DebugHelper.Log($"[QuizUI] Exibindo quiz tipo {quizType}");
 
-            HideAllPanels();
+            // Limpar instância anterior
+            if (currentQuizInstance != null)
+            {
+                Destroy(currentQuizInstance);
+                currentQuizInstance = null;
+            }
+
+            // Limpar listas
+            ClearCachedReferences();
+
             quizCanvas.SetActive(true);
             isInteractable = true;
 
-            if (resultFeedback != null)
-                resultFeedback.SetActive(false);
+            // Definir label do tipo de quiz
+            SetQuizTypeLabel(quizType);
 
+            // Instanciar prefab correto
             switch (quizType)
             {
                 case QuizType.ImageQuiz:
-                    ShowImageQuiz(card.quizData.imageQuiz);
+                    InstantiateImageQuiz(card.quizData.imageQuiz);
                     break;
 
                 case QuizType.TextQuiz:
-                    ShowTextQuiz(card.quizData.textQuiz);
+                    InstantiateTextQuiz(card.quizData.textQuiz);
                     break;
 
                 case QuizType.TrueFalseQuiz:
-                    ShowTrueFalseQuiz(card.quizData.trueFalseQuiz);
+                    InstantiateTrueFalseQuiz(card.quizData.trueFalseQuiz);
                     break;
 
                 case QuizType.CorrelationQuiz:
-                    ShowCorrelationQuiz(card.quizData.correlationQuiz);
+                    InstantiateCorrelationQuiz(card.quizData.correlationQuiz);
                     break;
             }
 
@@ -159,7 +155,7 @@ namespace TimeCrax.Quiz
         {
             isInteractable = false;
 
-            // Mostrar feedback
+            // Mostrar feedback visual
             ShowFeedback(correct);
 
             // Esconder após delay
@@ -169,131 +165,351 @@ namespace TimeCrax.Quiz
                 {
                     LeanTween.alphaCanvas(canvasGroup, 0f, 0.3f).setOnComplete(() =>
                     {
-                        quizCanvas.SetActive(false);
-                        HideAllPanels();
+                        CleanupQuiz();
                     });
                 }
                 else
                 {
-                    quizCanvas.SetActive(false);
-                    HideAllPanels();
+                    CleanupQuiz();
                 }
             });
         }
 
         #endregion
 
-        #region Quiz Display Methods
+        #region Prefab Instantiation
 
-        private void ShowImageQuiz(ImageQuiz quiz)
+        private void InstantiateTextQuiz(TextQuiz quiz)
         {
-            if (quiz == null || imageQuizPanel == null) return;
+            if (quiz == null || textQuizPrefab == null || container == null) return;
 
-            imageQuizPanel.SetActive(true);
+            currentQuizInstance = Instantiate(textQuizPrefab, container);
 
-            if (questionText != null)
-                questionText.text = quiz.question;
-
-            // Carregar imagens das opções
-            for (int i = 0; i < imageOptionImages.Count && i < quiz.options.Count; i++)
+            // Buscar referências na hierarquia
+            // Header/Question
+            var questionTransform = currentQuizInstance.transform.Find("Header/Question");
+            if (questionTransform != null)
             {
-                var option = quiz.options[i];
-                var rawImage = imageOptionImages[i];
+                questionText = questionTransform.GetComponent<TextMeshProUGUI>();
+                if (questionText != null)
+                    questionText.text = quiz.question;
+            }
 
-                if (!string.IsNullOrEmpty(option.localImagePath))
+            // Options/AnswerButton_01, 02, 03, 04
+            var optionsTransform = currentQuizInstance.transform.Find("Options");
+            if (optionsTransform != null)
+            {
+                for (int i = 1; i <= 4; i++)
                 {
-                    var texture = ThemeStorage.LoadLocalImage(option.localImagePath);
-                    if (texture != null)
-                        rawImage.texture = texture;
+                    var buttonTransform = optionsTransform.Find($"AnswerButton_0{i}");
+                    if (buttonTransform != null)
+                    {
+                        var button = buttonTransform.GetComponent<Button>();
+                        var answerTextTransform = buttonTransform.Find("AnswerText");
+                        var answerText = answerTextTransform?.GetComponent<TextMeshProUGUI>();
+
+                        if (button != null && answerText != null)
+                        {
+                            int optionIndex = i - 1;
+                            optionButtons.Add(button);
+                            optionTexts.Add(answerText);
+
+                            // Configurar texto se houver opção
+                            if (optionIndex < quiz.options.Count)
+                            {
+                                answerText.text = quiz.options[optionIndex].text;
+                                button.gameObject.SetActive(true);
+                                button.onClick.AddListener(() => OnOptionClicked(optionIndex));
+                            }
+                            else
+                            {
+                                button.gameObject.SetActive(false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void InstantiateImageQuiz(ImageQuiz quiz)
+        {
+            if (quiz == null || imageQuizPrefab == null || container == null)
+            {
+                DebugHelper.Log($"[QuizUI] InstantiateImageQuiz ERRO: quiz={quiz != null}, prefab={imageQuizPrefab != null}, container={container != null}");
+                return;
+            }
+
+            DebugHelper.Log($"[QuizUI] InstantiateImageQuiz: question={quiz.question}, options={quiz.options?.Count ?? 0}");
+
+            currentQuizInstance = Instantiate(imageQuizPrefab, container);
+
+            // Header/Question
+            var questionTransform = currentQuizInstance.transform.Find("Header/Question");
+            if (questionTransform != null)
+            {
+                questionText = questionTransform.GetComponent<TextMeshProUGUI>();
+                if (questionText != null)
+                    questionText.text = quiz.question;
+            }
+
+            // Options/AnswerButton_01, 02, 03, 04
+            var optionsTransform = currentQuizInstance.transform.Find("Options");
+
+            if (optionsTransform != null)
+            {
+                for (int i = 1; i <= 4; i++)
+                {
+                    var buttonTransform = optionsTransform.Find($"AnswerButton_0{i}");
+
+                    if (buttonTransform != null)
+                    {
+                        var button = buttonTransform.GetComponent<Button>();
+                        var imageTransform = buttonTransform.Find("Image");
+
+                        // Suportar tanto RawImage quanto Image (UI)
+                        var rawImage = imageTransform?.GetComponent<RawImage>();
+                        var uiImage = imageTransform?.GetComponent<Image>();
+
+                        if (button != null)
+                        {
+                            int optionIndex = i - 1;
+                            optionButtons.Add(button);
+
+                            // Verificar se há opção para este índice
+                            if (optionIndex < quiz.options.Count)
+                            {
+                                var option = quiz.options[optionIndex];
+
+                                // Carregar imagem do arquivo local
+                                if (!string.IsNullOrEmpty(option.localImagePath))
+                                {
+                                    var texture = ThemeStorage.LoadLocalImage(option.localImagePath);
+                                    if (texture != null)
+                                    {
+                                        // Se tem RawImage, usar texture diretamente
+                                        if (rawImage != null)
+                                        {
+                                            rawImage.texture = texture;
+                                            optionImages.Add(rawImage);
+                                        }
+                                        // Se tem Image (UI), criar sprite da texture
+                                        else if (uiImage != null)
+                                        {
+                                            var sprite = Sprite.Create(
+                                                texture,
+                                                new Rect(0, 0, texture.width, texture.height),
+                                                new Vector2(0.5f, 0.5f)
+                                            );
+                                            uiImage.sprite = sprite;
+                                        }
+                                        DebugHelper.Log($"[QuizUI] Imagem {optionIndex} carregada com sucesso");
+                                    }
+                                    else
+                                    {
+                                        DebugHelper.Log($"[QuizUI] ERRO: Falha ao carregar imagem: {option.localImagePath}");
+                                    }
+                                }
+
+                                button.gameObject.SetActive(true);
+                                button.onClick.AddListener(() => OnOptionClicked(optionIndex));
+                            }
+                            else
+                            {
+                                button.gameObject.SetActive(false);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                DebugHelper.Log("[QuizUI] ERRO: 'Options' não encontrado no prefab!");
+            }
+        }
+
+        private void InstantiateTrueFalseQuiz(TrueFalseQuiz quiz)
+        {
+            if (quiz == null || trueOrFalseQuizPrefab == null || container == null) return;
+
+            currentQuizInstance = Instantiate(trueOrFalseQuizPrefab, container);
+
+            // Header/Question (statement)
+            var questionTransform = currentQuizInstance.transform.Find("Header/Question");
+            if (questionTransform != null)
+            {
+                questionText = questionTransform.GetComponent<TextMeshProUGUI>();
+                if (questionText != null)
+                    questionText.text = quiz.statement;
+            }
+
+            // Options/TrueButton
+            var optionsTransform = currentQuizInstance.transform.Find("Options");
+            if (optionsTransform != null)
+            {
+                var trueTransform = optionsTransform.Find("TrueButton");
+                if (trueTransform != null)
+                {
+                    trueButton = trueTransform.GetComponent<Button>();
+                    if (trueButton != null)
+                    {
+                        trueButton.onClick.AddListener(() => OnTrueFalseClicked(true));
+                    }
                 }
 
-                imageOptionButtons[i].gameObject.SetActive(true);
-            }
-
-            // Esconder botões extras
-            for (int i = quiz.options.Count; i < imageOptionButtons.Count; i++)
-            {
-                imageOptionButtons[i].gameObject.SetActive(false);
-            }
-        }
-
-        private void ShowTextQuiz(TextQuiz quiz)
-        {
-            if (quiz == null || textQuizPanel == null) return;
-
-            textQuizPanel.SetActive(true);
-
-            if (questionText != null)
-                questionText.text = quiz.question;
-
-            // Configurar opções de texto
-            for (int i = 0; i < textOptionLabels.Count && i < quiz.options.Count; i++)
-            {
-                textOptionLabels[i].text = quiz.options[i].text;
-                textOptionButtons[i].gameObject.SetActive(true);
-            }
-
-            // Esconder botões extras
-            for (int i = quiz.options.Count; i < textOptionButtons.Count; i++)
-            {
-                textOptionButtons[i].gameObject.SetActive(false);
+                var falseTransform = optionsTransform.Find("FalseButton");
+                if (falseTransform != null)
+                {
+                    falseButton = falseTransform.GetComponent<Button>();
+                    if (falseButton != null)
+                    {
+                        falseButton.onClick.AddListener(() => OnTrueFalseClicked(false));
+                    }
+                }
             }
         }
 
-        private void ShowTrueFalseQuiz(TrueFalseQuiz quiz)
+        private void InstantiateCorrelationQuiz(CorrelationQuiz quiz)
         {
-            if (quiz == null || trueFalsePanel == null) return;
+            if (quiz == null || correlationQuizPrefab == null || container == null) return;
 
-            trueFalsePanel.SetActive(true);
+            DebugHelper.Log($"[QuizUI] InstantiateCorrelationQuiz: items={quiz.items?.Count ?? 0}");
 
-            if (statementText != null)
-                statementText.text = quiz.statement;
+            currentQuizInstance = Instantiate(correlationQuizPrefab, container);
 
-            if (questionText != null)
-                questionText.text = "Verdadeiro ou Falso?";
-        }
+            // Header/Question
+            var questionTransform = currentQuizInstance.transform.Find("Header/Question");
+            if (questionTransform != null)
+            {
+                questionText = questionTransform.GetComponent<TextMeshProUGUI>();
+                if (questionText != null)
+                    questionText.text = "Associe as imagens aos textos corretos";
+            }
 
-        private void ShowCorrelationQuiz(CorrelationQuiz quiz)
-        {
-            if (quiz == null || correlationPanel == null) return;
+            // Resetar arrays
+            playerSelections = new int[3] { 0, 0, 0 }; // 0 = vazio
+            correctValues = new int[3];
+            numberImageComponents.Clear();
+            correlationButtons.Clear();
 
-            correlationPanel.SetActive(true);
-
-            if (questionText != null)
-                questionText.text = "Associe as imagens aos textos corretos";
-
-            // Inicializar ordem de correlação (embaralhada)
+            // Criar lista de índices e embaralhar para as IMAGENS
             correlationOrder = new List<int>();
-            for (int i = 0; i < quiz.items.Count; i++)
+            for (int i = 0; i < quiz.items.Count && i < 3; i++)
             {
                 correlationOrder.Add(i);
             }
-            // Embaralhar
-            for (int i = correlationOrder.Count - 1; i > 0; i--)
+            ShuffleList(correlationOrder);
+
+            var optionsTransform = currentQuizInstance.transform.Find("Options");
+            if (optionsTransform == null)
             {
-                int j = Random.Range(0, i + 1);
-                int temp = correlationOrder[i];
-                correlationOrder[i] = correlationOrder[j];
-                correlationOrder[j] = temp;
+                DebugHelper.Log("[QuizUI] ERRO: 'Options' não encontrado no prefab!");
+                return;
             }
 
-            // Carregar imagens (ordem original)
-            for (int i = 0; i < correlationImages.Count && i < quiz.items.Count; i++)
+            // Configurar TEXTOS em ordem fixa (posição 1 = texto 1, posição 2 = texto 2, etc)
+            for (int i = 1; i <= 3; i++)
             {
-                var item = quiz.items[i];
-                if (!string.IsNullOrEmpty(item.localImagePath))
+                var textTransform = optionsTransform.Find($"AnswerTextImage_0{i}/AnswerText");
+                if (textTransform != null)
                 {
-                    var texture = ThemeStorage.LoadLocalImage(item.localImagePath);
-                    if (texture != null)
-                        correlationImages[i].texture = texture;
+                    var tmpText = textTransform.GetComponent<TextMeshProUGUI>();
+                    if (tmpText != null)
+                    {
+                        correlationTexts.Add(tmpText);
+                        int textIndex = i - 1;
+                        if (textIndex < quiz.items.Count)
+                        {
+                            // Textos sempre em ordem fixa (items[0] na posição 1, items[1] na posição 2, etc)
+                            tmpText.text = quiz.items[textIndex].text;
+                            DebugHelper.Log($"[QuizUI] Texto {i}: {quiz.items[textIndex].text}");
+                        }
+                    }
                 }
             }
 
-            // Carregar textos (ordem embaralhada)
-            for (int i = 0; i < correlationTexts.Count && i < quiz.items.Count; i++)
+            // Configurar IMAGENS em ordem embaralhada
+            // Cada imagem guarda seu valor correto (índice original + 1)
+            for (int i = 1; i <= 3; i++)
             {
-                int shuffledIndex = correlationOrder[i];
-                correlationTexts[i].text = quiz.items[shuffledIndex].text;
+                int posIndex = i - 1;
+                if (posIndex >= correlationOrder.Count) continue;
+
+                int originalIndex = correlationOrder[posIndex]; // Índice original no array
+                correctValues[posIndex] = originalIndex + 1; // Valor correto é o índice original + 1 (1, 2 ou 3)
+
+                DebugHelper.Log($"[QuizUI] Imagem posição {i}: originalIndex={originalIndex}, correctValue={correctValues[posIndex]}");
+
+                // Carregar imagem embaralhada
+                var imageTransform = optionsTransform.Find($"AnswerImage_0{i}/AnswerImageContent");
+                if (imageTransform != null && originalIndex < quiz.items.Count)
+                {
+                    var rawImage = imageTransform.GetComponent<RawImage>();
+                    var uiImage = imageTransform.GetComponent<Image>();
+                    var item = quiz.items[originalIndex];
+
+                    if (!string.IsNullOrEmpty(item.localImagePath))
+                    {
+                        var texture = ThemeStorage.LoadLocalImage(item.localImagePath);
+                        if (texture != null)
+                        {
+                            if (rawImage != null)
+                            {
+                                rawImage.texture = texture;
+                                correlationImages.Add(rawImage);
+                            }
+                            else if (uiImage != null)
+                            {
+                                var sprite = Sprite.Create(
+                                    texture,
+                                    new Rect(0, 0, texture.width, texture.height),
+                                    new Vector2(0.5f, 0.5f)
+                                );
+                                uiImage.sprite = sprite;
+                            }
+                            DebugHelper.Log($"[QuizUI] Imagem {i} carregada: {item.localImagePath}");
+                        }
+                    }
+                }
+
+                // Configurar botão de número para cada imagem
+                var buttonTransform = optionsTransform.Find($"ButtonAnswerImage_0{i}");
+                if (buttonTransform != null)
+                {
+                    var button = buttonTransform.GetComponent<Button>();
+                    var numberImageTransform = buttonTransform.Find("NumberImage");
+                    var numberImage = numberImageTransform?.GetComponent<Image>();
+
+                    if (button != null)
+                    {
+                        correlationButtons.Add(button);
+
+                        // Guardar referência da imagem de número
+                        if (numberImage != null)
+                        {
+                            numberImageComponents.Add(numberImage);
+                            // Iniciar com sprite vazio
+                            numberImage.sprite = emptyNumberSprite;
+                        }
+
+                        // Adicionar listener para ciclar o valor
+                        int buttonIndex = posIndex; // Capturar para o closure
+                        button.onClick.AddListener(() => OnCorrelationButtonClicked(buttonIndex));
+
+                        DebugHelper.Log($"[QuizUI] Botão {i} configurado");
+                    }
+                }
+            }
+
+            // Configurar botão de confirmar
+            var confirmButton = optionsTransform.Find("ConfirmButton");
+            if (confirmButton != null)
+            {
+                var button = confirmButton.GetComponent<Button>();
+                if (button != null)
+                {
+                    button.onClick.AddListener(OnCorrelationConfirmed);
+                    DebugHelper.Log("[QuizUI] ConfirmButton configurado");
+                }
             }
         }
 
@@ -301,21 +517,19 @@ namespace TimeCrax.Quiz
 
         #region Button Handlers
 
-        private void OnImageOptionClicked(int index)
+        private void OnOptionClicked(int index)
         {
             if (!isInteractable || quizManager == null) return;
 
-            DebugHelper.Log($"[QuizUI] Imagem selecionada: {index}");
+            DebugHelper.Log($"[QuizUI] Opção selecionada: {index}");
             isInteractable = false;
-            quizManager.SubmitAnswer(index);
-        }
 
-        private void OnTextOptionClicked(int index)
-        {
-            if (!isInteractable || quizManager == null) return;
+            // Feedback visual no botão clicado
+            if (index < optionButtons.Count)
+            {
+                HighlightButton(optionButtons[index]);
+            }
 
-            DebugHelper.Log($"[QuizUI] Texto selecionado: {index}");
-            isInteractable = false;
             quizManager.SubmitAnswer(index);
         }
 
@@ -325,62 +539,254 @@ namespace TimeCrax.Quiz
 
             DebugHelper.Log($"[QuizUI] V/F selecionado: {answer}");
             isInteractable = false;
+
+            // Feedback visual
+            if (answer && trueButton != null)
+                HighlightButton(trueButton);
+            else if (!answer && falseButton != null)
+                HighlightButton(falseButton);
+
             quizManager.SubmitTrueFalseAnswer(answer);
         }
 
         /// <summary>
-        /// Chamado quando o jogador confirma a correlação (botão de confirmar)
+        /// Handler para clique nos botões de número da correlação
+        /// Cicla os valores: 0 (vazio) → 1 → 2 → 3 → 1 → ...
         /// </summary>
-        public void OnCorrelationConfirmed()
+        private void OnCorrelationButtonClicked(int buttonIndex)
         {
-            if (!isInteractable || quizManager == null || correlationOrder == null) return;
+            if (!isInteractable) return;
 
-            DebugHelper.Log("[QuizUI] Correlação confirmada");
+            // Ciclar valor: 0→1→2→3→1→2→3...
+            int currentValue = playerSelections[buttonIndex];
+            int newValue;
+
+            if (currentValue == 0)
+                newValue = 1;
+            else if (currentValue >= 3)
+                newValue = 1;
+            else
+                newValue = currentValue + 1;
+
+            playerSelections[buttonIndex] = newValue;
+
+            // Atualizar imagem do número
+            if (buttonIndex < numberImageComponents.Count && numberImageComponents[buttonIndex] != null)
+            {
+                Sprite newSprite = GetNumberSprite(newValue);
+                numberImageComponents[buttonIndex].sprite = newSprite;
+            }
+
+            DebugHelper.Log($"[QuizUI] Botão {buttonIndex + 1} clicado: {currentValue} → {newValue}");
+        }
+
+        /// <summary>
+        /// Retorna o sprite correspondente ao valor do número
+        /// </summary>
+        private Sprite GetNumberSprite(int value)
+        {
+            switch (value)
+            {
+                case 1: return number1Sprite;
+                case 2: return number2Sprite;
+                case 3: return number3Sprite;
+                default: return emptyNumberSprite;
+            }
+        }
+
+        private void OnCorrelationConfirmed()
+        {
+            if (!isInteractable || quizManager == null) return;
+
+            DebugHelper.Log("[QuizUI] Correlação confirmada - verificando respostas...");
+
+            // Verificar se todas as posições foram preenchidas
+            bool allFilled = true;
+            for (int i = 0; i < playerSelections.Length; i++)
+            {
+                if (playerSelections[i] == 0)
+                {
+                    allFilled = false;
+                    break;
+                }
+            }
+
+            if (!allFilled)
+            {
+                DebugHelper.Log("[QuizUI] Nem todas as imagens foram marcadas!");
+                // Poderia mostrar feedback visual aqui
+                return;
+            }
+
+            // Verificar se as seleções estão corretas
+            bool correct = true;
+            for (int i = 0; i < playerSelections.Length && i < correctValues.Length; i++)
+            {
+                DebugHelper.Log($"[QuizUI] Posição {i + 1}: seleção={playerSelections[i]}, correto={correctValues[i]}");
+                if (playerSelections[i] != correctValues[i])
+                {
+                    correct = false;
+                }
+            }
+
+            DebugHelper.Log($"[QuizUI] Resultado da correlação: {(correct ? "CORRETO" : "ERRADO")}");
             isInteractable = false;
-            quizManager.SubmitCorrelationAnswer(correlationOrder);
+
+            // Enviar resultado para o QuizManager
+            // Criamos uma lista com os valores na ordem correta se acertou, ou na ordem errada se errou
+            var resultOrder = new List<int>();
+            for (int i = 0; i < playerSelections.Length; i++)
+            {
+                // Se a seleção for igual ao valor correto, consideramos que está na posição correta
+                if (playerSelections[i] == correctValues[i])
+                    resultOrder.Add(i); // Posição correta
+                else
+                    resultOrder.Add(-1); // Posição incorreta (qualquer valor diferente de i)
+            }
+
+            quizManager.SubmitCorrelationAnswer(resultOrder);
         }
 
         #endregion
 
         #region UI Helpers
 
-        private void HideAllPanels()
+        private void SetQuizTypeLabel(QuizType quizType)
         {
-            if (imageQuizPanel != null) imageQuizPanel.SetActive(false);
-            if (textQuizPanel != null) textQuizPanel.SetActive(false);
-            if (trueFalsePanel != null) trueFalsePanel.SetActive(false);
-            if (correlationPanel != null) correlationPanel.SetActive(false);
+            if (quizTypeLabel == null) return;
+
+            switch (quizType)
+            {
+                case QuizType.ImageQuiz:
+                    quizTypeLabel.text = "QUIZ DE IMAGENS";
+                    break;
+                case QuizType.TextQuiz:
+                    quizTypeLabel.text = "QUIZ DE TEXTO";
+                    break;
+                case QuizType.TrueFalseQuiz:
+                    quizTypeLabel.text = "VERDADEIRO OU FALSO";
+                    break;
+                case QuizType.CorrelationQuiz:
+                    quizTypeLabel.text = "CORRELAÇÃO";
+                    break;
+                default:
+                    quizTypeLabel.text = "QUIZ";
+                    break;
+            }
         }
 
         private void UpdateTimer(float normalizedTime)
         {
-            if (timerBar != null)
+            // Timer pode ser implementado no prefab se necessário
+            // Por enquanto, mudar cor do background quando estiver acabando
+            if (backgroundImage != null && normalizedTime < 0.25f)
             {
-                timerBar.fillAmount = normalizedTime;
+                backgroundImage.color = Color.Lerp(backgroundImage.color, wrongColor, Time.deltaTime * 2f);
+            }
+        }
 
-                // Mudar cor quando estiver acabando
-                if (normalizedTime < 0.25f)
-                    timerBar.color = wrongColor;
-                else
-                    timerBar.color = Color.white;
+        private void HighlightButton(Button button)
+        {
+            if (button == null) return;
+
+            var image = button.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = new Color(0.8f, 0.8f, 0.2f); // Amarelo para selecionado
             }
         }
 
         private void ShowFeedback(bool correct)
         {
-            if (resultFeedback == null) return;
-
-            resultFeedback.SetActive(true);
-
-            if (resultText != null)
+            // Tocar som
+            if (soundEffects != null)
             {
-                resultText.text = correct ? "CORRETO!" : "ERRADO!";
-                resultText.color = correct ? correctColor : wrongColor;
+                if (correct)
+                    soundEffects.PlayRightSlotSound();
+                else
+                    soundEffects.PlayWrongSlotSound();
             }
 
-            if (resultIcon != null)
+            // Mudar cor do background para feedback
+            if (backgroundImage != null)
             {
-                resultIcon.color = correct ? correctColor : wrongColor;
+                backgroundImage.color = correct ? correctColor : wrongColor;
+            }
+
+            // Atualizar label
+            if (quizTypeLabel != null)
+            {
+                quizTypeLabel.text = correct ? "CORRETO!" : "ERRADO!";
+                quizTypeLabel.color = correct ? correctColor : wrongColor;
+            }
+        }
+
+        private void CleanupQuiz()
+        {
+            if (currentQuizInstance != null)
+            {
+                Destroy(currentQuizInstance);
+                currentQuizInstance = null;
+            }
+
+            ClearCachedReferences();
+
+            if (quizCanvas != null)
+                quizCanvas.SetActive(false);
+
+            // Resetar cor do background
+            if (backgroundImage != null)
+                backgroundImage.color = Color.white;
+
+            // Resetar cor do label
+            if (quizTypeLabel != null)
+                quizTypeLabel.color = Color.white;
+        }
+
+        private void ClearCachedReferences()
+        {
+            // Remover listeners antes de limpar
+            foreach (var button in optionButtons)
+            {
+                if (button != null)
+                    button.onClick.RemoveAllListeners();
+            }
+
+            foreach (var button in correlationButtons)
+            {
+                if (button != null)
+                    button.onClick.RemoveAllListeners();
+            }
+
+            if (trueButton != null)
+                trueButton.onClick.RemoveAllListeners();
+
+            if (falseButton != null)
+                falseButton.onClick.RemoveAllListeners();
+
+            optionButtons.Clear();
+            optionTexts.Clear();
+            optionImages.Clear();
+            correlationImages.Clear();
+            correlationTexts.Clear();
+            correlationButtons.Clear();
+            numberImageComponents.Clear();
+            correlationOrder = null;
+            questionText = null;
+            trueButton = null;
+            falseButton = null;
+            playerSelections = new int[3];
+            correctValues = new int[3];
+        }
+
+        private void ShuffleList<T>(List<T> list)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                T temp = list[i];
+                list[i] = list[j];
+                list[j] = temp;
             }
         }
 
