@@ -9,8 +9,17 @@ public class DeckRepair : MonoBehaviourPunCallbacks
     [SerializeField] private Canvas gameInfo;
     [SerializeField] private SoundEffects soundEffects;
 
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     public void OnMouseDown()
     {
+        // Bloquear clique durante animações de câmera
+        if (CameraController.IsAnimating) return;
+
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
 
         if (gameObject.CompareTag("Disabled"))
         {
@@ -99,6 +108,9 @@ public class DeckRepair : MonoBehaviourPunCallbacks
                 break;
             }
         }
+
+        // Resetar proteção contra clique duplo após ação
+        isProcessingClick = false;
     }
 
     [PunRPC]
@@ -130,6 +142,15 @@ public class DeckRepair : MonoBehaviourPunCallbacks
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
+        isProcessingClick = false;
+    }
+
+    /// <summary>
+    /// Reseta a proteção contra clique duplo
+    /// </summary>
+    public void ResetClickProtection()
+    {
+        isProcessingClick = false;
     }
 
 

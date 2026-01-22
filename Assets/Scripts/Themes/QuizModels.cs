@@ -106,6 +106,31 @@ namespace TimeCrax.Themes
             if (correlationQuiz != null) return QuizType.CorrelationQuiz;
             return QuizType.None;
         }
+
+        /// <summary>
+        /// Retorna uma lista de todos os tipos de quiz disponíveis
+        /// </summary>
+        public List<QuizType> GetAllAvailableQuizTypes()
+        {
+            var types = new List<QuizType>();
+            if (imageQuiz != null) types.Add(QuizType.ImageQuiz);
+            if (textQuiz != null) types.Add(QuizType.TextQuiz);
+            if (trueFalseQuiz != null) types.Add(QuizType.TrueFalseQuiz);
+            if (correlationQuiz != null) types.Add(QuizType.CorrelationQuiz);
+            return types;
+        }
+
+        /// <summary>
+        /// Retorna um tipo de quiz aleatório entre os disponíveis
+        /// </summary>
+        public QuizType GetRandomAvailableQuizType()
+        {
+            var availableTypes = GetAllAvailableQuizTypes();
+            if (availableTypes.Count == 0) return QuizType.None;
+
+            int randomIndex = UnityEngine.Random.Range(0, availableTypes.Count);
+            return availableTypes[randomIndex];
+        }
     }
 
     #region API Response Classes

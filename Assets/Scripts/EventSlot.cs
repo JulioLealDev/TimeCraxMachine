@@ -18,6 +18,9 @@ public class EventSlot : MonoBehaviourPunCallbacks
     private int pendingQuizSlotCount = -1;
     private EventCard pendingQuizCard;
 
+    // Proteção contra clique duplo
+    private static bool isProcessingClick = false;
+
     public int SlotNumber => slotNumber;
 
     // Start is called before the first frame update
@@ -45,17 +48,32 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        // Bloquear clique durante animações de câmera
+        if (CameraController.IsAnimating) return;
+
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+
         var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
         foreach (var card in eventCards)
         {
             if (card != null && card.CompareTag("Drew"))
             {
+                isProcessingClick = true;
                 // Enviar requisição ao MasterClient para processar o clique no slot
                 photonView.RPC("RequestSlotClick", RpcTarget.MasterClient, card.slotCount, slotNumber);
                 break; // Só processa uma carta
             }
         }
+    }
+
+    /// <summary>
+    /// Reseta a proteção contra clique duplo (chamado após ação completar)
+    /// </summary>
+    public static void ResetClickProtection()
+    {
+        isProcessingClick = false;
     }
 
     /// <summary>
@@ -119,14 +137,22 @@ public class EventSlot : MonoBehaviourPunCallbacks
             {
                 this.DelayedCall(5f, RandomComponent);
             }
+
+            // Resetar proteção contra clique duplo após animação
+            this.DelayedCall(5.5f, ResetClickProtection);
         }
     }
+
+    // Tempo para aguardar a animação da carta antes de mostrar o quiz
+    private const float CARD_ANIMATION_DELAY = 3.5f;
 
     /// <summary>
     /// Processa slot correto (pode ter quiz)
     /// </summary>
     private void ProcessRightSlot(int cardSlotCount, int clickedSlotNumber)
     {
+        DebugHelper.Log($"[EventSlot] ProcessRightSlot chamado - cardSlotCount={cardSlotCount}, clickedSlotNumber={clickedSlotNumber}");
+
         var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         EventCard targetCard = null;
 
@@ -139,28 +165,45 @@ public class EventSlot : MonoBehaviourPunCallbacks
             }
         }
 
-        if (targetCard == null) return;
+        if (targetCard == null)
+        {
+            DebugHelper.Log($"[EventSlot] targetCard é NULL para cardSlotCount={cardSlotCount}");
+            return;
+        }
+
+        DebugHelper.Log($"[EventSlot] targetCard encontrado: {targetCard.name}, quizManager={quizManager != null}");
+
+        // Animar a carta para o slot
+        targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
 
         // Verificar se a carta tem quiz
-        if (targetCard.HasQuiz() && quizManager != null)
+        bool hasQuiz = targetCard.HasQuiz();
+        DebugHelper.Log($"[EventSlot] hasQuiz={hasQuiz}");
+
+        if (hasQuiz && quizManager != null)
         {
+            DebugHelper.Log("[EventSlot] Carta tem quiz! Aguardando animação...");
+
             // Guardar estado pendente para quando o quiz terminar
             pendingQuizSlotCount = cardSlotCount;
             pendingQuizCard = targetCard;
             pendingQuizClickedSlotNumber = clickedSlotNumber;
 
-            // Animar a carta para o slot (mas ainda não confirma)
-            targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
-
-            // Iniciar quiz apenas no MasterClient
+            // Aguardar a animação da carta terminar antes de iniciar o quiz
+            // Apenas MasterClient inicia o quiz (vai sincronizar via RPC)
             if (PhotonNetwork.IsMasterClient)
             {
-                var themeCard = targetCard.GetThemeCard();
-                quizManager.StartQuiz(themeCard, cardSlotCount);
+                this.DelayedCall(CARD_ANIMATION_DELAY, () =>
+                {
+                    DebugHelper.Log("[EventSlot] Animação terminou, iniciando quiz...");
+                    var themeCard = targetCard.GetThemeCard();
+                    quizManager.StartQuiz(themeCard, cardSlotCount);
+                });
             }
         }
         else
         {
+            DebugHelper.Log($"[EventSlot] Sem quiz ou quizManager null - finalizando slot diretamente");
             // Sem quiz - fluxo original
             FinalizeCorrectSlotLocal(cardSlotCount, targetCard, clickedSlotNumber);
         }
@@ -192,6 +235,9 @@ public class EventSlot : MonoBehaviourPunCallbacks
         card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
         card.tag = "Disabled";
         card.waitToDistance();
+
+        // Resetar proteção contra clique duplo
+        ResetClickProtection();
 
         CheckIfWin();
     }
@@ -277,14 +323,33 @@ public class EventSlot : MonoBehaviourPunCallbacks
             deckEvent.AddCardBack(slotCount);
         }
 
-        // Reativar slots para nova tentativa
-        this.DelayedCall(3.5f, () =>
-        {
-            SetUpSlots(true, "Selectable");
-        });
-
         // Tocar som de erro
         soundEffects.PlayWrongSlotSound();
+
+        // Sortear componente para malfunction após câmera voltar (3.3s animação + 1.5s zoom out + margem)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            this.DelayedCall(5f, RandomComponent);
+        }
+
+        // Resetar proteção contra clique duplo após animação
+        this.DelayedCall(5.5f, ResetClickProtection);
+    }
+
+    /// <summary>
+    /// Verifica se é o turno do jogador local
+    /// </summary>
+    private bool IsMyTurn()
+    {
+        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        foreach (var player in players)
+        {
+            if (player != null && player.photonView != null && player.photonView.IsMine && player.GetYourTurn())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void SetUpSlots(bool activateSlot, string tag)

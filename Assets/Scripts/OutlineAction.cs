@@ -26,18 +26,14 @@ public class OutlineAction : MonoBehaviour
         {
             if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
             {
-                //DebugHelper.Log("Highlight n�o nulo Outiline: "+ highlight.gameObject.name);
                 highlight.gameObject.GetComponent<OutlineComponent>().enabled = false;
                 highlight = null;
             }
             else
             {
-                //DebugHelper.Log("Highlight n�o nulo Material: " + highlight.gameObject.name);
                 highlight.gameObject.GetComponent<MeshRenderer>().material = originalMaterial;
                 highlight = null;
-
             }
-
         }
 
         Transform[] opcoes = menuStart.GetComponentsInChildren<Transform>();
@@ -46,20 +42,15 @@ public class OutlineAction : MonoBehaviour
             opcoes[i].GetComponentInChildren<TextMeshPro>().alpha = 0;
         }
 
-
         Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit)) //Make sure you have EventSystem in the hierarchy before using EventSystem
+        if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit))
         {
             highlight = raycastHit.transform;
-            //DebugHelper.Log("raycastHIt -- Highligh: " + highlight.gameObject.name);
             if (highlight.CompareTag("Selectable"))
             {
-                //DebugHelper.Log("raycast hitting: " + highlight.gameObject.name);
-
                 if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
                 {
                     highlight.gameObject.GetComponent<OutlineComponent>().enabled = true;
-                    //DebugHelper.Log("tem outline -- raycast hitting: " + highlight.gameObject.name);
 
                     for (int i = 0; i < opcoes.Length; i++)
                     {
@@ -69,15 +60,11 @@ public class OutlineAction : MonoBehaviour
                             {
                                 opcoes[i].GetComponentInChildren<TextMeshPro>().alpha = 1;
                             }
-
                         }
-
                     }
-
                 }
                 else
                 {
-                    //DebugHelper.Log("raycast hitting: " + highlight.gameObject.name);
                     if (highlight.gameObject.GetComponent<MeshRenderer>().material != selectionMaterial)
                     {
                         originalMaterial = highlight.gameObject.GetComponent<MeshRenderer>().material;
@@ -87,12 +74,9 @@ public class OutlineAction : MonoBehaviour
             }
             else
             {
-                //DebugHelper.Log("N�o � Selectable: "+ highlight.gameObject.name);
                 highlight = null;
             }
-
         }
-
     }
     public void MakeObjectsSelectable()
     {

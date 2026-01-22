@@ -7,34 +7,43 @@ public class QuitInGaming : MonoBehaviour
     [SerializeField] private SoundEffects soundEffects;
     [SerializeField] private GameManager gameManager;
 
+    private bool isQuitting = false;
+
     private void OnMouseDown()
     {
+        // Prevenir múltiplos cliques
+        if (isQuitting) return;
+        isQuitting = true;
+
         DebugHelper.Log("1 -- Clicou no Quit");
 
-        soundEffects.PressButtonSound();
+        if (soundEffects != null) soundEffects.PressButtonSound();
 
-        animator.SetBool("quitGame", true);
-        //chamar um texto pedindo confirma��o
+        if (animator != null) animator.SetBool("quitGame", true);
+
         this.DelayedCall(1f, QuitGame);
-
     }
 
     public void QuitGame()
     {
-        animator.SetBool("quitGame", false);
+        if (animator != null) animator.SetBool("quitGame", false);
 
         this.DelayedCall(2f, CloseHUD);
 
-        gameManager.BackToMenu();
-
+        if (gameManager != null) gameManager.BackToMenu();
     }
 
     public void CloseHUD()
     {
-        gameManager.hud.SetActive(false);
+        if (gameManager == null) return;
+
+        if (gameManager.hud != null) gameManager.hud.SetActive(false);
 
         gameManager.DeactivateAll();
         gameManager.ResetAllComponents();
         gameManager.ResetAllPlatenames();
+
+        // Resetar flag para permitir novo quit em próxima partida
+        isQuitting = false;
     }
 }

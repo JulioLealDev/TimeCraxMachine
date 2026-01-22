@@ -13,6 +13,9 @@ namespace TimeCrax.Themes
         [SerializeField] private SoundEffects soundEffects;
         [SerializeField] private Canvas inputName;
 
+        // Proteção contra clique duplo
+        private bool isProcessingClick = false;
+
         private void Start()
         {
             // Inscrever no evento de fechamento da tela de temas
@@ -32,6 +35,10 @@ namespace TimeCrax.Themes
 
         private void OnMouseDown()
         {
+            // Proteção contra clique duplo
+            if (isProcessingClick) return;
+            isProcessingClick = true;
+
             DebugHelper.Log("[ThemeSelectorButton] Clicked");
 
             // Desabilitar menu enquanto tela de temas está aberta
@@ -67,6 +74,9 @@ namespace TimeCrax.Themes
 
             if (inputName != null)
                 inputName.gameObject.SetActive(true);
+
+            // Resetar proteção contra clique duplo
+            isProcessingClick = false;
         }
     }
 }

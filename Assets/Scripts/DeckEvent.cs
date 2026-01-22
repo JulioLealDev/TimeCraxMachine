@@ -12,6 +12,9 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     private List<int> eventList = new List<int>();
     private int[] numbers = { 1, 2, 3, 4, 5, 6, 7 };
 
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     void Start()
     {
         eventList.Clear();
@@ -20,6 +23,13 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        // Bloquear clique durante animações de câmera
+        if (CameraController.IsAnimating) return;
+
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
         if (gameObject.CompareTag("Selectable"))
         {
             // Enviar requisição ao MasterClient para processar a compra
@@ -95,6 +105,9 @@ public class DeckEvent : MonoBehaviourPunCallbacks
                 break;
             }
         }
+
+        // Resetar proteção contra clique duplo após ação
+        isProcessingClick = false;
     }
 
     [PunRPC]
@@ -125,6 +138,15 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
+        isProcessingClick = false;
+    }
+
+    /// <summary>
+    /// Reseta a proteção contra clique duplo
+    /// </summary>
+    public void ResetClickProtection()
+    {
+        isProcessingClick = false;
     }
 
 

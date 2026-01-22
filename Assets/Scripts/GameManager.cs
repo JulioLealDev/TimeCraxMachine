@@ -180,47 +180,41 @@ public class GameManager : MonoBehaviourPunCallbacks
                     return;
                 }
 
-                int plateNameIndex = 0;
+                int plateNameIndex = -1;
 
-                int maxPlayerNumber = PhotonNetwork.PlayerList.Length;
-                while (maxPlayerNumber > 0)
+                // Encontrar qual jogador saiu comparando players locais com PhotonNetwork.PlayerList
+                foreach (var player in players)
                 {
-                    DebugHelper.Log("while maxplayerNumber: " + maxPlayerNumber);
-                    foreach (var player in players)
+                    if (player == null) continue;
+
+                    bool playerStillConnected = false;
+                    for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
                     {
-                        // Verificar se player é válido
-                        if (player == null) continue;
-
-                        for(int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+                        if (player.nickname == PhotonNetwork.PlayerList[i].NickName)
                         {
-                            DebugHelper.Log("playerNickname: " + player.nickname + " ---  PN_Nickname: "+ PhotonNetwork.PlayerList[i].NickName);
-                            if (player.nickname != PhotonNetwork.PlayerList[i].NickName)
-                            {
-                                DebugHelper.Log("maxplayerNumber --: " + maxPlayerNumber);
-                                maxPlayerNumber--;
-                            }
-                        }
-
-                        if(maxPlayerNumber == 0)
-                        {
-                            DebugHelper.Log("ENTROU maxplayerNumber: " + maxPlayerNumber);
-                            plateNameIndex = player.plateNameIndex;
-                            DebugHelper.Log("plateNameIndex: " + plateNameIndex);
-
+                            playerStillConnected = true;
                             break;
                         }
-                        else
-                        {
-                            DebugHelper.Log("RESETANDO maxplayerNumber: " + maxPlayerNumber);
-                            maxPlayerNumber = PhotonNetwork.PlayerList.Length;
-                        }
-
                     }
 
+                    // Se o jogador não está mais na lista do Photon, ele saiu
+                    if (!playerStillConnected)
+                    {
+                        DebugHelper.Log("[Update] Jogador que saiu: " + player.nickname + " plateNameIndex: " + player.plateNameIndex);
+                        plateNameIndex = player.plateNameIndex;
+                        break;
+                    }
                 }
 
-                DebugHelper.Log("numberPlayers: "+PhotonNetwork.PlayerList.Length+" --  initialNumber: "+initialPlayersNumber);
-                photonView.RPC("RemovePlayersPlatenames", RpcTarget.All, plateNameIndex);
+                if (plateNameIndex >= 0)
+                {
+                    DebugHelper.Log("numberPlayers: " + PhotonNetwork.PlayerList.Length + " --  initialNumber: " + initialPlayersNumber);
+                    photonView.RPC("RemovePlayersPlatenames", RpcTarget.All, plateNameIndex);
+                }
+                else
+                {
+                    DebugHelper.Log("[Update] Não foi possível identificar qual jogador saiu");
+                }
             }
         }
     }
@@ -552,6 +546,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void SyncTurnInternal(int syncedTime, int syncedRound)
     {
+        // Não processar se o jogo não está ativo
+        if (!gameIsOn)
+        {
+            DebugHelper.Log("[GameManager] SyncTurn ignorado - jogo não está ativo");
+            return;
+        }
+
         DebugHelper.Log($"[GameManager] SyncTurn recebido: time={syncedTime}, round={syncedRound}");
         time = syncedTime;
         if (syncedRound >= 0)
@@ -563,10 +564,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (orderedPlayers == null || orderedPlayers.Length == 0)
         {
             players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+            if (players == null || players.Length == 0)
+            {
+                DebugHelper.Log("[GameManager] SyncTurn - nenhum player encontrado");
+                return;
+            }
+
             orderedPlayers = new PlayerScript[players.Length];
 
             for (int i = 0; i < players.Length; i++)
             {
+                if (players[i] == null) continue;
                 if (players[i].index == 0) orderedPlayers[0] = players[i];
                 else if (players[i].index == 1) orderedPlayers[1] = players[i];
                 else if (players[i].index == 2) orderedPlayers[2] = players[i];
@@ -579,6 +587,18 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void Turn()
     {
+        // Não processar se o jogo não está ativo
+        if (!gameIsOn)
+        {
+            DebugHelper.Log("[Turn] Ignorado - jogo não está ativo");
+            return;
+        }
+
+        if (orderedPlayers == null || orderedPlayers.Length == 0)
+        {
+            DebugHelper.Log("[Turn] orderedPlayers é null ou vazio");
+            return;
+        }
 
         for (int i = 0; i < orderedPlayers.Length; i++)
         {
@@ -785,6 +805,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void StartTurn()
     {
         //Button[] components = gameHUD.GetComponentsInChildren<Button>();
+
+        // Garantir que os slots da timeline estejam desativados no início de cada turno
+        // Os slots só devem ser ativados quando o jogador comprar uma carta de evento
+        var eventSlot = FindFirstObjectByType<EventSlot>();
+        if (eventSlot != null)
+        {
+            eventSlot.SetUpSlots(false, "Undestructable");
+        }
 
         players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
@@ -1040,21 +1068,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        //if (time == PhotonNetwork.PlayerList.Length - 1)
-        DebugHelper.Log("Ultimo do Round? -- Time: " + time + " - index: " + lastPlayerIndex);
-        if (time == lastPlayerIndex)
-        {
-            DebugHelper.Log("Random Malfunction");
-            RandomComponentNumber();
-            waiting = 4;
-            
-        }
-        //else
-        //{
-        //    DebugHelper.Log("N�o � o ultimo da rodada");
-        //    Invoke("WaitForFinishTurn", waiting);
-        //}
-
         this.DelayedCall(waiting, WaitForFinishTurn);
 
     }
@@ -1103,12 +1116,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void FinishTurn()
     {
         DebugHelper.Log("4 -- Finish turn, time ++");
-        deckRepair.tag = "Disabled";
-        deckEvent.tag = "Disabled";
-        timeline.tag = "Disabled";
+
+        // Verificações de segurança
+        if (deckRepair != null) deckRepair.tag = "Disabled";
+        if (deckEvent != null) deckEvent.tag = "Disabled";
+        if (timeline != null) timeline.tag = "Disabled";
 
         // Apenas MasterClient incrementa e sincroniza o time
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.IsConnected && photonView != null)
         {
             time++;
             photonView.RPC("SyncTurn", RpcTarget.All, time);
@@ -1142,50 +1157,85 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void CheckQuitGamePlayer()
     {
+        // Verificações de segurança
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.LocalPlayer == null)
+        {
+            DebugHelper.Log("[CheckQuitGamePlayer] Não conectado ou LocalPlayer null");
+            return;
+        }
 
         players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
+        if (players == null || players.Length == 0)
+        {
+            DebugHelper.Log("[CheckQuitGamePlayer] Nenhum player encontrado");
+            return;
+        }
+
         foreach (var player in players)
         {
-            DebugHelper.Log("2 -- LocalPlayer ActrNumber: " + PhotonNetwork.LocalPlayer?.ActorNumber + " --- Photon ActrNumber: " + player?.photonView.ControllerActorNr);
-            if (PhotonNetwork.LocalPlayer?.ActorNumber == player?.photonView.ControllerActorNr && !gameOver.gameIsOver)
+            if (player == null || player.photonView == null) continue;
+
+            DebugHelper.Log("2 -- LocalPlayer ActrNumber: " + PhotonNetwork.LocalPlayer?.ActorNumber + " --- Photon ActrNumber: " + player.photonView.ControllerActorNr);
+
+            bool isGameOver = gameOver != null && gameOver.gameIsOver;
+
+            if (PhotonNetwork.LocalPlayer.ActorNumber == player.photonView.ControllerActorNr && !isGameOver)
             {
-
-                //photonView.RPC("RemovePlateName", RpcTarget.All, player.plateNameIndex);
-
                 DebugHelper.Log("Chamando ShowLeftPlayer");
-                photonView.RPC("ShowLeftPlayerInfo", RpcTarget.Others, player.nickname);
 
+                // Enviar RPC apenas se ainda estiver conectado
+                if (PhotonNetwork.IsConnected && photonView != null)
+                {
+                    photonView.RPC("ShowLeftPlayerInfo", RpcTarget.Others, player.nickname);
+                }
 
                 if (player.GetYourTurn())
                 {
                     DebugHelper.Log("numero de players: " + PhotonNetwork.PlayerList.Length);
-                    if(PhotonNetwork.PlayerList.Length != 1)
+                    if (PhotonNetwork.PlayerList.Length > 1 && PhotonNetwork.IsConnected && photonView != null)
                     {
-                        //return true;
-                        photonView.RPC("FinishTurn", RpcTarget.All);
+                        photonView.RPC("FinishTurn", RpcTarget.Others); // Enviar apenas para outros, não para si mesmo
                     }
-                    //else
-                    //{
-                        //photonView.RPC("FinishTurn", RpcTarget.All);
-                        //return true;
-                    //}
-
                 }
+
+                break; // Sair do loop após encontrar o jogador local
             }
         }
-
-        //return false;
     }
 
     [PunRPC]
     public void ShowLeftPlayerInfo(string nickname)
     {
-        DebugHelper.Log("Entrou no ShowLeftPlayer");
+        DebugHelper.Log("Entrou no ShowLeftPlayer - nickname: " + nickname);
 
+        if (gameInfo == null)
+        {
+            DebugHelper.Log("ShowLeftPlayerInfo: gameInfo é null");
+            return;
+        }
+
+        if (playerLeftBackground == null)
+        {
+            DebugHelper.Log("ShowLeftPlayerInfo: playerLeftBackground é null");
+            return;
+        }
+
+        DebugHelper.Log("ShowLeftPlayerInfo: Ativando gameInfo...");
         gameInfo.gameObject.SetActive(true);
-        playerLeftBackground.GetComponentInChildren<TMP_Text>().text = nickname + " left the game";
-        playerLeftBackground.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
+        DebugHelper.Log("ShowLeftPlayerInfo: gameInfo ativado");
+
+        var tmpText = playerLeftBackground.GetComponentInChildren<TMP_Text>();
+        if (tmpText != null)
+        {
+            tmpText.text = nickname + " left the game";
+        }
+
+        var canvasGroup = playerLeftBackground.GetComponent<CanvasGroup>();
+        if (canvasGroup != null)
+        {
+            canvasGroup.LeanAlpha(1f, 0.5f);
+        }
 
         this.DelayedCall(1.5f, HideLeftPlayerInfo);
     }
@@ -1193,34 +1243,37 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void HideLeftPlayerInfo()
     {
         DebugHelper.Log("Entrou no HideLeftPlayer");
-        playerLeftBackground.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
+
+        if (playerLeftBackground == null) return;
+
+        var canvasGroup = playerLeftBackground.GetComponent<CanvasGroup>();
+        if (canvasGroup != null)
+        {
+            canvasGroup.LeanAlpha(0f, 0.5f);
+        }
+
         this.DelayedCall(0.5f, DisableOnlyGameInfo);
     }
 
     public void DisableOnlyGameInfo()
     {
-        gameInfo.gameObject.SetActive(false);
+        if (gameInfo != null)
+        {
+            gameInfo.gameObject.SetActive(false);
+        }
     }
 
     public void BackToMenu()
     {
+        DebugHelper.Log("[BackToMenu] Iniciando saída do jogo");
 
-        //bool isTurn = CheckQuitGamePlayer();
-
-        //if (isTurn)
-        //{
-        //    DebugHelper.Log("7 -- Estou no turno");
-        //    Invoke("SetUpBackToMenu", 0.5f);
-        //}
-        //else
-        //{
-        //    SetUpBackToMenu();
-        //}
+        // Marcar jogo como inativo ANTES de notificar outros jogadores
+        // Isso evita que RPCs de turno continuem sendo processados
+        gameIsOn = false;
 
         CheckQuitGamePlayer();
 
         this.DelayedCall(0.7f, SetUpBackToMenu);
-
     }
 
     //[PunRPC]
@@ -1260,16 +1313,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log("8 -- SeUPBackToMenu");
 
-        backgroundMusic.PlayMenuSound();
+        if (backgroundMusic != null) backgroundMusic.PlayMenuSound();
 
         gameIsOn = false;
-        gameOver.gameIsOver = false;
+        if (gameOver != null) gameOver.gameIsOver = false;
 
-        //DeactivateAll();
-        //ResetAllComponents();
-        //ResetAllPlatenames();
-
-        deckEvent.ResetAllEventCards();
+        if (deckEvent != null) deckEvent.ResetAllEventCards();
 
         var gameConnection = FindFirstObjectByType<GameConnection>();
         if (gameConnection != null)
@@ -1376,22 +1425,23 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void ActivateEnd()
     {
-
+        // Verificar se o jogador LOCAL está na vez
+        bool shouldEnable = false;
         foreach (var player in players)
         {
-
-            if (player.index == time)
+            if (player.index == time && player.photonView.IsMine)
             {
-                DebugHelper.Log("player " + player.nickname + " est� na vez");
-                if (cachedEndButtonMeshCollider != null) cachedEndButtonMeshCollider.enabled = true;
-            }
-            else
-            {
-                DebugHelper.Log("player " + player.nickname + " N�O est� na vez");
-                if (cachedEndButtonMeshCollider != null) cachedEndButtonMeshCollider.enabled = false;
+                DebugHelper.Log("player " + player.nickname + " est� na vez (local)");
+                shouldEnable = true;
+                break;
             }
         }
 
+        if (cachedEndButtonMeshCollider != null)
+        {
+            cachedEndButtonMeshCollider.enabled = shouldEnable;
+            DebugHelper.Log("EndButton enabled: " + shouldEnable);
+        }
     }
 
     public void ActivateFinishButton(bool activate)

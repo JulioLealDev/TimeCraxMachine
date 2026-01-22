@@ -9,6 +9,9 @@ public class CameraController : MonoBehaviourPunCallbacks
     [SerializeField] private GameConnection gameConnection;
     [SerializeField] private bool fullScreen = true;
 
+    // Indica se a câmera está em animação (bloqueia interações)
+    public static bool IsAnimating { get; private set; }
+
     // Cached components
     private Timeline timeline;
     private EventSlot slot;
@@ -58,12 +61,14 @@ public class CameraController : MonoBehaviourPunCallbacks
 
     public void ZoomTimeline()
     {
+        IsAnimating = true;
         animator.SetBool("distanceZoom", false);
         animator.SetBool("zoomTimeline", true);
     }
 
     public void DistanceTimeline()
     {
+        IsAnimating = true;
         animator.SetBool("zoomTimeline", false);
         animator.SetBool("distanceZoom", true);
         this.DelayedCall(1.5f, ActivateEndButton);
@@ -76,7 +81,9 @@ public class CameraController : MonoBehaviourPunCallbacks
 
     void AwaitZoomTimeline()
     {
-        if (timeline.photonView.IsMine)
+        IsAnimating = false;
+        // Verificar se é o turno do jogador local
+        if (IsMyTurn())
         {
             if (CheckIfCardWasDrew())
             {
@@ -91,7 +98,9 @@ public class CameraController : MonoBehaviourPunCallbacks
 
     void AwaitDistanceTimeline()
     {
-        if (timeline.photonView.IsMine)
+        IsAnimating = false;
+        // Verificar se é o turno do jogador local
+        if (IsMyTurn())
         {
             timeline.ActiveTimeline(true);
             if (CheckIfCardWasDrew())
@@ -99,6 +108,22 @@ public class CameraController : MonoBehaviourPunCallbacks
                 slot.SetUpSlots(false, "Undestructable");
             }
         }
+    }
+
+    /// <summary>
+    /// Verifica se é o turno do jogador local
+    /// </summary>
+    private bool IsMyTurn()
+    {
+        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        foreach (var player in players)
+        {
+            if (player != null && player.photonView != null && player.photonView.IsMine && player.GetYourTurn())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     bool CheckIfCardWasDrew()

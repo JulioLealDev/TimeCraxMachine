@@ -129,7 +129,19 @@ public class EventCard : MonoBehaviourPunCallbacks
     /// </summary>
     public bool HasQuiz()
     {
-        return themeCard?.quizData?.HasQuiz ?? false;
+        bool hasThemeCard = themeCard != null;
+        bool hasQuizData = themeCard?.quizData != null;
+        bool hasQuiz = themeCard?.quizData?.HasQuiz ?? false;
+
+        DebugHelper.Log($"[EventCard.HasQuiz] slotCount={slotCount}, hasThemeCard={hasThemeCard}, hasQuizData={hasQuizData}, hasQuiz={hasQuiz}");
+
+        if (hasQuizData)
+        {
+            var qd = themeCard.quizData;
+            DebugHelper.Log($"[EventCard.HasQuiz] imageQuiz={qd.imageQuiz != null}, textQuiz={qd.textQuiz != null}, trueFalseQuiz={qd.trueFalseQuiz != null}, correlationQuiz={qd.correlationQuiz != null}");
+        }
+
+        return hasQuiz;
     }
 
     /// <summary>

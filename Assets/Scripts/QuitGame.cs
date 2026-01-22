@@ -11,8 +11,15 @@ public class QuitGame : MonoBehaviour
     [SerializeField] private InputField nameDisplay;
     [SerializeField] private SoundEffects soundEffects;
 
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     private void OnMouseDown()
     {
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
         soundEffects.PressButtonSound();
         animator.SetBool("quitGame", true);
         nameDisplay.text = " ";

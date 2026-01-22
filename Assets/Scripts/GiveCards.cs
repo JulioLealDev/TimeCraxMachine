@@ -7,8 +7,19 @@ public class GiveCards : MonoBehaviour
 
     public Canvas gameInfo;
     private int sendNumberCards;
+
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     private void OnMouseDown()
     {
+        // Bloquear clique durante animações de câmera
+        if (CameraController.IsAnimating) return;
+
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
         DebugHelper.Log("Clicou no player: " + gameObject.name);
 
         var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
@@ -103,13 +114,14 @@ public class GiveCards : MonoBehaviour
                     {
                         var gameManager = FindFirstObjectByType<GameManager>();
                         gameManager.GiveCard(numberPlayer);
+                        // Resetar proteção após dar a carta
+                        isProcessingClick = false;
                     }
                 }
             }
 
 
         }
-   
     }
 
     public void HideFiveInfo()
@@ -154,5 +166,14 @@ public class GiveCards : MonoBehaviour
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
+        isProcessingClick = false;
+    }
+
+    /// <summary>
+    /// Reseta a proteção contra clique duplo
+    /// </summary>
+    public void ResetClickProtection()
+    {
+        isProcessingClick = false;
     }
 }

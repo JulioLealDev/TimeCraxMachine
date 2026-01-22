@@ -21,6 +21,9 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     private MeshCollider cachedMeshCollider;
     private Animator cachedAnimator;
     private Animator[] cachedChildAnimators = new Animator[4];
+
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
     void Start()
     {
         soundEffects = FindFirstObjectByType<SoundEffects>();
@@ -76,8 +79,14 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        // Bloquear clique durante animações de câmera
+        if (CameraController.IsAnimating) return;
 
-        if (gameObject.CompareTag("Selectable")) 
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
+        if (gameObject.CompareTag("Selectable"))
         {
             var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
             foreach (var player in players)
@@ -190,6 +199,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
+        isProcessingClick = false;
     }
 
     public void AddMalfunction()

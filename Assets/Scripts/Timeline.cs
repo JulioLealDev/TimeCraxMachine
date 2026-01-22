@@ -7,6 +7,9 @@ public class Timeline : MonoBehaviourPunCallbacks
     private bool zoom;
     private FinishTurn endButton;
 
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,6 +19,13 @@ public class Timeline : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        // Bloquear clique durante animações de câmera
+        if (CameraController.IsAnimating) return;
+
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
         if (gameObject.CompareTag("Selectable"))
         {
             // Calcular novo estado localmente
@@ -63,6 +73,17 @@ public class Timeline : MonoBehaviourPunCallbacks
         {
             camera.DistanceTimeline();
         }
+
+        // Resetar proteção contra clique duplo após animação da câmera
+        this.DelayedCall(1.5f, ResetClickProtection);
+    }
+
+    /// <summary>
+    /// Reseta a proteção contra clique duplo
+    /// </summary>
+    public void ResetClickProtection()
+    {
+        isProcessingClick = false;
     }
 
     public void ActiveTimeline(bool activate)

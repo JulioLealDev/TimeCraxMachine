@@ -35,6 +35,12 @@ namespace TimeCrax.Quiz
         [Header("Audio")]
         [SerializeField] private SoundEffects soundEffects;
 
+        [Header("Quiz Roulette")]
+        [SerializeField] private GameObject quizRouletteCanvas;
+        [SerializeField] private RectTransform quizPointer;
+        [SerializeField] private float rouletteDuration = 3f;
+        [SerializeField] private int minSpins = 3; // Número mínimo de voltas completas
+
         [Header("Correlation Number Sprites")]
         [SerializeField] private Sprite emptyNumberSprite;
         [SerializeField] private Sprite number1Sprite;
@@ -66,6 +72,10 @@ namespace TimeCrax.Quiz
         private List<Button> correlationButtons = new List<Button>(); // Botões de seleção
         private Button confirmButton; // Botão de confirmar correlação
 
+        // Roleta - dados temporários durante animação
+        private ThemeCard pendingCard;
+        private QuizType pendingQuizType;
+
         private void Start()
         {
             quizManager = QuizManager.Instance;
@@ -78,6 +88,10 @@ namespace TimeCrax.Quiz
             // Inicialmente escondido
             if (quizCanvas != null)
                 quizCanvas.SetActive(false);
+
+            // Roleta também escondida
+            if (quizRouletteCanvas != null)
+                quizRouletteCanvas.SetActive(false);
         }
 
         private void OnDestroy()
@@ -97,9 +111,128 @@ namespace TimeCrax.Quiz
         #region Public Methods
 
         /// <summary>
-        /// Exibe o quiz para a carta especificada
+        /// Exibe o quiz para a carta especificada (com roleta)
         /// </summary>
         public void ShowQuiz(ThemeCard card, QuizType quizType)
+        {
+            if (card == null) return;
+
+            DebugHelper.Log($"[QuizUI] Iniciando sequência de quiz tipo {quizType}");
+
+            // Armazenar dados para após a roleta
+            pendingCard = card;
+            pendingQuizType = quizType;
+
+            // Se temos roleta configurada, mostrar ela primeiro
+            if (quizRouletteCanvas != null && quizPointer != null)
+            {
+                ShowRoulette(quizType);
+            }
+            else
+            {
+                // Sem roleta, mostrar quiz diretamente
+                ShowQuizInternal(card, quizType);
+            }
+        }
+
+        /// <summary>
+        /// Mostra a roleta e anima até parar no tipo de quiz correto
+        /// </summary>
+        private void ShowRoulette(QuizType quizType)
+        {
+            DebugHelper.Log($"[QuizUI] Aguardando para mostrar roleta...");
+
+            // Delay antes de mostrar a roleta (para o som de acerto tocar primeiro)
+            this.DelayedCall(1f, () =>
+            {
+                DebugHelper.Log($"[QuizUI] Mostrando roleta para quiz tipo {quizType}");
+
+                // Esconder quiz canvas, mostrar roleta
+                if (quizCanvas != null) quizCanvas.SetActive(false);
+                quizRouletteCanvas.SetActive(true);
+
+                // Resetar rotação do pointer
+                quizPointer.localRotation = Quaternion.Euler(0, 0, 0);
+
+                // Delay de 1 segundo antes do ponteiro começar a girar
+                this.DelayedCall(1f, () =>
+                {
+                    StartRouletteAnimation(quizType);
+                });
+            });
+        }
+
+        /// <summary>
+        /// Inicia a animação de rotação do ponteiro
+        /// </summary>
+        private void StartRouletteAnimation(QuizType quizType)
+        {
+            // Calcular ângulo final baseado no tipo de quiz
+            float targetAngle = GetTargetAngleForQuizType(quizType);
+
+            // Adicionar voltas completas + ângulo final
+            float totalRotation = (minSpins * 360f) + targetAngle;
+
+            DebugHelper.Log($"[QuizUI] Roleta girando: alvo={targetAngle}°, rotação total={totalRotation}°");
+
+            // Animar rotação com easing (desacelera no final)
+            LeanTween.rotateZ(quizPointer.gameObject, -totalRotation, rouletteDuration)
+                .setEase(LeanTweenType.easeOutQuart)
+                .setOnComplete(() =>
+                {
+                    DebugHelper.Log("[QuizUI] Roleta parou, mostrando quiz...");
+                    this.DelayedCall(0.5f, OnRouletteComplete);
+                });
+        }
+
+        /// <summary>
+        /// Calcula o ângulo alvo para cada tipo de quiz
+        /// </summary>
+        private float GetTargetAngleForQuizType(QuizType quizType)
+        {
+            // Assumindo que a roleta tem 4 quadrantes dispostos assim (vistos de cima):
+            // - ImageQuiz no topo-direita (0° a 90°) → centro em 45°
+            // - TextQuiz no topo-esquerda (90° a 180°) → centro em 135°
+            // - TrueFalseQuiz no baixo-esquerda (180° a 270°) → centro em 225°
+            // - CorrelationQuiz no baixo-direita (270° a 360°) → centro em 315°
+            // Ajuste esses valores conforme o layout da sua roleta
+            switch (quizType)
+            {
+                case QuizType.ImageQuiz:
+                    return 45f;
+                case QuizType.TextQuiz:
+                    return 135f;
+                case QuizType.TrueFalseQuiz:
+                    return 225f;
+                case QuizType.CorrelationQuiz:
+                    return 315f;
+                default:
+                    return 0f;
+            }
+        }
+
+        /// <summary>
+        /// Chamado quando a roleta termina de girar
+        /// </summary>
+        private void OnRouletteComplete()
+        {
+            // Esconder roleta
+            if (quizRouletteCanvas != null)
+            {
+                quizRouletteCanvas.SetActive(false);
+            }
+
+            // Mostrar o quiz
+            if (pendingCard != null)
+            {
+                ShowQuizInternal(pendingCard, pendingQuizType);
+            }
+        }
+
+        /// <summary>
+        /// Exibe o quiz (método interno, sem roleta)
+        /// </summary>
+        private void ShowQuizInternal(ThemeCard card, QuizType quizType)
         {
             if (card == null || quizCanvas == null) return;
 
@@ -708,11 +841,6 @@ namespace TimeCrax.Quiz
         private void UpdateTimer(float normalizedTime)
         {
             // Timer pode ser implementado no prefab se necessário
-            // Por enquanto, mudar cor do background quando estiver acabando
-            if (backgroundImage != null && normalizedTime < 0.25f)
-            {
-                backgroundImage.color = Color.Lerp(backgroundImage.color, wrongColor, Time.deltaTime * 2f);
-            }
         }
 
         private void HighlightButton(Button button)
@@ -736,19 +864,6 @@ namespace TimeCrax.Quiz
                 else
                     soundEffects.PlayWrongSlotSound();
             }
-
-            // Mudar cor do background para feedback
-            if (backgroundImage != null)
-            {
-                backgroundImage.color = correct ? correctColor : wrongColor;
-            }
-
-            // Atualizar label
-            if (quizTypeLabel != null)
-            {
-                quizTypeLabel.text = correct ? "CORRETO!" : "ERRADO!";
-                quizTypeLabel.color = correct ? correctColor : wrongColor;
-            }
         }
 
         private void CleanupQuiz()
@@ -764,13 +879,13 @@ namespace TimeCrax.Quiz
             if (quizCanvas != null)
                 quizCanvas.SetActive(false);
 
-            // Resetar cor do background
-            if (backgroundImage != null)
-                backgroundImage.color = Color.white;
+            // Garantir que a roleta também está desativada
+            if (quizRouletteCanvas != null)
+                quizRouletteCanvas.SetActive(false);
 
-            // Resetar cor do label
-            if (quizTypeLabel != null)
-                quizTypeLabel.color = Color.white;
+            // Limpar dados pendentes
+            pendingCard = null;
+            pendingQuizType = QuizType.None;
         }
 
         private void ClearCachedReferences()

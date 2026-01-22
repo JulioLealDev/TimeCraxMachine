@@ -10,6 +10,9 @@ public class Photo : MonoBehaviour
     public ThemeSelectionUI themeSelectionUI;
     public SoundEffects soundEffects;
 
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     private void Start()
     {
         if (themeSelectionUI != null)
@@ -28,6 +31,10 @@ public class Photo : MonoBehaviour
 
     private void OnMouseDown()
     {
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
         DebugHelper.Log("Clicou na foto");
 
         menu.DisableMenu();
@@ -41,6 +48,7 @@ public class Photo : MonoBehaviour
     private void OnThemeSelectionClosed()
     {
         menu.EnableMenu();
+        isProcessingClick = false;
         DebugHelper.Log("Menu reativado após fechar seleção de temas");
     }
 }

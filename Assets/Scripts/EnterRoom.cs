@@ -8,8 +8,15 @@ public class EnterRoom : MonoBehaviour
     [SerializeField] private CameraController cam;
     [SerializeField] private SoundEffects soundEffects;
 
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     public void OnMouseDown()
     {
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
         soundEffects.PressButtonSound();
 
         // Usa o nome do usuário logado (da tag)
@@ -23,6 +30,14 @@ public class EnterRoom : MonoBehaviour
 
         var menu = FindFirstObjectByType<Menu>();
         menu.DisableMenu();
+
+        // Resetar após um delay
+        this.DelayedCall(1f, ResetClickProtection);
+    }
+
+    private void ResetClickProtection()
+    {
+        isProcessingClick = false;
     }
 
     void AwaitGreenButtonAnimation()

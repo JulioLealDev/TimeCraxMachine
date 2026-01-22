@@ -7,14 +7,25 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     [SerializeField] private Animator animator;
     [SerializeField] private SoundEffects soundEffects;
 
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
+
     public void OnMouseDown()
     {
+        // Bloquear clique durante animações de câmera
+        if (CameraController.IsAnimating) return;
+
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+
         // Verificar se é o turno do jogador local antes de processar
         if (!IsMyTurn())
         {
             DebugHelper.Log("[FinishTurn] Não é meu turno, ignorando clique");
             return;
         }
+
+        isProcessingClick = true;
 
         DebugHelper.Log("Clicou no Finish");
         gameObject.GetComponent<MeshCollider>().enabled = false;
@@ -30,9 +41,15 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     private bool IsMyTurn()
     {
         var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        DebugHelper.Log($"[FinishTurn.IsMyTurn] Verificando turno. Total players: {players.Length}");
+
         foreach (var player in players)
         {
-            if (player.photonView.IsMine && player.GetYourTurn())
+            bool isMine = player.photonView.IsMine;
+            bool yourTurn = player.GetYourTurn();
+            DebugHelper.Log($"[FinishTurn.IsMyTurn] Player: {player.nickname}, IsMine: {isMine}, YourTurn: {yourTurn}");
+
+            if (isMine && yourTurn)
             {
                 return true;
             }
@@ -53,5 +70,8 @@ public class FinishTurn : MonoBehaviourPunCallbacks
         animator.SetBool("finishTurn", false);
         var gameManager = FindFirstObjectByType<GameManager>();
         gameManager.EndTurn();
+
+        // Resetar proteção contra clique duplo para o próximo turno
+        isProcessingClick = false;
     }
 }
