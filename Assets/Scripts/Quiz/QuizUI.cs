@@ -64,6 +64,7 @@ namespace TimeCrax.Quiz
         private int[] correctValues = new int[3]; // Valores corretos para cada imagem
         private List<Image> numberImageComponents = new List<Image>(); // Imagens de número nos botões
         private List<Button> correlationButtons = new List<Button>(); // Botões de seleção
+        private Button confirmButton; // Botão de confirmar correlação
 
         private void Start()
         {
@@ -501,15 +502,32 @@ namespace TimeCrax.Quiz
             }
 
             // Configurar botão de confirmar
-            var confirmButton = optionsTransform.Find("ConfirmButton");
-            if (confirmButton != null)
+            // Tentar encontrar em Options primeiro, depois na raiz do prefab
+            var confirmButtonTransform = optionsTransform.Find("ConfirmButton");
+            if (confirmButtonTransform == null)
             {
-                var button = confirmButton.GetComponent<Button>();
-                if (button != null)
+                confirmButtonTransform = currentQuizInstance.transform.Find("ConfirmButton");
+                DebugHelper.Log($"[QuizUI] ConfirmButton não encontrado em Options, buscando na raiz: {confirmButtonTransform != null}");
+            }
+
+            if (confirmButtonTransform != null)
+            {
+                confirmButton = confirmButtonTransform.GetComponent<Button>();
+                DebugHelper.Log($"[QuizUI] ConfirmButton encontrado, Button component: {confirmButton != null}");
+                if (confirmButton != null)
                 {
-                    button.onClick.AddListener(OnCorrelationConfirmed);
-                    DebugHelper.Log("[QuizUI] ConfirmButton configurado");
+                    confirmButton.onClick.RemoveAllListeners(); // Limpar listeners anteriores
+                    confirmButton.onClick.AddListener(OnCorrelationConfirmed);
+                    DebugHelper.Log("[QuizUI] ConfirmButton configurado com sucesso!");
                 }
+                else
+                {
+                    DebugHelper.Log("[QuizUI] ERRO: ConfirmButton não tem componente Button!");
+                }
+            }
+            else
+            {
+                DebugHelper.Log("[QuizUI] ERRO: ConfirmButton não encontrado no prefab!");
             }
         }
 
@@ -596,7 +614,19 @@ namespace TimeCrax.Quiz
 
         private void OnCorrelationConfirmed()
         {
-            if (!isInteractable || quizManager == null) return;
+            DebugHelper.Log($"[QuizUI] OnCorrelationConfirmed chamado! isInteractable={isInteractable}, quizManager={quizManager != null}");
+
+            if (!isInteractable)
+            {
+                DebugHelper.Log("[QuizUI] BLOQUEADO: isInteractable é false");
+                return;
+            }
+
+            if (quizManager == null)
+            {
+                DebugHelper.Log("[QuizUI] BLOQUEADO: quizManager é null");
+                return;
+            }
 
             DebugHelper.Log("[QuizUI] Correlação confirmada - verificando respostas...");
 
@@ -764,6 +794,9 @@ namespace TimeCrax.Quiz
             if (falseButton != null)
                 falseButton.onClick.RemoveAllListeners();
 
+            if (confirmButton != null)
+                confirmButton.onClick.RemoveAllListeners();
+
             optionButtons.Clear();
             optionTexts.Clear();
             optionImages.Clear();
@@ -775,6 +808,7 @@ namespace TimeCrax.Quiz
             questionText = null;
             trueButton = null;
             falseButton = null;
+            confirmButton = null;
             playerSelections = new int[3];
             correctValues = new int[3];
         }
