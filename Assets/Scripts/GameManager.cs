@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Material plateNameMaterial2;
     public GameObject playerLeftBackground;
     public RandomMaterial randomMaterial;
+    public TurnTimer turnTimer;
 
     // Cache para evitar chamadas repetitivas a FindObjectsByType
     private GiveCards[] cachedPlateNames;
@@ -814,6 +815,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             eventSlot.SetUpSlots(false, "Undestructable");
         }
 
+        // Iniciar o cronômetro do turno via RPC (apenas MasterClient)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StartTurnTimerRPC();
+        }
+
         players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
         DebugHelper.Log("tamanho da lista: " + PhotonNetwork.PlayerList.Length);
@@ -1050,6 +1057,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void EndTurn()
     {
+        // Parar o cronômetro do turno via RPC (apenas MasterClient)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StopTurnTimerRPC();
+        }
+
         float waiting;
         waiting = 0;
 
@@ -1072,7 +1085,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
-    public void WaitForFinishTurn() 
+    public void WaitForFinishTurn()
     {
 
         DebugHelper.Log(" -------------------->>>>>  game is over?: "+ gameOver.gameIsOver);
@@ -1083,6 +1096,96 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
     }
+
+    /// <summary>
+    /// Chamado pelo TurnTimer quando o tempo do turno expira.
+    /// Passa o turno automaticamente para o próximo jogador.
+    /// </summary>
+    public void AutoEndTurn()
+    {
+        DebugHelper.Log("[GameManager] AutoEndTurn - Tempo do turno expirado!");
+
+        // Verificar se o jogo ainda está ativo
+        if (!gameIsOn)
+        {
+            DebugHelper.Log("[GameManager] AutoEndTurn ignorado - jogo não está ativo");
+            return;
+        }
+
+        // Verificar se não é game over
+        if (gameOver != null && gameOver.gameIsOver)
+        {
+            DebugHelper.Log("[GameManager] AutoEndTurn ignorado - game over");
+            return;
+        }
+
+        // Chamar o fluxo normal de fim de turno
+        photonView.RPC("FinishTurn", RpcTarget.All);
+    }
+
+    #region TurnTimer RPCs
+
+    /// <summary>
+    /// Sincroniza o tempo do timer para outros clientes
+    /// </summary>
+    public void SyncTurnTimer(float time)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_SyncTurnTimer", RpcTarget.Others, time);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_SyncTurnTimer(float time)
+    {
+        if (turnTimer != null)
+        {
+            turnTimer.SyncTime(time);
+        }
+    }
+
+    /// <summary>
+    /// Para o timer em todos os clientes via RPC
+    /// </summary>
+    public void StopTurnTimerRPC()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_StopTurnTimer", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_StopTurnTimer()
+    {
+        if (turnTimer != null)
+        {
+            turnTimer.StopTimerLocal();
+        }
+    }
+
+    /// <summary>
+    /// Inicia o timer em todos os clientes via RPC
+    /// </summary>
+    public void StartTurnTimerRPC()
+    {
+        if (PhotonNetwork.IsMasterClient && turnTimer != null)
+        {
+            photonView.RPC("RPC_StartTurnTimer", RpcTarget.All, turnTimer.TimeLimit);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_StartTurnTimer(float time)
+    {
+        if (turnTimer != null)
+        {
+            turnTimer.StartTimerLocal(time);
+        }
+    }
+
+    #endregion
 
     public void SetUpComponents()
     {
@@ -1270,6 +1373,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         // Marcar jogo como inativo ANTES de notificar outros jogadores
         // Isso evita que RPCs de turno continuem sendo processados
         gameIsOn = false;
+
+        // Parar e esconder o timer
+        if (turnTimer != null)
+        {
+            turnTimer.StopTimerLocal();
+        }
 
         CheckQuitGamePlayer();
 
@@ -1479,6 +1588,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void DeactivateAll()
     {
+        // Parar e esconder o timer
+        if (turnTimer != null)
+        {
+            turnTimer.StopTimerLocal();
+        }
+
         DebugHelper.Log("9 -- Desativando platenames");
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
