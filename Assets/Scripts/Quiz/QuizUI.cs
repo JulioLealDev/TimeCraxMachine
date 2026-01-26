@@ -309,6 +309,26 @@ namespace TimeCrax.Quiz
             });
         }
 
+        /// <summary>
+        /// Força o fechamento imediato do quiz sem feedback.
+        /// Usado quando o tempo do turno expira.
+        /// </summary>
+        public void ForceHideQuiz()
+        {
+            DebugHelper.Log("[QuizUI] ForceHideQuiz - Fechando quiz imediatamente");
+
+            isInteractable = false;
+
+            // Cancelar qualquer animação em andamento
+            if (canvasGroup != null)
+            {
+                LeanTween.cancel(canvasGroup.gameObject);
+            }
+
+            // Limpar e esconder imediatamente
+            CleanupQuiz();
+        }
+
         #endregion
 
         #region Prefab Instantiation

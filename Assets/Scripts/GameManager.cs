@@ -9,6 +9,7 @@ using System.Collections;
 using TimeCrax.Core;
 using TimeCrax.Themes;
 using TimeCrax.Managers;
+using TimeCrax.Quiz;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -1096,7 +1097,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log("[GameManager] RPC_HandleTimeoutCleanup - Executando limpeza de timeout");
 
-        // 1. Verificar se há uma carta de evento comprada (tag "Drew")
+        // 1. Fechar quiz se estiver aberto
+        if (QuizManager.Instance != null && QuizManager.Instance.IsQuizActive)
+        {
+            DebugHelper.Log("[GameManager] Quiz estava aberto, fechando...");
+            QuizManager.Instance.ForceCloseQuiz();
+        }
+
+        // 2. Verificar se há uma carta de evento comprada (tag "Drew")
         EventCard drewCard = null;
         var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         foreach (var card in eventCards)
@@ -1109,7 +1117,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        // 2. Se há carta comprada, devolver ao deck e resetar visual
+        // 3. Se há carta comprada, devolver ao deck e resetar visual
         if (drewCard != null)
         {
             int cardSlotCount = drewCard.slotCount;
@@ -1127,10 +1135,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             DebugHelper.Log($"[GameManager] Carta {cardSlotCount} devolvida ao deck");
         }
 
-        // 3. Verificar se a câmera está em modo zoom antes de resetar
+        // 4. Verificar se a câmera está em modo zoom antes de resetar
         bool wasInZoomMode = gameCamera != null && gameCamera.IsInZoomMode();
 
-        // 4. Forçar reset da câmera e estados relacionados
+        // 5. Forçar reset da câmera e estados relacionados
         if (gameCamera != null)
         {
             if (wasInZoomMode)
@@ -1146,21 +1154,21 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        // 5. Desativar slots da timeline (redundante mas garante)
+        // 6. Desativar slots da timeline (redundante mas garante)
         var timeline = FindFirstObjectByType<Timeline>();
         if (timeline != null)
         {
             timeline.ActiveTimeline(false);
         }
 
-        // 6. Desativar seleção de slots (redundante mas garante)
+        // 7. Desativar seleção de slots (redundante mas garante)
         var eventSlot = FindFirstObjectByType<EventSlot>();
         if (eventSlot != null)
         {
             eventSlot.SetUpSlots(false, "Undestructable");
         }
 
-        // 7. Chamar RandomComponentNumber para adicionar malfunction (apenas MasterClient)
+        // 8. Chamar RandomComponentNumber para adicionar malfunction (apenas MasterClient)
         if (PhotonNetwork.IsMasterClient)
         {
             // Se estava em zoom, esperar a animação; senão, delay menor

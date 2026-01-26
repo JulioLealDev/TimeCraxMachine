@@ -206,6 +206,30 @@ namespace TimeCrax.Quiz
         /// </summary>
         public QuizType GetCurrentQuizType() => currentQuizType;
 
+        /// <summary>
+        /// Força o fechamento do quiz sem processar resultado.
+        /// Usado quando o tempo do turno expira.
+        /// </summary>
+        public void ForceCloseQuiz()
+        {
+            if (!isQuizActive) return;
+
+            DebugHelper.Log("[QuizManager] ForceCloseQuiz - Fechando quiz forçadamente (timeout do turno)");
+
+            isQuizActive = false;
+            remainingTime = 0;
+
+            // Esconder UI do quiz
+            if (quizUI != null)
+            {
+                quizUI.ForceHideQuiz();
+            }
+
+            // Resetar estado
+            currentCard = null;
+            currentQuizType = QuizType.None;
+        }
+
         #endregion
 
         #region Private Methods
