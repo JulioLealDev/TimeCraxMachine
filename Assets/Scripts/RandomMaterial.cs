@@ -135,9 +135,9 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         var material = materialList[randomNumberList[i]];
         if (material == null) return;
 
-        eventCards[i].GetComponent<Renderer>().material = material.material;
-        eventCards[i].slotYear = material.year;
-        selectedYears[i] = material.year;
+        eventCards[i].GetComponent<Renderer>().material = material.Material;
+        eventCards[i].slotYear = material.Year;
+        selectedYears[i] = material.Year;
     }
 
     public void SetSlotCounts()

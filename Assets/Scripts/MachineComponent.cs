@@ -257,7 +257,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
         backgroundMusic.PlayGameOverSound();
         gameOver.transform.GetChild(0).gameObject.SetActive(true);
-        gameManager.hud.SetActive(false);
+        gameManager.Hud.SetActive(false);
         DebugHelper.Log("name ---> " + gameOver.name);
     }
 

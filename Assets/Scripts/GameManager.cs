@@ -45,6 +45,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     // Campos públicos necessários para RPCs e acesso externo
     public int randomId;
 
+    // Propriedades públicas para acesso externo
+    public GameObject Hud => hud;
+
     // Campos privados
     private MachineComponent[] timeCraxComponents;
     private PlayerScript[] players;

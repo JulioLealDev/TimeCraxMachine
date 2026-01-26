@@ -393,7 +393,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (gameManager != null)
         {
-            gameManager.hud.SetActive(false);
+            gameManager.Hud.SetActive(false);
         }
         if (backgroundMusic != null)
         {
