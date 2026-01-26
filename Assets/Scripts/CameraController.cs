@@ -111,6 +111,42 @@ public class CameraController : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
+    /// Força o reset da câmera para o estado inicial.
+    /// Usado quando o tempo do turno expira.
+    /// </summary>
+    public void ForceResetToInitialState()
+    {
+        DebugHelper.Log("[CameraController] ForceResetToInitialState");
+
+        // Resetar flags de animação
+        IsAnimating = false;
+
+        // Garantir que a câmera está no estado de distância
+        animator.SetBool("zoomTimeline", false);
+        animator.SetBool("distanceZoom", false);
+
+        // Desativar slots
+        if (slot != null)
+        {
+            slot.SetUpSlots(false, "Undestructable");
+        }
+
+        // Desativar timeline
+        if (timeline != null)
+        {
+            timeline.ActiveTimeline(false);
+        }
+    }
+
+    /// <summary>
+    /// Verifica se a câmera está em modo zoom timeline
+    /// </summary>
+    public bool IsInZoomMode()
+    {
+        return animator.GetBool("zoomTimeline");
+    }
+
+    /// <summary>
     /// Verifica se é o turno do jogador local
     /// </summary>
     private bool IsMyTurn()

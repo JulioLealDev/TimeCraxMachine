@@ -1127,32 +1127,45 @@ public class GameManager : MonoBehaviourPunCallbacks
             DebugHelper.Log($"[GameManager] Carta {cardSlotCount} devolvida ao deck");
         }
 
-        // 3. Resetar câmera para estado inicial (se estiver em zoom)
+        // 3. Verificar se a câmera está em modo zoom antes de resetar
+        bool wasInZoomMode = gameCamera != null && gameCamera.IsInZoomMode();
+
+        // 4. Forçar reset da câmera e estados relacionados
         if (gameCamera != null)
         {
-            gameCamera.DistanceTimeline();
-            DebugHelper.Log("[GameManager] Câmera resetada para estado inicial");
+            if (wasInZoomMode)
+            {
+                gameCamera.DistanceTimeline();
+                DebugHelper.Log("[GameManager] Câmera saindo do modo zoom");
+            }
+            else
+            {
+                // Apenas forçar reset dos estados sem animação
+                gameCamera.ForceResetToInitialState();
+                DebugHelper.Log("[GameManager] Câmera já estava no estado inicial, forçando reset");
+            }
         }
 
-        // 4. Desativar slots da timeline
+        // 5. Desativar slots da timeline (redundante mas garante)
         var timeline = FindFirstObjectByType<Timeline>();
         if (timeline != null)
         {
             timeline.ActiveTimeline(false);
         }
 
-        // 5. Desativar seleção de slots
+        // 6. Desativar seleção de slots (redundante mas garante)
         var eventSlot = FindFirstObjectByType<EventSlot>();
         if (eventSlot != null)
         {
             eventSlot.SetUpSlots(false, "Undestructable");
         }
 
-        // 6. Chamar RandomComponentNumber para adicionar malfunction (apenas MasterClient)
-        // Usar delay para esperar a câmera resetar
+        // 7. Chamar RandomComponentNumber para adicionar malfunction (apenas MasterClient)
         if (PhotonNetwork.IsMasterClient)
         {
-            this.DelayedCall(1.5f, TimeoutMalfunction);
+            // Se estava em zoom, esperar a animação; senão, delay menor
+            float delay = wasInZoomMode ? 1.5f : 0.5f;
+            this.DelayedCall(delay, TimeoutMalfunction);
         }
     }
 
