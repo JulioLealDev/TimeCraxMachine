@@ -1083,7 +1083,113 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        // Chamar o fluxo normal de fim de turno
+        // Enviar RPC para todos os clientes executarem a limpeza do timeout
+        photonView.RPC("RPC_HandleTimeoutCleanup", RpcTarget.All);
+    }
+
+    /// <summary>
+    /// RPC que executa a limpeza quando o tempo do turno expira.
+    /// Sincroniza em todos os clientes: reseta câmera, devolve carta, e passa turno.
+    /// </summary>
+    [PunRPC]
+    public void RPC_HandleTimeoutCleanup()
+    {
+        DebugHelper.Log("[GameManager] RPC_HandleTimeoutCleanup - Executando limpeza de timeout");
+
+        // 1. Verificar se há uma carta de evento comprada (tag "Drew")
+        EventCard drewCard = null;
+        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
+        foreach (var card in eventCards)
+        {
+            if (card != null && card.CompareTag("Drew"))
+            {
+                drewCard = card;
+                DebugHelper.Log($"[GameManager] Carta comprada encontrada: slotCount={card.slotCount}");
+                break;
+            }
+        }
+
+        // 2. Se há carta comprada, devolver ao deck e resetar visual
+        if (drewCard != null)
+        {
+            int cardSlotCount = drewCard.slotCount;
+
+            // Resetar estado visual da carta
+            drewCard.ResetStatusCard();
+            drewCard.tag = "Untagged";
+
+            // Devolver carta ao deck (apenas MasterClient sincroniza)
+            if (PhotonNetwork.IsMasterClient && deckEvent != null)
+            {
+                deckEvent.AddCardBack(cardSlotCount);
+            }
+
+            DebugHelper.Log($"[GameManager] Carta {cardSlotCount} devolvida ao deck");
+        }
+
+        // 3. Resetar câmera para estado inicial (se estiver em zoom)
+        if (gameCamera != null)
+        {
+            gameCamera.DistanceTimeline();
+            DebugHelper.Log("[GameManager] Câmera resetada para estado inicial");
+        }
+
+        // 4. Desativar slots da timeline
+        var timeline = FindFirstObjectByType<Timeline>();
+        if (timeline != null)
+        {
+            timeline.ActiveTimeline(false);
+        }
+
+        // 5. Desativar seleção de slots
+        var eventSlot = FindFirstObjectByType<EventSlot>();
+        if (eventSlot != null)
+        {
+            eventSlot.SetUpSlots(false, "Undestructable");
+        }
+
+        // 6. Chamar RandomComponentNumber para adicionar malfunction (apenas MasterClient)
+        // Usar delay para esperar a câmera resetar
+        if (PhotonNetwork.IsMasterClient)
+        {
+            this.DelayedCall(1.5f, TimeoutMalfunction);
+        }
+    }
+
+    /// <summary>
+    /// Chamado após o delay do timeout para adicionar malfunction e passar turno.
+    /// </summary>
+    private void TimeoutMalfunction()
+    {
+        DebugHelper.Log("[GameManager] TimeoutMalfunction - Adicionando malfunction e passando turno");
+
+        // Verificar novamente se o jogo ainda está ativo
+        if (!gameIsOn || (gameOver != null && gameOver.gameIsOver))
+        {
+            DebugHelper.Log("[GameManager] TimeoutMalfunction cancelado - jogo não está ativo ou game over");
+            return;
+        }
+
+        // Chamar a roleta de malfunction
+        RandomComponentNumber();
+
+        // Aguardar a animação da roleta terminar antes de passar o turno
+        // A roleta leva aproximadamente 15 * 0.3s = 4.5s + margem
+        this.DelayedCall(5f, FinishTurnAfterTimeout);
+    }
+
+    /// <summary>
+    /// Finaliza o turno após o timeout (chamado após a animação de malfunction).
+    /// </summary>
+    private void FinishTurnAfterTimeout()
+    {
+        DebugHelper.Log("[GameManager] FinishTurnAfterTimeout - Passando turno");
+
+        if (!gameIsOn || (gameOver != null && gameOver.gameIsOver))
+        {
+            return;
+        }
+
         photonView.RPC("FinishTurn", RpcTarget.All);
     }
 
