@@ -91,6 +91,33 @@ MonoBehaviour:
   - RPC_StartQuiz
   - SetAllValuesFromTheme
   - QuizFailed
+  - AddCardBackRPC
+  - DrawEventCardRPC
+  - RemoveIndexRPC
+  - SetZoomState
+  - SyncTurn
+  - SyncTurnWithRound
+  - ExecuteDrawEventCard
+  - RequestDrawEventCard
+  - ExecuteSlotClick
+  - RequestSlotClick
+  - ExecuteDrawRepairCard
+  - RequestDrawRepairCard
+  - SyncPlayerEnteredMessage
+  - SyncPlayerLeftMessage
+  - RPC_ChangePlateNameMaterial
+  - RPC_ComponentRandom
+  - RPC_GiveRepairCard
+  - RPC_RemovePlayerPlatename
+  - RPC_ShowLeftPlayerInfo
+  - RPC_SyncTurn
+  - RPC_SyncTurnWithRound
+  - RPC_StartTimer
+  - RPC_StopTimer
+  - RPC_SyncTime
+  - RPC_StartTurnTimer
+  - RPC_StopTurnTimer
+  - RPC_SyncTurnTimer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
