@@ -4,8 +4,7 @@ using TimeCrax.Core;
 
 public class GiveCards : MonoBehaviour
 {
-
-    public Canvas gameInfo;
+    [SerializeField] private Canvas gameInfo;
     private int sendNumberCards;
 
     // Proteção contra clique duplo

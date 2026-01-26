@@ -1,7 +1,13 @@
 using UnityEngine;
 
+/// <summary>
+/// Conteúdo de uma carta de evento (dados do tema legado)
+/// </summary>
 public class EventCardContent : MonoBehaviour
 {
-    public Material material;
-    public int year;
+    [SerializeField] private Material material;
+    [SerializeField] private int year;
+
+    public Material Material => material;
+    public int Year => year;
 }

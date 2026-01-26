@@ -1,23 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundEffects : MonoBehaviour
 {
-    public AudioClip turnPage01;
-    public AudioClip turnPage02;
-    public AudioClip turnPage03;
-    public AudioClip buttonSound;
-    public AudioClip hudbuttonSound;
-    public AudioClip nameTagSound;
-    public AudioClip rouletteSound;
-    public AudioClip drawCard;
-    public AudioClip rightSlotSound;
-    public AudioClip wrongSlotSound;
-    public AudioClip clickSlotSound;
-    public AudioClip componentExplosionSound;
-    public AudioClip componentFinalExplosionSound;
-    public AudioClip componentRepairSound;
+    [Header("UI Sounds")]
+    [SerializeField] private AudioClip turnPage01;
+    [SerializeField] private AudioClip turnPage02;
+    [SerializeField] private AudioClip turnPage03;
+    [SerializeField] private AudioClip buttonSound;
+    [SerializeField] private AudioClip hudbuttonSound;
+    [SerializeField] private AudioClip nameTagSound;
+
+    [Header("Game Sounds")]
+    [SerializeField] private AudioClip rouletteSound;
+    [SerializeField] private AudioClip drawCard;
+    [SerializeField] private AudioClip rightSlotSound;
+    [SerializeField] private AudioClip wrongSlotSound;
+    [SerializeField] private AudioClip clickSlotSound;
+
+    [Header("Component Sounds")]
+    [SerializeField] private AudioClip componentExplosionSound;
+    [SerializeField] private AudioClip componentFinalExplosionSound;
+    [SerializeField] private AudioClip componentRepairSound;
 
     private AudioSource audioSource;
 

@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using TimeCrax.Core;
 
 public class NameTag : MonoBehaviour
 {
-
-    public SoundEffects soundEffects;
+    [SerializeField] private SoundEffects soundEffects;
 
     // Proteção contra clique duplo
     private bool isProcessingClick = false;
@@ -19,7 +17,7 @@ public class NameTag : MonoBehaviour
         soundEffects.TagSound();
 
         // Resetar após um pequeno delay para evitar som duplo
-        Invoke(nameof(ResetClickProtection), 0.3f);
+        this.DelayedCall(0.3f, ResetClickProtection);
     }
 
     private void ResetClickProtection()

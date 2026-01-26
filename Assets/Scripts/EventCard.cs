@@ -7,10 +7,13 @@ using TimeCrax.Themes;
 
 public class EventCard : MonoBehaviourPunCallbacks
 {
-    public CameraController cameraController;
-    public int slotCount;
-    public int slotYear;
-    public string era;
+    [Header("Referências")]
+    [SerializeField] private CameraController cameraController;
+
+    [Header("Dados da Carta")]
+    public int slotCount;  // Público - usado em RPCs e acesso externo
+    public int slotYear;   // Público - usado em RPCs e acesso externo
+    public string era;     // Público - usado em RPCs e acesso externo
 
     // Referência à carta do tema (novo sistema)
     private ThemeCard themeCard;

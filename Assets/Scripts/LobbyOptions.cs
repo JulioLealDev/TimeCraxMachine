@@ -8,29 +8,38 @@ using TimeCrax.Themes;
 
 public class LobbyOptions : MonoBehaviourPunCallbacks
 {
-    public GameObject lobbyBackgroundScreen;
-    public GameConnection gameConnection;
-    public GameObject roomNameInput;
-    public GameObject maxPlayersDropdown;
-    public GameObject difficultyDropdown;
-    public GameObject privateDropdown;
-    public GameObject themeDropdown;
-    public GameObject passwordInput;
-    public GameObject passwordLabel;
-    public GameManager gameManager;
-    public GameObject createRoom;
-    public GameObject roomScreen;
-    public GameObject lobbyScreen;
-    public InputField nameDisplay;
-    public GameObject roomListContent;
-    public GameObject createRoomButton;
-    public GameObject roomNameWarning;
-    public GameObject passwordWarning;
-    public GameObject alreadyExistNameWarning;
-    public BackgroundMusic backgroundMusic;
-    public SoundEffects soundEffects;
+    [Header("Telas")]
+    [SerializeField] private GameObject lobbyBackgroundScreen;
+    [SerializeField] private GameObject createRoom;
+    [SerializeField] private GameObject roomScreen;
+    [SerializeField] private GameObject lobbyScreen;
 
-    bool privateRoom = false;
+    [Header("Inputs")]
+    [SerializeField] private GameObject roomNameInput;
+    [SerializeField] private GameObject maxPlayersDropdown;
+    [SerializeField] private GameObject difficultyDropdown;
+    [SerializeField] private GameObject privateDropdown;
+    [SerializeField] private GameObject themeDropdown;
+    [SerializeField] private GameObject passwordInput;
+    [SerializeField] private GameObject passwordLabel;
+    [SerializeField] private InputField nameDisplay;
+
+    [Header("UI")]
+    [SerializeField] private GameObject roomListContent;
+    [SerializeField] private GameObject createRoomButton;
+    [SerializeField] private GameObject roomNameWarning;
+    [SerializeField] private GameObject passwordWarning;
+    [SerializeField] private GameObject alreadyExistNameWarning;
+
+    [Header("Referências")]
+    [SerializeField] private GameConnection gameConnection;
+    [SerializeField] private GameManager gameManager;
+
+    [Header("Áudio")]
+    [SerializeField] private BackgroundMusic backgroundMusic;
+    [SerializeField] private SoundEffects soundEffects;
+
+    private bool privateRoom = false;
 
     public void ClickStart()
     {

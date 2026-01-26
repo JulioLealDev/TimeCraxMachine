@@ -1,35 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BackgroundMusic : MonoBehaviour
 {
-    public AudioClip timeUntraveledMusic;
-    public AudioClip timeEnigmaMusic;
-    public AudioClip echoesOfThePastMusic;
-    public AudioClip victoryMusic;
+    [SerializeField] private AudioClip timeUntraveledMusic;
+    [SerializeField] private AudioClip timeEnigmaMusic;
+    [SerializeField] private AudioClip echoesOfThePastMusic;
+    [SerializeField] private AudioClip victoryMusic;
+
+    private AudioSource cachedAudioSource;
+
+    private void Awake()
+    {
+        cachedAudioSource = GetComponent<AudioSource>();
+    }
 
     public void PlayGameSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = timeEnigmaMusic;
-        gameObject.GetComponent<AudioSource>().Play();
+        cachedAudioSource.clip = timeEnigmaMusic;
+        cachedAudioSource.Play();
     }
 
     public void PlayMenuSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = timeUntraveledMusic;
-        gameObject.GetComponent<AudioSource>().Play();
+        cachedAudioSource.clip = timeUntraveledMusic;
+        cachedAudioSource.Play();
     }
 
     public void PlayGameOverSound()
     {
-        gameObject.GetComponent<AudioSource>().clip = echoesOfThePastMusic;
-        gameObject.GetComponent<AudioSource>().Play();
+        cachedAudioSource.clip = echoesOfThePastMusic;
+        cachedAudioSource.Play();
     }
 
     public void PlayVictorySound()
     {
-        gameObject.GetComponent<AudioSource>().clip = victoryMusic;
-        gameObject.GetComponent<AudioSource>().Play();
+        cachedAudioSource.clip = victoryMusic;
+        cachedAudioSource.Play();
     }
 }

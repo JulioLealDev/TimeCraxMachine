@@ -3,11 +3,12 @@ using UnityEngine.UI;
 
 public class Configurations : MonoBehaviour
 {
-    public SoundEffects soundEffects;
-    public BackgroundMusic backgroundMusic;
-    public GameObject soundEffectsSlider;
-    public GameObject backgroundMusicSlider;
-    public Menu menu;
+    [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private BackgroundMusic backgroundMusic;
+    [SerializeField] private GameObject soundEffectsSlider;
+    [SerializeField] private GameObject backgroundMusicSlider;
+    [SerializeField] private Menu menu;
+
     private float soundEffectsSliderDefault;
     private float backgroundMusicSliderDefault;
 

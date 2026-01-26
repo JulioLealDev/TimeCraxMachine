@@ -12,22 +12,42 @@ using TimeCrax.Managers;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    [Header("Referências de Cena")]
+    [SerializeField] private GameObject gameInfo;
+    [SerializeField] private GameObject enviroment;
+    [SerializeField] private DeckEvent deckEvent;
+    [SerializeField] private GameObject deckRepair;
+    [SerializeField] private GameObject timeline;
+    [SerializeField] private CameraController gameCamera;
+    [SerializeField] private GameObject inputName;
+    [SerializeField] private GameObject suitTop;
+    [SerializeField] private GameObject hud;
+    [SerializeField] private FinishTurn endButton;
+    [SerializeField] private GameObject quitButton;
+    [SerializeField] private GameOver gameOver;
+    [SerializeField] private Victory victory;
+
+    [Header("Áudio")]
+    [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private BackgroundMusic backgroundMusic;
+
+    [Header("Materiais")]
+    [SerializeField] private Material plateNameMaterial;
+    [SerializeField] private Material plateNameMaterial2;
+
+    [Header("UI")]
+    [SerializeField] private GameObject playerLeftBackground;
+
+    [Header("Sistemas")]
+    [SerializeField] private RandomMaterial randomMaterial;
+    [SerializeField] private TurnTimer turnTimer;
+
+    // Campos públicos necessários para RPCs e acesso externo
     public int randomId;
+
+    // Campos privados
     private MachineComponent[] timeCraxComponents;
     private PlayerScript[] players;
-    public GameObject gameInfo;
-    public GameObject enviroment;
-    public DeckEvent deckEvent;
-    public GameObject deckRepair;
-    public GameObject timeline;
-    public CameraController gameCamera;
-    public GameObject inputName;
-    public GameObject suitTop;
-    public GameObject hud;
-    public FinishTurn endButton;
-    public GameObject quitButton;
-    public GameOver gameOver;
-    public Victory victory;
     private int[] playersList;
     private int initialPlayersNumber;
     private int round;
@@ -35,15 +55,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int time;
     private bool gameIsOn = false;
     private List<int> componentList = new List<int>();
-    Transform[] componentsWithAnimator = new Transform[20];
-    public SoundEffects soundEffects;
-    public BackgroundMusic backgroundMusic;
+    private Transform[] componentsWithAnimator = new Transform[20];
     private PlayerScript[] orderedPlayers;
-    public Material plateNameMaterial;
-    public Material plateNameMaterial2;
-    public GameObject playerLeftBackground;
-    public RandomMaterial randomMaterial;
-    public TurnTimer turnTimer;
 
     // Cache para evitar chamadas repetitivas a FindObjectsByType
     private GiveCards[] cachedPlateNames;
@@ -297,21 +310,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         //gameCamera.gameObject.GetComponent<Animator>().SetBool("enterMatch", true);
 
-        //int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-        //componentList.AddRange(numbers);
-
-        //for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-        //{
-        //    playersList[i] = PhotonNetwork.PlayerList[i].ActorNumber;
-
-        //}
-        //if (PhotonNetwork.IsMasterClient)
-        //{
-        //    Invoke("StartGame", 6f);
-        //}
     }
 
-    //[PunRPC]
     public void GetRandomEventCards(string theme)
     {
         randomMaterial.GetRandomMaterial(theme);
@@ -610,10 +610,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         int numberOfPlayers = 4;
 
-        //if(playerLeftGame)
-        //{
-        //    numberOfPlayers--;
-        //}
 
         players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
@@ -637,55 +633,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         DebugHelper.Log("time: " + time + " < numPlayers: " + numberOfPlayers);
         if (time < numberOfPlayers)
         {
-            //Button[] components = gameHUD.GetComponentsInChildren<Button>();
-            //int indexPlayer = time + 1;
-
             foreach (var player in players)
             {
-                //DebugHelper.Log("time: " + time);
-                //if(time == 0)
-                //{
-                //    DebugHelper.Log("Resetando Index");
-                //    player.UpdateIndex();
-                //}
-
                 if (player.index == time)
                 {
-                    //DebugHelper.Log("agora � o turno de : " + player.nickname);
                     player.SetYourTurn(true);
-
                     ChangeRepairCardsView(player);
-
-                    //ChangePlateNameMaterial(player.plateNameIndex);
                     photonView.RPC("ChangePlateNameMaterial", RpcTarget.All, player.plateNameIndex);
-
-                    //foreach (Button component in components)
-                    //{
-                    //    //DebugHelper.Log("name: " + component.name + " - time+1:" + indexPlayer);
-                    //    if (component.name == indexPlayer.ToString())
-                    //    {
-                    //        component.interactable = false;
-                    //    }
-                    //    else
-                    //    {
-                    //        component.interactable = true;
-                    //    }
-
-                    //}
                 }
                 else
                 {
-                    //DebugHelper.Log("n�o � turno de : " + player.nickname);
                     player.SetYourTurn(false);
-
-                    //foreach (Button component in components)
-                    //{
-                    //    if (!(component.name == "QuitGame"))
-                    //    {
-                    //        component.interactable = false;
-                    //    }
-
-                    //}
                 }
             }
 
@@ -1000,7 +958,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
-    [PunRPC]
+    /// <summary>
+    /// Coroutine que anima a roleta de componentes antes de adicionar malfunction.
+    /// Nota: Não é um RPC - é chamada localmente após receber ComponentRandom via RPC.
+    /// </summary>
     private IEnumerator Roulettecomponent()
     {
         int randomIndex = 0;
@@ -1384,39 +1345,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         this.DelayedCall(0.7f, SetUpBackToMenu);
     }
-
-    //[PunRPC]
-    //public void RemovePlateName(int index)
-    //{
-    //    DebugHelper.Log("3 -- Removendo platenames");
-
-    //    string plateName = "plateName0" + (index + 1);
-    //    var plate = GameObject.Find(plateName);
-    //    DebugHelper.Log("plate name: " + plate.name);
-
-    //    plate.GetComponent<MeshRenderer>().enabled = false;
-    //    plate.GetComponent<MeshCollider>().enabled = false;
-
-    //    string repairSymbolName = "repairCardSymbol0" + (index + 1);
-    //    var repairSymbol = GameObject.Find(repairSymbolName);
-    //    DebugHelper.Log("repairSymbol name: "+repairSymbol.name);
-
-    //    repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
-
-    //    string namePlateText = "namePlayer0" + (index + 1);
-    //    var namePlate = GameObject.Find(namePlateText);
-    //    DebugHelper.Log("namePlate name: " + namePlate.name);
-
-    //    namePlate.GetComponent<TMP_Text>().text = " ";
-    //    namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
-
-    //    string numberRepairCardText = "numberRepairCards0" + (index + 1);
-    //    var numberRepairCard = GameObject.Find(numberRepairCardText);
-    //    DebugHelper.Log("repairCardSymbol name: " + numberRepairCard.name);
-
-    //    numberRepairCard.GetComponent<TextMeshProUGUI>().text = " ";
-
-    //}
 
     public void SetUpBackToMenu()
     {
