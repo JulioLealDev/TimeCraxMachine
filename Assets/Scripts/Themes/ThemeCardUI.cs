@@ -64,7 +64,10 @@ namespace TimeCrax.Themes
                 nameText.text = theme.name ?? "Sem nome";
 
             if (creatorText != null)
-                creatorText.text = theme.creatorName ?? "Autor desconhecido";
+            {
+                string firstName = theme.creatorName?.Split(' ')[0] ?? "Autor desconhecido";
+                creatorText.text = firstName;
+            }
 
             if (cardCountText != null)
                 cardCountText.text = theme.numberOfCards > 0 ? theme.numberOfCards.ToString() : "";

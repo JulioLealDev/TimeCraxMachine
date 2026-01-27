@@ -17,6 +17,7 @@ namespace TimeCrax.Auth
         [Header("Painéis")]
         [SerializeField] private GameObject loginPanel;
         [SerializeField] private GameObject loadingPanel;
+        [SerializeField] private GameObject exitConfirmPanel;
 
         [Header("Login - Campos")]
         [SerializeField] private TMP_InputField emailInput;
@@ -31,10 +32,15 @@ namespace TimeCrax.Auth
         [SerializeField] private bool autoLoginIfTokenExists = true;
         [SerializeField] private float minimumLoadingTime = 3f;
 
+        [Header("Exit Confirm")]
+        [SerializeField] private Button exitButton;
+        [SerializeField] private Button cancelButton;
+
         [Header("Audio")]
         [SerializeField] private SoundEffects soundEffects;
 
         private bool isLoading = false;
+        private bool isExitDialogOpen = false;
         private float loadingStartTime;
         private AuthResult pendingResult;
         private EventSystem cachedEventSystem;
@@ -65,8 +71,22 @@ namespace TimeCrax.Auth
             // Bloqueia input durante loading
             if (isLoading) return;
 
-            // Tab para navegar entre campos
-            if (Input.GetKeyDown(KeyCode.Tab))
+            // ESC para abrir/fechar diálogo de saída
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (isExitDialogOpen)
+                {
+                    HideExitDialog();
+                }
+                else
+                {
+                    ShowExitDialog();
+                }
+                return;
+            }
+
+            // Tab para navegar entre campos (apenas se o diálogo de saída não estiver aberto)
+            if (!isExitDialogOpen && Input.GetKeyDown(KeyCode.Tab))
             {
                 if (emailInput != null && emailInput.isFocused)
                 {
@@ -90,6 +110,16 @@ namespace TimeCrax.Auth
 
             if (registerButton != null)
                 registerButton.onClick.AddListener(OnRegisterClicked);
+
+            if (exitButton != null)
+                exitButton.onClick.AddListener(OnExitClicked);
+
+            if (cancelButton != null)
+                cancelButton.onClick.AddListener(OnCancelExitClicked);
+
+            // Esconder painel de confirmação de saída inicialmente
+            if (exitConfirmPanel != null)
+                exitConfirmPanel.SetActive(false);
         }
 
         private void SetupInputFields()
@@ -333,6 +363,65 @@ namespace TimeCrax.Auth
 
         #endregion
 
+        #region Exit Confirmation
+
+        private void ShowExitDialog()
+        {
+            if (exitConfirmPanel == null) return;
+
+            PlayButtonSound();
+            isExitDialogOpen = true;
+            exitConfirmPanel.SetActive(true);
+
+            // Desabilita interação com o painel de login
+            if (loginButton != null)
+                loginButton.interactable = false;
+            if (registerButton != null)
+                registerButton.interactable = false;
+            if (emailInput != null)
+                emailInput.interactable = false;
+            if (passwordInput != null)
+                passwordInput.interactable = false;
+        }
+
+        private void HideExitDialog()
+        {
+            if (exitConfirmPanel == null) return;
+
+            PlayButtonSound();
+            isExitDialogOpen = false;
+            exitConfirmPanel.SetActive(false);
+
+            // Reabilita interação com o painel de login
+            if (loginButton != null)
+                loginButton.interactable = true;
+            if (registerButton != null)
+                registerButton.interactable = true;
+            if (emailInput != null)
+                emailInput.interactable = true;
+            if (passwordInput != null)
+                passwordInput.interactable = true;
+        }
+
+        private void OnExitClicked()
+        {
+            PlayButtonSound();
+            DebugHelper.Log("[LoginUI] Saindo do jogo...");
+
+            #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+            #else
+            Application.Quit();
+            #endif
+        }
+
+        private void OnCancelExitClicked()
+        {
+            HideExitDialog();
+        }
+
+        #endregion
+
         #region Cleanup
 
         private void OnDestroy()
@@ -343,6 +432,12 @@ namespace TimeCrax.Auth
 
             if (registerButton != null)
                 registerButton.onClick.RemoveListener(OnRegisterClicked);
+
+            if (exitButton != null)
+                exitButton.onClick.RemoveListener(OnExitClicked);
+
+            if (cancelButton != null)
+                cancelButton.onClick.RemoveListener(OnCancelExitClicked);
 
             if (passwordInput != null)
                 passwordInput.onSubmit.RemoveAllListeners();
