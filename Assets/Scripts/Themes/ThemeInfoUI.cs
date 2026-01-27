@@ -38,7 +38,30 @@ namespace TimeCrax.Themes
         public event Action<string> OnPlayRequested;
 
         private static ThemeInfoUI _instance;
-        public static ThemeInfoUI Instance => _instance;
+        private bool isInitialized = false;
+
+        public static ThemeInfoUI Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    // Tentar encontrar na cena (incluindo objetos inativos)
+                    _instance = FindFirstObjectByType<ThemeInfoUI>(FindObjectsInactive.Include);
+
+                    if (_instance == null)
+                    {
+                        DebugHelper.Log("[ThemeInfoUI] Instance not found in scene!");
+                    }
+                    else
+                    {
+                        // Garantir inicialização
+                        _instance.Initialize();
+                    }
+                }
+                return _instance;
+            }
+        }
 
         private void Awake()
         {
@@ -48,6 +71,15 @@ namespace TimeCrax.Themes
                 return;
             }
             _instance = this;
+            Initialize();
+        }
+
+        /// <summary>
+        /// Inicializa o componente. Pode ser chamado múltiplas vezes com segurança.
+        /// </summary>
+        private void Initialize()
+        {
+            if (isInitialized) return;
 
             if (themeInfoScreen != null)
             {
@@ -57,6 +89,9 @@ namespace TimeCrax.Themes
 
                 themeInfoScreen.SetActive(false);
             }
+
+            isInitialized = true;
+            DebugHelper.Log("[ThemeInfoUI] Initialized");
         }
 
         private void OnDestroy()
