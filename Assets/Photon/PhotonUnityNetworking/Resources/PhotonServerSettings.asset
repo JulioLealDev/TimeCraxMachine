@@ -118,6 +118,7 @@ MonoBehaviour:
   - RPC_StartTurnTimer
   - RPC_StopTurnTimer
   - RPC_SyncTurnTimer
+  - RPC_HandleTimeoutCleanup
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

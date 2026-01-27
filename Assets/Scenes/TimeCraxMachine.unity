@@ -93174,7 +93174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddf87d0f80b75743b37f2c94c62204c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnTimer
-  timeLimit: 60
+  timeLimit: 30
   syncInterval: 1
   timerText: {fileID: 537655074}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
@@ -127410,7 +127410,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 584c3730f60371b4bbc9cc31ecdd91b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomId: 0
   gameInfo: {fileID: 1866755941}
   enviroment: {fileID: 1262901645}
   deckEvent: {fileID: 3469287838404029340}
@@ -127431,6 +127430,7 @@ MonoBehaviour:
   playerLeftBackground: {fileID: 362769697}
   randomMaterial: {fileID: 336008437}
   turnTimer: {fileID: 1359821953}
+  randomId: 0
 --- !u!4 &1891373291
 Transform:
   m_ObjectHideFlags: 0
@@ -143903,7 +143903,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lobbyBackgroundScreen: {fileID: 7522756651233981217}
-  gameConnection: {fileID: 1159048666}
+  createRoom: {fileID: 1818767650}
+  roomScreen: {fileID: 8378379566945254124}
+  lobbyScreen: {fileID: 1054568729}
   roomNameInput: {fileID: 187768839}
   maxPlayersDropdown: {fileID: 2114030863}
   difficultyDropdown: {fileID: 94615598}
@@ -143911,16 +143913,14 @@ MonoBehaviour:
   themeDropdown: {fileID: 68022210}
   passwordInput: {fileID: 1618998388}
   passwordLabel: {fileID: 0}
-  gameManager: {fileID: 1891373290}
-  createRoom: {fileID: 1818767650}
-  roomScreen: {fileID: 8378379566945254124}
-  lobbyScreen: {fileID: 1054568729}
   nameDisplay: {fileID: 0}
   roomListContent: {fileID: 281523498}
   createRoomButton: {fileID: 310040532}
   roomNameWarning: {fileID: 1976066735}
   passwordWarning: {fileID: 1214088491}
   alreadyExistNameWarning: {fileID: 1627247051}
+  gameConnection: {fileID: 1159048666}
+  gameManager: {fileID: 1891373290}
   backgroundMusic: {fileID: 1865630401}
   soundEffects: {fileID: 751731491}
 --- !u!23 &965412487922978549
