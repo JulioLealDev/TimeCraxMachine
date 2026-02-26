@@ -93139,7 +93139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1359821952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93174,7 +93174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddf87d0f80b75743b37f2c94c62204c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnTimer
-  timeLimit: 30
+  timeLimit: 150
   syncInterval: 1
   timerText: {fileID: 537655074}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
