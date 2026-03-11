@@ -49,6 +49,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     // Propriedades públicas para acesso externo
     public GameObject Hud => hud;
 
+    // Flag para rastrear se está em transição de turno (cursor deve permanecer desabilitado)
+    public static bool IsInTurnTransition { get; set; } = false;
+
     // Campos privados
     private MachineComponent[] timeCraxComponents;
     private PlayerScript[] players;
@@ -59,7 +62,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int time;
     private bool gameIsOn = false;
     private List<int> componentList = new List<int>();
-    private Transform[] componentsWithAnimator = new Transform[20];
+    private List<Transform> componentsWithAnimator = new List<Transform>();
     private PlayerScript[] orderedPlayers;
 
     // Cache para evitar chamadas repetitivas a FindObjectsByType
@@ -331,9 +334,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         // Cache dos componentes no início do jogo
         CacheComponents();
 
-        int index = 0;
         gameIsOn = true;
         //gameOver.gameIsOver = false;
+
+        // Limpar lista de componentes com animator
+        componentsWithAnimator.Clear();
 
         //Lista de todos os componentes com o Script Component
         timeCraxComponents = FindObjectsByType<MachineComponent>(FindObjectsSortMode.None);
@@ -344,11 +349,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (components[i].CompareTag("Component"))
             {
-                //Lista de todos os componentes com a tag Componet (Ou seja, possui Animator)
-                DebugHelper.Log("Ativando animator do componente " + components[i].name);
-                components[i].GetComponent<Animator>().enabled = true;
-                componentsWithAnimator[index] = components[i];
-                index++;
+                //Lista de todos os componentes com a tag Component (Ou seja, possui Animator)
+                var animator = components[i].GetComponent<Animator>();
+                if (animator != null)
+                {
+                    DebugHelper.Log("Ativando animator do componente " + components[i].name);
+                    animator.enabled = true;
+                    componentsWithAnimator.Add(components[i]);
+                }
             }
         }
 
@@ -368,7 +376,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             cachedGameCameraAnimator.SetBool("enterMatch", true);
         }
 
-        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
         componentList.Clear();
         componentList.AddRange(numbers);
 
@@ -413,6 +421,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         // Inicializar cache de referências
         RefreshCache();
+
+        // Inicializar termômetro para nova partida
+        if (ThermometerManager.Instance != null)
+        {
+            ThermometerManager.Instance.Initialize();
+        }
 
         hud.SetActive(true);
         var outline = FindFirstObjectByType<OutlineAction>();
@@ -767,7 +781,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void StartTurn()
     {
-        //Button[] components = gameHUD.GetComponentsInChildren<Button>();
+        // Finalizar transição de turno e reabilitar cursor
+        IsInTurnTransition = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         // Garantir que os slots da timeline estejam desativados no início de cada turno
         // Os slots só devem ser ativados quando o jogador comprar uma carta de evento
@@ -941,16 +958,98 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void RandomComponentNumber()
     {
-        //DebugHelper.Log("7 --");
-        randomId = UnityEngine.Random.Range(1, componentList.Count + 1);
-        DebugHelper.Log("result: " + randomId);
+        // Criar lista de componentes elegíveis (excluir os que já têm malfunction=2)
+        List<int> eligibleComponents = new List<int>();
 
-        //photonView.RPC("RandomAnimator", RpcTarget.All);
+        if (timeCraxComponents != null)
+        {
+            foreach (var component in timeCraxComponents)
+            {
+                if (component != null && component.malfunctions < 2)
+                {
+                    eligibleComponents.Add(component.componentId);
+                }
+            }
+        }
+
+        if (eligibleComponents.Count == 0)
+        {
+            DebugHelper.Log("[GameManager] Nenhum componente elegível para malfunction!");
+            return;
+        }
+
+        // Sortear entre os elegíveis
+        int randomIndex = UnityEngine.Random.Range(0, eligibleComponents.Count);
+        randomId = eligibleComponents[randomIndex];
+        DebugHelper.Log($"[GameManager] Componente sorteado: {randomId} (de {eligibleComponents.Count} elegíveis)");
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         photonView.RPC("ComponentRandom", RpcTarget.All, randomId);
+    }
 
+    /// <summary>
+    /// Verifica se a condição de derrota foi atingida (3 componentes com malfunction=2)
+    /// </summary>
+    public void CheckGameOverCondition()
+    {
+        if (timeCraxComponents == null) return;
+
+        int criticalComponents = 0;
+
+        foreach (var component in timeCraxComponents)
+        {
+            if (component != null && component.malfunctions >= 2)
+            {
+                criticalComponents++;
+            }
+        }
+
+        DebugHelper.Log($"[GameManager] Componentes críticos: {criticalComponents}/3");
+
+        if (criticalComponents >= 3)
+        {
+            DebugHelper.Log("[GameManager] GAME OVER - 3 componentes com malfunction crítico!");
+
+            if (gameOver != null)
+            {
+                gameOver.gameIsOver = true;
+            }
+
+            this.DelayedCall(3f, TriggerGameOver);
+        }
+    }
+
+    /// <summary>
+    /// Executa o Game Over
+    /// </summary>
+    private void TriggerGameOver()
+    {
+        BackgroundMusic bgMusic = FindFirstObjectByType<BackgroundMusic>();
+
+        DeactivateAll();
+        ResetAllComponents();
+        ResetAllPlatenames();
+
+        if (bgMusic != null)
+        {
+            bgMusic.PlayGameOverSound();
+        }
+
+        if (gameOver != null)
+        {
+            gameOver.transform.GetChild(0).gameObject.SetActive(true);
+        }
+
+        if (hud != null)
+        {
+            hud.SetActive(false);
+        }
+
+        // Habilitar cursor no game over
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     [PunRPC]
@@ -971,13 +1070,20 @@ public class GameManager : MonoBehaviourPunCallbacks
         int randomIndex = 0;
         int cond = 0;
         float interval = 0.3f;
+        int componentCount = timeCraxComponents != null ? timeCraxComponents.Length : 0;
+
+        if (componentCount == 0)
+        {
+            DebugHelper.Log("[GameManager] ERRO: timeCraxComponents está vazio!");
+            yield break;
+        }
 
         while(cond < 15)
         {
-            int index = UnityEngine.Random.Range(0, 15);
-            while(index == randomIndex)
+            int index = UnityEngine.Random.Range(0, componentCount);
+            while(index == randomIndex && componentCount > 1)
             {
-                index = UnityEngine.Random.Range(0, 15);
+                index = UnityEngine.Random.Range(0, componentCount);
             }
             randomIndex = index;
             //DebugHelper.Log("Random: " + index);
@@ -995,25 +1101,44 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         //DebugHelper.Log("Random: " + (randomId - 1));
 
-        //DebugHelper.Log("Ativando outline do component: " + timeCraxComponents[(randomId - 1)].name);
-        timeCraxComponents[(randomId - 1)].GetComponent<OutlineComponent>().enabled = true;
-        soundEffects.PlayRouletteSound();
-        yield return new WaitForSeconds(interval);
+        // Encontrar o componente final pelo componentId (não pelo índice)
+        MachineComponent finalComponent = null;
+        foreach (var comp in timeCraxComponents)
+        {
+            if (comp != null && comp.componentId == randomId)
+            {
+                finalComponent = comp;
+                break;
+            }
+        }
 
-        //DebugHelper.Log("Destivando outline do component: " + timeCraxComponents[(randomId - 1)].name);
-        timeCraxComponents[(randomId - 1)].GetComponent<OutlineComponent>().enabled = false;
+        if (finalComponent != null)
+        {
+            var outline = finalComponent.GetComponent<OutlineComponent>();
+            if (outline != null)
+            {
+                outline.enabled = true;
+                soundEffects.PlayRouletteSound();
+                yield return new WaitForSeconds(interval);
+                outline.enabled = false;
+            }
+        }
 
         AddMalfunctionInComponent();
     }
 
     public void AddMalfunctionInComponent()
     {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        // Só reabilitar cursor se NÃO estiver em transição de turno
+        if (!IsInTurnTransition)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
 
         foreach (var component in timeCraxComponents)
         {
-            if (component.componentId == randomId)
+            if (component != null && component.componentId == randomId)
             {
                 component.AddMalfunction();
             }
@@ -1057,7 +1182,30 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (!gameOver.gameIsOver)
         {
             DebugHelper.Log("Game is ON");
-            photonView.RPC("FinishTurn", RpcTarget.All);
+
+            // Aumentar temperatura quando turno é finalizado (apenas MasterClient)
+            if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
+            {
+                // Calcular tempo de espera baseado na animação do termômetro
+                float waitTime = ThermometerManager.Instance.GetErrorProcessingTime();
+
+                // Iniciar animação do termômetro imediatamente
+                ThermometerManager.Instance.OnPlayerError();
+
+                // Esperar a animação terminar antes de passar o turno
+                this.DelayedCall(waitTime, () =>
+                {
+                    if (!gameOver.gameIsOver)
+                    {
+                        photonView.RPC("FinishTurn", RpcTarget.All);
+                    }
+                });
+            }
+            else
+            {
+                // Se não for MasterClient, apenas passa o turno
+                photonView.RPC("FinishTurn", RpcTarget.All);
+            }
         }
 
     }
@@ -1096,6 +1244,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void RPC_HandleTimeoutCleanup()
     {
         DebugHelper.Log("[GameManager] RPC_HandleTimeoutCleanup - Executando limpeza de timeout");
+
+        // Marcar que está em transição de turno
+        IsInTurnTransition = true;
+
+        // Desabilitar cursor para todos os jogadores
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         // 1. Fechar quiz se estiver aberto
         if (QuizManager.Instance != null && QuizManager.Instance.IsQuizActive)
@@ -1545,13 +1700,19 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log("10 -- ResetAllComponents");
 
+        // Resetar termômetro
+        if (ThermometerManager.Instance != null)
+        {
+            ThermometerManager.Instance.ResetThermometer();
+        }
+
         if (timeCraxComponents != null)
         {
             foreach (var component in timeCraxComponents)
             {
                 if (component != null)
                 {
-                    component.malfunctions = 0;
+                    component.ResetComponent();
                 }
             }
         }
@@ -1563,8 +1724,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                 if (component == null) continue;
 
                 DebugHelper.Log("opcName: " + component.name);
-                component.GetComponent<Animator>().SetBool("malfunction", false);
-                component.GetComponent<Animator>().enabled = false;
+                var animator = component.GetComponent<Animator>(); if (animator != null) animator.SetBool("malfunction", false);
+                if (animator != null) animator.enabled = false;
                 component.tag = "Component";
 
                 ParticleSystem[] effects = component.GetComponentsInChildren<ParticleSystem>(true);

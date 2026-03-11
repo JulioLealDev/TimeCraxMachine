@@ -2,6 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 using System;
+using System.Collections.Generic;
 using TimeCrax.Core;
 
 public class MachineComponent : MonoBehaviourPunCallbacks
@@ -9,26 +10,51 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     public int componentId;
     public int malfunctions = 0;
     public GameObject gameInfo;
+
+    [Header("Smoothness - Objetos afetados pelo malfunction crítico")]
+    [Tooltip("Lista de Renderers que terão Smoothness alterado para 0 quando malfunction = 2")]
+    [SerializeField] private List<Renderer> smoothnessTargets = new List<Renderer>();
+
     private SoundEffects soundEffects;
     private GameOver gameOver;
     private Transform sparks;
     private Transform smoke;
     private Transform componentWithAnimator = null;
-    private Transform[] childrenWithanimator = new Transform[4] {null,null,null,null};
-    private int count;
+    private List<Transform> childrenWithanimator = new List<Transform>();
 
     // Componentes cacheados para evitar GetComponent repetido
     private MeshCollider cachedMeshCollider;
     private Animator cachedAnimator;
-    private Animator[] cachedChildAnimators = new Animator[4];
+    private List<Animator> cachedChildAnimators = new List<Animator>();
+
+    // Cache para smoothness e cor original dos targets
+    private List<float> originalSmoothness = new List<float>();
+    private List<Color> originalAlbedoColors = new List<Color>();
 
     // Proteção contra clique duplo
     private bool isProcessingClick = false;
+
+    /// <summary>
+    /// Define o parâmetro bool "malfunction" no Animator, se existir
+    /// </summary>
+    private void SafeSetMalfunctionBool(Animator anim, bool value)
+    {
+        if (anim == null) return;
+
+        foreach (var param in anim.parameters)
+        {
+            if (param.name == "malfunction" && param.type == AnimatorControllerParameterType.Bool)
+            {
+                anim.SetBool("malfunction", value);
+                return;
+            }
+        }
+    }
+
     void Start()
     {
         soundEffects = FindFirstObjectByType<SoundEffects>();
         gameOver = FindFirstObjectByType<GameOver>();
-        count = 0;
 
         // Cache do MeshCollider
         cachedMeshCollider = GetComponent<MeshCollider>();
@@ -42,9 +68,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 Animator anim = opcoes[i].GetComponent<Animator>();
                 if (anim != null)
                 {
-                    childrenWithanimator[count] = opcoes[i];
-                    cachedChildAnimators[count] = anim; // Cache do Animator
-                    count++;
+                    childrenWithanimator.Add(opcoes[i]);
+                    cachedChildAnimators.Add(anim); // Cache do Animator
                 }
                 else if (opcoes[i].CompareTag("Sparks"))
                 {
@@ -75,6 +100,140 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             }
         }
 
+        // Cache dos Renderers e smoothness original
+        CacheRenderersAndSmoothness();
+    }
+
+    /// <summary>
+    /// Cachea os valores originais de Smoothness e cor Albedo dos targets configurados
+    /// </summary>
+    private void CacheRenderersAndSmoothness()
+    {
+        originalSmoothness.Clear();
+        originalAlbedoColors.Clear();
+
+        foreach (var renderer in smoothnessTargets)
+        {
+            if (renderer != null && renderer.sharedMaterial != null)
+            {
+                // Guardar smoothness original (propriedade _Glossiness para Standard shader)
+                float smoothness = renderer.sharedMaterial.HasProperty("_Glossiness")
+                    ? renderer.sharedMaterial.GetFloat("_Glossiness")
+                    : 0.5f;
+                originalSmoothness.Add(smoothness);
+
+                // Guardar cor Albedo original (propriedade _Color para Standard shader)
+                Color albedo = renderer.sharedMaterial.HasProperty("_Color")
+                    ? renderer.sharedMaterial.GetColor("_Color")
+                    : Color.white;
+                originalAlbedoColors.Add(albedo);
+            }
+            else
+            {
+                originalSmoothness.Add(0.5f); // Valor padrão
+                originalAlbedoColors.Add(Color.white); // Valor padrão
+            }
+        }
+    }
+
+    /// <summary>
+    /// Define o parâmetro "malfunction" nos Animators dos smoothnessTargets
+    /// </summary>
+    private void SetTargetsMalfunctionState(bool value)
+    {
+        foreach (var renderer in smoothnessTargets)
+        {
+            if (renderer != null)
+            {
+                var animator = renderer.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    SafeSetMalfunctionBool(animator, value);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Define o Smoothness e cor Albedo de todos os materiais configurados em smoothnessTargets
+    /// </summary>
+    private void SetMaterialSmoothnessAndColor(float smoothness, Color albedoColor)
+    {
+        foreach (var renderer in smoothnessTargets)
+        {
+            if (renderer != null && renderer.material != null)
+            {
+                // Alterar Smoothness
+                if (renderer.material.HasProperty("_Glossiness"))
+                {
+                    renderer.material.SetFloat("_Glossiness", smoothness);
+                }
+
+                // Alterar cor Albedo
+                if (renderer.material.HasProperty("_Color"))
+                {
+                    renderer.material.SetColor("_Color", albedoColor);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Desativa os Animators dos smoothnessTargets com delay
+    /// </summary>
+    private void DisableTargetsAnimatorsWithDelay(float delay)
+    {
+        this.DelayedCall(delay, DisableTargetsAnimators);
+    }
+
+    /// <summary>
+    /// Desativa os Animators dos smoothnessTargets
+    /// </summary>
+    private void DisableTargetsAnimators()
+    {
+        foreach (var renderer in smoothnessTargets)
+        {
+            if (renderer != null)
+            {
+                var animator = renderer.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    animator.enabled = false;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Restaura o Smoothness e cor Albedo original de todos os materiais configurados
+    /// e reativa os Animators desses objetos
+    /// </summary>
+    private void RestoreMaterialSmoothness()
+    {
+        for (int i = 0; i < smoothnessTargets.Count; i++)
+        {
+            if (smoothnessTargets[i] != null && smoothnessTargets[i].material != null)
+            {
+                // Restaurar Smoothness
+                if (i < originalSmoothness.Count && smoothnessTargets[i].material.HasProperty("_Glossiness"))
+                {
+                    smoothnessTargets[i].material.SetFloat("_Glossiness", originalSmoothness[i]);
+                }
+
+                // Restaurar cor Albedo
+                if (i < originalAlbedoColors.Count && smoothnessTargets[i].material.HasProperty("_Color"))
+                {
+                    smoothnessTargets[i].material.SetColor("_Color", originalAlbedoColors[i]);
+                }
+
+                // Reativar Animator se existir
+                var animator = smoothnessTargets[i].GetComponent<Animator>();
+                if (animator != null)
+                {
+                    animator.enabled = true;
+                }
+            }
+        }
     }
 
     public void OnMouseDown()
@@ -206,41 +365,71 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     {
         malfunctions++;
 
-        if (malfunctions > 1)
+        if (malfunctions >= 2)
         {
-            DebugHelper.Log("----> EndGame");
+            // Componente com 2 malfunctions - ativa fumaça
+            DebugHelper.Log($"----> Componente {componentId} com malfunction crítico (2)");
             soundEffects.PlayFinalComponentExplosionSound();
-            //sparks.gameObject.SetActive(true);
-            smoke.gameObject.SetActive(true);
 
-            gameOver.gameIsOver = true;
+            if (smoke != null)
+            {
+                smoke.gameObject.SetActive(true);
+            }
 
-            this.DelayedCall(3f, EndGame);
+            // Desativar sparks quando malfunction = 2
+            if (sparks != null)
+            {
+                sparks.gameObject.SetActive(false);
+            }
 
+            // Alterar tag para Untagged quando malfunction crítico
+            gameObject.tag = "Untagged";
+
+            // Definir parâmetro "malfunction" = false nos animators antes de alterar Smoothness
+            SetTargetsMalfunctionState(false);
+
+            // Alterar Smoothness para 0 e cor Albedo para #999999
+            SetMaterialSmoothnessAndColor(0f, new Color(0.6f, 0.6f, 0.6f, 1f));
+
+            // Desativar animators após 2 segundos
+            DisableTargetsAnimatorsWithDelay(2f);
+
+            // Verificar condição de derrota global (3 componentes com malfunction=2)
+            var gameManager = FindFirstObjectByType<GameManager>();
+            if (gameManager != null)
+            {
+                gameManager.CheckGameOverCondition();
+            }
         }
         else
         {
-            DebugHelper.Log("----> NOT EndGame");
+            // Primeiro malfunction - ativa animação e sparks
+            DebugHelper.Log($"----> Componente {componentId} com primeiro malfunction");
             if (componentWithAnimator != null)
             {
                 if (cachedAnimator != null)
                 {
-                    cachedAnimator.SetBool("malfunction", true);
+                    cachedAnimator.enabled = true;
+                    SafeSetMalfunctionBool(cachedAnimator, true);
                 }
             }
             else
             {
-                for (int i = 0; i < cachedChildAnimators.Length; i++)
+                for (int i = 0; i < cachedChildAnimators.Count; i++)
                 {
                     if (cachedChildAnimators[i] != null)
                     {
-                        cachedChildAnimators[i].SetBool("malfunction", true);
+                        cachedChildAnimators[i].enabled = true;
+                        SafeSetMalfunctionBool(cachedChildAnimators[i], true);
                     }
                 }
 
             }
 
-            sparks.gameObject.SetActive(true);
+            if (sparks != null)
+            {
+                sparks.gameObject.SetActive(true);
+            }
             soundEffects.PlayComponentExplosionSound();
         }
 
@@ -264,27 +453,29 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RemoveMalfunction()
     {
+        // Definir malfunction = false imediatamente
         if (componentWithAnimator != null)
         {
             if (cachedAnimator != null)
             {
-                cachedAnimator.SetBool("malfunction", false);
+                SafeSetMalfunctionBool(cachedAnimator, false);
             }
         }
         else
         {
-            for (int i = 0; i < cachedChildAnimators.Length; i++)
+            for (int i = 0; i < cachedChildAnimators.Count; i++)
             {
                 if (cachedChildAnimators[i] != null)
                 {
-                    cachedChildAnimators[i].SetBool("malfunction", false);
+                    SafeSetMalfunctionBool(cachedChildAnimators[i], false);
                 }
             }
-
         }
 
-
-        sparks.gameObject.SetActive(false);
+        if (sparks != null)
+        {
+            sparks.gameObject.SetActive(false);
+        }
         soundEffects.PlayComponentRepairSound();
 
         malfunctions--;
@@ -297,6 +488,51 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         if (gameManager != null)
         {
             gameManager.BlockActions();
+        }
+    }
+
+    /// <summary>
+    /// Reseta o componente para o estado inicial (usado ao reiniciar partida)
+    /// </summary>
+    public void ResetComponent()
+    {
+        malfunctions = 0;
+        gameObject.tag = "Component";
+
+        // Resetar Animator principal
+        if (cachedAnimator != null)
+        {
+            SafeSetMalfunctionBool(cachedAnimator, false);
+            cachedAnimator.enabled = false;
+        }
+
+        // Resetar Animators filhos
+        for (int i = 0; i < cachedChildAnimators.Count; i++)
+        {
+            if (cachedChildAnimators[i] != null)
+            {
+                SafeSetMalfunctionBool(cachedChildAnimators[i], false);
+                cachedChildAnimators[i].enabled = false;
+            }
+        }
+
+        // Desativar efeitos de partículas
+        if (sparks != null)
+        {
+            sparks.gameObject.SetActive(false);
+        }
+        if (smoke != null)
+        {
+            smoke.gameObject.SetActive(false);
+        }
+
+        // Restaurar Smoothness original dos materiais
+        RestoreMaterialSmoothness();
+
+        // Desabilitar MeshCollider
+        if (cachedMeshCollider != null)
+        {
+            cachedMeshCollider.enabled = false;
         }
     }
 

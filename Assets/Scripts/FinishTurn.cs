@@ -27,6 +27,10 @@ public class FinishTurn : MonoBehaviourPunCallbacks
 
         isProcessingClick = true;
 
+        // Desabilitar cursor imediatamente ao clicar
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         DebugHelper.Log("Clicou no Finish");
         gameObject.GetComponent<MeshCollider>().enabled = false;
         photonView.RPC("ClickFinish", RpcTarget.All);
@@ -62,6 +66,13 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log("Click Finish");
         soundEffects.PressHudButtonSound();
+
+        // Marcar que está em transição de turno
+        GameManager.IsInTurnTransition = true;
+
+        // Desabilitar cursor para todos os jogadores
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void Finish()

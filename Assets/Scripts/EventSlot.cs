@@ -2,6 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
 using TimeCrax.Quiz;
+using TimeCrax.Managers;
 
 public class EventSlot : MonoBehaviourPunCallbacks
 {
@@ -74,6 +75,13 @@ public class EventSlot : MonoBehaviourPunCallbacks
     public static void ResetClickProtection()
     {
         isProcessingClick = false;
+
+        // Reabilitar cursor se NÃO estiver em transição de turno
+        if (!GameManager.IsInTurnTransition)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
     /// <summary>
@@ -116,6 +124,10 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         else
         {
+            // Desabilitar cursor imediatamente ao errar slot
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             // Slot errado - som de erro após delay
             this.DelayedCall(3.3f, PlayWrongSound);
 
@@ -132,14 +144,20 @@ public class EventSlot : MonoBehaviourPunCallbacks
                 }
             }
 
-            // Agendar malfunction apenas no MasterClient
-            if (PhotonNetwork.IsMasterClient)
+            // Agendar aumento de temperatura apenas no MasterClient
+            if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
             {
-                this.DelayedCall(5f, RandomComponent);
-            }
+                float thermometerProcessingTime = ThermometerManager.Instance.GetErrorProcessingTime();
+                this.DelayedCall(5f, () => ThermometerManager.Instance.OnPlayerError());
 
-            // Resetar proteção contra clique duplo após animação
-            this.DelayedCall(5.5f, ResetClickProtection);
+                // Resetar proteção contra clique duplo após animação do termômetro
+                this.DelayedCall(5f + thermometerProcessingTime + 0.5f, ResetClickProtection);
+            }
+            else
+            {
+                // Fallback se ThermometerManager não existir
+                this.DelayedCall(5.5f, ResetClickProtection);
+            }
         }
     }
 
@@ -296,6 +314,10 @@ public class EventSlot : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log($"[EventSlot] RPC QuizFailed - slotCount: {slotCount}");
 
+        // Desabilitar cursor imediatamente ao falhar quiz
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         // Encontrar a carta
         var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         foreach (var card in cards)
@@ -326,14 +348,20 @@ public class EventSlot : MonoBehaviourPunCallbacks
         // Tocar som de erro
         soundEffects.PlayWrongSlotSound();
 
-        // Sortear componente para malfunction após câmera voltar (3.3s animação + 1.5s zoom out + margem)
-        if (PhotonNetwork.IsMasterClient)
+        // Aumentar temperatura após câmera voltar (3.3s animação + 1.5s zoom out + margem)
+        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
         {
-            this.DelayedCall(5f, RandomComponent);
-        }
+            float thermometerProcessingTime = ThermometerManager.Instance.GetErrorProcessingTime();
+            this.DelayedCall(5f, () => ThermometerManager.Instance.OnPlayerError());
 
-        // Resetar proteção contra clique duplo após animação
-        this.DelayedCall(5.5f, ResetClickProtection);
+            // Resetar proteção contra clique duplo após animação do termômetro
+            this.DelayedCall(5f + thermometerProcessingTime + 0.5f, ResetClickProtection);
+        }
+        else
+        {
+            // Fallback se ThermometerManager não existir
+            this.DelayedCall(5.5f, ResetClickProtection);
+        }
     }
 
     /// <summary>

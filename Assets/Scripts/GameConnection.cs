@@ -112,7 +112,15 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void CreatedRoom(string nameRoom, int maxPlayers, string difficulty, string theme, string password, string themeId = "")
     {
-                DebugHelper.Log("Entrou na Sala Criada");
+        DebugHelper.Log("Entrou na Sala Criada");
+
+        // Prevenir cliques múltiplos
+        if (isProcessingRoomOperation)
+        {
+            DebugHelper.Log("[GameConnection] Operação de criar sala em andamento, ignorando clique duplicado");
+            return;
+        }
+        isProcessingRoomOperation = true;
 
         // Verificar se está conectado ao Master Server e pronto para operações
         if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby)
@@ -179,6 +187,21 @@ public class GameConnection : MonoBehaviourPunCallbacks
         fullGameScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
         nameDisplay.gameObject.SetActive(true);
+    }
+
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        DebugHelper.Log($"[GameConnection] OnCreateRoomFailed: {returnCode} - {message}");
+
+        // Resetar flag de operação
+        isProcessingRoomOperation = false;
+        pendingRoomData = null;
+
+        // Voltar para a tela de criação de sala
+        if (createRoom != null)
+        {
+            createRoom.SetActive(true);
+        }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)

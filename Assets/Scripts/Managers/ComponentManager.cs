@@ -75,7 +75,7 @@ namespace TimeCrax.Managers
             }
 
             // Inicializar lista de componentes
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
             componentList.Clear();
             componentList.AddRange(numbers);
 
@@ -109,12 +109,13 @@ namespace TimeCrax.Managers
             int cond = 0;
             float interval = 0.3f;
 
-            while (cond < 15)
+            int componentCount = timeCraxComponents != null ? timeCraxComponents.Length : 0;
+            while (cond < 13)
             {
-                int index = Random.Range(0, 15);
-                while (index == randomIndex)
+                int index = Random.Range(0, componentCount);
+                while (index == randomIndex && componentCount > 1)
                 {
-                    index = Random.Range(0, 15);
+                    index = Random.Range(0, componentCount);
                 }
                 randomIndex = index;
 
@@ -158,8 +159,12 @@ namespace TimeCrax.Managers
         /// </summary>
         public void AddMalfunctionInComponent()
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            // Só reabilitar cursor se NÃO estiver em transição de turno
+            if (!GameManager.IsInTurnTransition)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
 
             if (timeCraxComponents == null) return;
 
