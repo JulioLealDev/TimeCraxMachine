@@ -87,11 +87,17 @@ public class CameraController : MonoBehaviourPunCallbacks
         {
             if (CheckIfCardWasDrew())
             {
-                slot.SetUpSlots(true, "Selectable");
+                if (slot != null)
+                {
+                    slot.SetUpSlots(true, "Selectable");
+                }
             }
             else
             {
-                timeline.ActiveTimeline(true);
+                if (timeline != null)
+                {
+                    timeline.ActiveTimeline(true);
+                }
             }
         }
     }
@@ -102,8 +108,11 @@ public class CameraController : MonoBehaviourPunCallbacks
         // Verificar se é o turno do jogador local
         if (IsMyTurn())
         {
-            timeline.ActiveTimeline(true);
-            if (CheckIfCardWasDrew())
+            if (timeline != null)
+            {
+                timeline.ActiveTimeline(true);
+            }
+            if (CheckIfCardWasDrew() && slot != null)
             {
                 slot.SetUpSlots(false, "Undestructable");
             }

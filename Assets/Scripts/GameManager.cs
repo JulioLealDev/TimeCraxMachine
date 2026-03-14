@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     [Header("UI")]
     [SerializeField] private GameObject playerLeftBackground;
+    [SerializeField] private Animator rightCompartmentAnimator;
 
     [Header("Sistemas")]
     [SerializeField] private RandomMaterial randomMaterial;
@@ -330,6 +331,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         string theme = PhotonNetwork.CurrentRoom.CustomProperties["the"].ToString();
 
         DebugHelper.Log("-------------  THEME: " + theme);
+
+        // Abrir compartimento direito
+        if (rightCompartmentAnimator != null)
+        {
+            rightCompartmentAnimator.SetBool("open", true);
+        }
 
         // Cache dos componentes no início do jogo
         CacheComponents();
@@ -1050,6 +1057,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         // Habilitar cursor no game over
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        // Fechar compartimento direito
+        if (rightCompartmentAnimator != null)
+        {
+            rightCompartmentAnimator.SetBool("open", false);
+        }
     }
 
     [PunRPC]
@@ -1639,6 +1652,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         gameIsOn = false;
         if (gameOver != null) gameOver.gameIsOver = false;
+
+        // Fechar compartimento direito
+        if (rightCompartmentAnimator != null)
+        {
+            rightCompartmentAnimator.SetBool("open", false);
+        }
 
         if (deckEvent != null) deckEvent.ResetAllEventCards();
 

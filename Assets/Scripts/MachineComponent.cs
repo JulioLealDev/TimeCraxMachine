@@ -31,6 +31,9 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     private List<float> originalSmoothness = new List<float>();
     private List<Color> originalAlbedoColors = new List<Color>();
 
+    // Instâncias de materiais para cada target (evita compartilhamento)
+    private List<Material> materialInstances = new List<Material>();
+
     // Proteção contra clique duplo
     private bool isProcessingClick = false;
 
@@ -39,13 +42,30 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     /// </summary>
     private void SafeSetMalfunctionBool(Animator anim, bool value)
     {
-        if (anim == null) return;
+        if (anim == null || anim.runtimeAnimatorController == null) return;
 
         foreach (var param in anim.parameters)
         {
             if (param.name == "malfunction" && param.type == AnimatorControllerParameterType.Bool)
             {
                 anim.SetBool("malfunction", value);
+                return;
+            }
+        }
+    }
+
+        /// <summary>
+    /// Define o parâmetro bool "broken" no Animator, se existir
+    /// </summary>
+    private void SafeSetBrokenBool(Animator anim, bool value)
+    {
+        if (anim == null || anim.runtimeAnimatorController == null) return;
+
+        foreach (var param in anim.parameters)
+        {
+            if (param.name == "broken" && param.type == AnimatorControllerParameterType.Bool)
+            {
+                anim.SetBool("broken", value);
                 return;
             }
         }
@@ -100,46 +120,53 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             }
         }
 
-        // Cache dos Renderers e smoothness original
+        // Cache dos Renderers, criar instâncias de material e guardar valores originais
         CacheRenderersAndSmoothness();
     }
 
     /// <summary>
     /// Cachea os valores originais de Smoothness e cor Albedo dos targets configurados
+    /// e cria instâncias de material para cada renderer
     /// </summary>
     private void CacheRenderersAndSmoothness()
     {
         originalSmoothness.Clear();
         originalAlbedoColors.Clear();
+        materialInstances.Clear();
 
         foreach (var renderer in smoothnessTargets)
         {
             if (renderer != null && renderer.sharedMaterial != null)
             {
-                // Guardar smoothness original (propriedade _Glossiness para Standard shader)
-                float smoothness = renderer.sharedMaterial.HasProperty("_Glossiness")
-                    ? renderer.sharedMaterial.GetFloat("_Glossiness")
+                // Criar instância de material para este renderer (força cópia única)
+                Material matInstance = renderer.material; // Isso cria uma instância
+                materialInstances.Add(matInstance);
+
+                // Guardar smoothness original
+                float smoothness = matInstance.HasProperty("_Glossiness")
+                    ? matInstance.GetFloat("_Glossiness")
                     : 0.5f;
                 originalSmoothness.Add(smoothness);
 
-                // Guardar cor Albedo original (propriedade _Color para Standard shader)
-                Color albedo = renderer.sharedMaterial.HasProperty("_Color")
-                    ? renderer.sharedMaterial.GetColor("_Color")
+                // Guardar cor Albedo original
+                Color albedo = matInstance.HasProperty("_Color")
+                    ? matInstance.GetColor("_Color")
                     : Color.white;
                 originalAlbedoColors.Add(albedo);
             }
             else
             {
-                originalSmoothness.Add(0.5f); // Valor padrão
-                originalAlbedoColors.Add(Color.white); // Valor padrão
+                materialInstances.Add(null);
+                originalSmoothness.Add(0.5f);
+                originalAlbedoColors.Add(Color.white);
             }
         }
     }
 
-    /// <summary>
+        /// <summary>
     /// Define o parâmetro "malfunction" nos Animators dos smoothnessTargets
     /// </summary>
-    private void SetTargetsMalfunctionState(bool value)
+    private void SetTargetsBrokenState(bool value)
     {
         foreach (var renderer in smoothnessTargets)
         {
@@ -148,31 +175,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 var animator = renderer.GetComponent<Animator>();
                 if (animator != null)
                 {
-                    SafeSetMalfunctionBool(animator, value);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Define o Smoothness e cor Albedo de todos os materiais configurados em smoothnessTargets
-    /// </summary>
-    private void SetMaterialSmoothnessAndColor(float smoothness, Color albedoColor)
-    {
-        foreach (var renderer in smoothnessTargets)
-        {
-            if (renderer != null && renderer.material != null)
-            {
-                // Alterar Smoothness
-                if (renderer.material.HasProperty("_Glossiness"))
-                {
-                    renderer.material.SetFloat("_Glossiness", smoothness);
-                }
-
-                // Alterar cor Albedo
-                if (renderer.material.HasProperty("_Color"))
-                {
-                    renderer.material.SetColor("_Color", albedoColor);
+                    SafeSetBrokenBool(animator, value);
                 }
             }
         }
@@ -210,23 +213,27 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     /// </summary>
     private void RestoreMaterialSmoothness()
     {
-        for (int i = 0; i < smoothnessTargets.Count; i++)
+        for (int i = 0; i < materialInstances.Count; i++)
         {
-            if (smoothnessTargets[i] != null && smoothnessTargets[i].material != null)
+            var mat = materialInstances[i];
+            if (mat != null)
             {
                 // Restaurar Smoothness
-                if (i < originalSmoothness.Count && smoothnessTargets[i].material.HasProperty("_Glossiness"))
+                if (i < originalSmoothness.Count && mat.HasProperty("_Glossiness"))
                 {
-                    smoothnessTargets[i].material.SetFloat("_Glossiness", originalSmoothness[i]);
+                    mat.SetFloat("_Glossiness", originalSmoothness[i]);
                 }
 
                 // Restaurar cor Albedo
-                if (i < originalAlbedoColors.Count && smoothnessTargets[i].material.HasProperty("_Color"))
+                if (i < originalAlbedoColors.Count && mat.HasProperty("_Color"))
                 {
-                    smoothnessTargets[i].material.SetColor("_Color", originalAlbedoColors[i]);
+                    mat.SetColor("_Color", originalAlbedoColors[i]);
                 }
+            }
 
-                // Reativar Animator se existir
+            // Reativar Animator se existir
+            if (i < smoothnessTargets.Count && smoothnessTargets[i] != null)
+            {
                 var animator = smoothnessTargets[i].GetComponent<Animator>();
                 if (animator != null)
                 {
@@ -385,14 +392,10 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             // Alterar tag para Untagged quando malfunction crítico
             gameObject.tag = "Untagged";
 
-            // Definir parâmetro "malfunction" = false nos animators antes de alterar Smoothness
-            SetTargetsMalfunctionState(false);
-
-            // Alterar Smoothness para 0 e cor Albedo para #999999
-            SetMaterialSmoothnessAndColor(0f, new Color(0.6f, 0.6f, 0.6f, 1f));
+            SetTargetsBrokenState(true);
 
             // Desativar animators após 2 segundos
-            DisableTargetsAnimatorsWithDelay(2f);
+            //DisableTargetsAnimatorsWithDelay(2f);
 
             // Verificar condição de derrota global (3 componentes com malfunction=2)
             var gameManager = FindFirstObjectByType<GameManager>();
