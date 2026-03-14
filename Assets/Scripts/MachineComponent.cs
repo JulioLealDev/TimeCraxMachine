@@ -27,7 +27,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     {
         None,
         Battery,
-        Cooler
+        Cooler,
+        Thermometer
     }
 
     private SoundEffects soundEffects;
@@ -481,6 +482,15 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                     DebugHelper.Log($"[MachineComponent] Cooler com malfunction! Níveis de temperatura aumentados.");
                 }
                 break;
+
+            case SpecialComponentType.Thermometer:
+                // Define malfunction = true no animator do termômetro
+                if (ThermometerManager.Instance != null)
+                {
+                    ThermometerManager.Instance.SetThermometerMalfunctionState(true);
+                    DebugHelper.Log($"[MachineComponent] Thermometer com malfunction! Animator atualizado.");
+                }
+                break;
         }
     }
 
@@ -507,6 +517,15 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 {
                     ThermometerManager.Instance.RemoveCoolerMalfunction();
                     DebugHelper.Log($"[MachineComponent] Cooler reparado! Níveis de temperatura reduzidos.");
+                }
+                break;
+
+            case SpecialComponentType.Thermometer:
+                // Define malfunction = false no animator do termômetro
+                if (ThermometerManager.Instance != null)
+                {
+                    ThermometerManager.Instance.SetThermometerMalfunctionState(false);
+                    DebugHelper.Log($"[MachineComponent] Thermometer reparado! Animator atualizado.");
                 }
                 break;
         }

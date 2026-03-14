@@ -421,6 +421,19 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
+        /// Define o estado de malfunction no animator do termômetro.
+        /// Chamado quando o componente Thermometer recebe malfunction.
+        /// </summary>
+        public void SetThermometerMalfunctionState(bool isMalfunctioning)
+        {
+            if (thermometerAnimator != null)
+            {
+                thermometerAnimator.SetBool("malfunction", isMalfunctioning);
+                DebugHelper.Log($"[ThermometerManager] Animator malfunction = {isMalfunctioning}");
+            }
+        }
+
+        /// <summary>
         /// Reseta o termômetro para o estado inicial (0)
         /// </summary>
         public void ResetThermometer()
