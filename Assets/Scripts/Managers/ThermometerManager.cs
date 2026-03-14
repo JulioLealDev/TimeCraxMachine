@@ -136,9 +136,17 @@ namespace TimeCrax.Managers
         {
             currentDifficulty = difficulty;
             currentProgressionIndex = 0;
-            SetTemperature(20);
+
+            // Resetar progressões para garantir valores base em nova partida
+            ResetProgressions();
+
+            // Usar primeiro nível da progressão atual
+            int[] progression = GetCurrentProgression();
+            int firstLevel = progression.Length > 0 ? progression[0] : 20;
+            SetTemperature(firstLevel);
+
             ActivateSmokeParticles();
-            DebugHelper.Log($"[ThermometerManager] Inicializado com dificuldade: {difficulty}");
+            DebugHelper.Log($"[ThermometerManager] Inicializado com dificuldade: {difficulty}, temperatura inicial: {firstLevel}");
         }
 
         /// <summary>
@@ -252,13 +260,17 @@ namespace TimeCrax.Managers
                 gameManager.RandomComponentNumber();
             }
 
-            // Resetar para 20 após um delay para a animação do malfunction
+            // Resetar para primeiro nível da progressão atual após delay
             this.DelayedCall(3f, () =>
             {
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    // Resetar para primeiro nível (20) e índice 0
-                    photonView.RPC("RPC_SetTemperatureWithIndex", RpcTarget.All, 20, 0);
+                    // Obter primeiro nível da progressão atual (pode ser > 20 se coolers estão danificados)
+                    int[] progression = GetCurrentProgression();
+                    int firstLevel = progression.Length > 0 ? progression[0] : 20;
+
+                    photonView.RPC("RPC_SetTemperatureWithIndex", RpcTarget.All, firstLevel, 0);
+                    DebugHelper.Log($"[ThermometerManager] Temperatura resetada para {firstLevel}");
                 }
             });
         }
