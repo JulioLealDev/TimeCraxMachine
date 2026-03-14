@@ -1156,6 +1156,13 @@ public class GameManager : MonoBehaviourPunCallbacks
                 component.AddMalfunction();
             }
         }
+
+        // Resetar temperatura para primeiro nível APÓS aplicar malfunction
+        // (importante para coolers que alteram a progressão)
+        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
+        {
+            ThermometerManager.Instance.ResetTemperatureToFirstLevel();
+        }
     }
 
     public void EndTurn()

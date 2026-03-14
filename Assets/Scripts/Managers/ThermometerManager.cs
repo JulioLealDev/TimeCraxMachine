@@ -255,24 +255,26 @@ namespace TimeCrax.Managers
             DebugHelper.Log("[ThermometerManager] Disparando malfunction!");
 
             // Chamar malfunction no GameManager
+            // O reset de temperatura será feito pelo GameManager após aplicar o malfunction
             if (gameManager != null)
             {
                 gameManager.RandomComponentNumber();
             }
+        }
 
-            // Resetar para primeiro nível da progressão atual após delay
-            this.DelayedCall(3f, () =>
-            {
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    // Obter primeiro nível da progressão atual (pode ser > 20 se coolers estão danificados)
-                    int[] progression = GetCurrentProgression();
-                    int firstLevel = progression.Length > 0 ? progression[0] : 20;
+        /// <summary>
+        /// Reseta a temperatura para o primeiro nível da progressão atual.
+        /// Chamado pelo GameManager após aplicar malfunction no componente.
+        /// </summary>
+        public void ResetTemperatureToFirstLevel()
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
 
-                    photonView.RPC("RPC_SetTemperatureWithIndex", RpcTarget.All, firstLevel, 0);
-                    DebugHelper.Log($"[ThermometerManager] Temperatura resetada para {firstLevel}");
-                }
-            });
+            int[] progression = GetCurrentProgression();
+            int firstLevel = progression.Length > 0 ? progression[0] : 20;
+
+            photonView.RPC("RPC_SetTemperatureWithIndex", RpcTarget.All, firstLevel, 0);
+            DebugHelper.Log($"[ThermometerManager] Temperatura resetada para {firstLevel}");
         }
 
         /// <summary>
