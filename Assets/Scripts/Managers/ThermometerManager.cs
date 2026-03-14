@@ -36,14 +36,23 @@ namespace TimeCrax.Managers
         [SerializeField] private int[] temperatureLevels = { 0, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
         [SerializeField] private float malfunctionDelay = 3f; // Delay antes de iniciar malfunction
 
-        // Progressões por dificuldade
-        private readonly int[] easyProgression = { 20, 50, 80, 100 };
-        private readonly int[] mediumHardProgression = { 20, 60, 100 };
+        // Progressões por dificuldade (base)
+        private readonly int[] easyProgressionBase = { 20, 40, 60, 80, 100 };
+        private readonly int[] mediumProgressionBase = { 20, 50, 80, 100 };
+        private readonly int[] hardProgressionBase = { 20, 60, 100 };
+
+        // Progressões atuais (podem ser modificadas pelos coolers)
+        private int[] easyProgression;
+        private int[] mediumProgression;
+        private int[] hardProgression;
 
         // Estado atual
         private int currentTemperature = 0;
         private int currentProgressionIndex = 0;
         private string currentDifficulty = "Normal";
+
+        // Contador de coolers com malfunction
+        private int coolersMalfunctioning = 0;
 
         // Referência ao GameManager para chamar malfunction
         private GameManager gameManager;
@@ -69,15 +78,29 @@ namespace TimeCrax.Managers
             // Se o animator não foi atribuído, tentar encontrar
             if (thermometerAnimator == null)
             {
-                var pointer = GameObject.Find("Pointer_12");
+                var pointer = GameObject.Find("Pointer");
                 if (pointer != null)
                 {
                     thermometerAnimator = pointer.GetComponent<Animator>();
                 }
             }
 
+            // Inicializar progressões
+            ResetProgressions();
+
             // Garantir que começa em 0
             SetTemperature(0);
+        }
+
+        /// <summary>
+        /// Reseta as progressões para os valores base
+        /// </summary>
+        private void ResetProgressions()
+        {
+            easyProgression = (int[])easyProgressionBase.Clone();
+            mediumProgression = (int[])mediumProgressionBase.Clone();
+            hardProgression = (int[])hardProgressionBase.Clone();
+            coolersMalfunctioning = 0;
         }
 
         /// <summary>
@@ -127,10 +150,13 @@ namespace TimeCrax.Managers
             {
                 return easyProgression;
             }
+            else if(currentDifficulty.ToLower() == "normal")
+            {
+                return mediumProgression;
+            }
             else
             {
-                // Medium e Hard usam a mesma progressão
-                return mediumHardProgression;
+                return hardProgression;
             }
         }
 
@@ -389,6 +415,9 @@ namespace TimeCrax.Managers
 
             currentProgressionIndex = 0;
 
+            // Resetar progressões para valores base
+            ResetProgressions();
+
             if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC("RPC_SetTemperatureWithIndex", RpcTarget.All, 0, 0);
@@ -406,6 +435,104 @@ namespace TimeCrax.Managers
 
             // Desativar partículas de fumaça
             DeactivateSmokeParticles();
+        }
+
+        /// <summary>
+        /// Aplica o efeito de malfunction do cooler (aumenta níveis de temperatura em 20°C)
+        /// </summary>
+        public void ApplyCoolerMalfunction()
+        {
+            coolersMalfunctioning++;
+            RecalculateProgressions();
+
+            // Aumentar temperatura atual em 20°C (capped em 100)
+            int newTemperature = Mathf.Min(currentTemperature + 20, 100);
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("RPC_SetTemperature", RpcTarget.All, newTemperature);
+            }
+            else
+            {
+                SetTemperature(newTemperature);
+            }
+
+            DebugHelper.Log($"[ThermometerManager] Cooler com malfunction! Total: {coolersMalfunctioning}, Temperatura: {newTemperature}");
+        }
+
+        /// <summary>
+        /// Remove o efeito de malfunction do cooler (quando reparado)
+        /// </summary>
+        public void RemoveCoolerMalfunction()
+        {
+            if (coolersMalfunctioning <= 0) return;
+
+            coolersMalfunctioning--;
+            RecalculateProgressions();
+
+            // Diminuir temperatura atual em 20°C (mínimo do primeiro nível da progressão atual)
+            int[] progression = GetCurrentProgression();
+            int minTemperature = progression.Length > 0 ? progression[0] : 20;
+            int newTemperature = Mathf.Max(currentTemperature - 20, minTemperature);
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("RPC_SetTemperature", RpcTarget.All, newTemperature);
+            }
+            else
+            {
+                SetTemperature(newTemperature);
+            }
+
+            DebugHelper.Log($"[ThermometerManager] Cooler reparado! Total: {coolersMalfunctioning}, Temperatura: {newTemperature}");
+        }
+
+        /// <summary>
+        /// Recalcula as progressões baseado no número de coolers com malfunction
+        /// Cada cooler aumenta os níveis em 20°C (mantendo 100 como máximo)
+        /// </summary>
+        private void RecalculateProgressions()
+        {
+            int offset = coolersMalfunctioning * 20;
+
+            easyProgression = ApplyOffsetToProgression(easyProgressionBase, offset);
+            mediumProgression = ApplyOffsetToProgression(mediumProgressionBase, offset);
+            hardProgression = ApplyOffsetToProgression(hardProgressionBase, offset);
+
+            DebugHelper.Log($"[ThermometerManager] Progressões recalculadas com offset de {offset}°C");
+            DebugHelper.Log($"[ThermometerManager] Easy: [{string.Join(", ", easyProgression)}]");
+            DebugHelper.Log($"[ThermometerManager] Medium: [{string.Join(", ", mediumProgression)}]");
+            DebugHelper.Log($"[ThermometerManager] Hard: [{string.Join(", ", hardProgression)}]");
+        }
+
+        /// <summary>
+        /// Aplica um offset aos níveis de progressão, mantendo 100 como máximo
+        /// Remove níveis duplicados que ultrapassariam 100
+        /// </summary>
+        private int[] ApplyOffsetToProgression(int[] baseProgression, int offset)
+        {
+            var newLevels = new System.Collections.Generic.List<int>();
+
+            foreach (int level in baseProgression)
+            {
+                int newLevel = level + offset;
+
+                // Se ultrapassar 100, usar 100
+                if (newLevel >= 100)
+                {
+                    // Adicionar 100 apenas se ainda não estiver na lista
+                    if (!newLevels.Contains(100))
+                    {
+                        newLevels.Add(100);
+                    }
+                }
+                else
+                {
+                    newLevels.Add(newLevel);
+                }
+            }
+
+            return newLevels.ToArray();
         }
 
         #region RPCs

@@ -4,6 +4,7 @@ using TMPro;
 using System;
 using System.Collections.Generic;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class MachineComponent : MonoBehaviourPunCallbacks
 {
@@ -11,9 +12,23 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     public int malfunctions = 0;
     public GameObject gameInfo;
 
+    [Header("Componente Especial")]
+    [Tooltip("Tipo de componente especial (None, Battery, Cooler)")]
+    [SerializeField] private SpecialComponentType specialType = SpecialComponentType.None;
+
     [Header("Smoothness - Objetos afetados pelo malfunction crítico")]
     [Tooltip("Lista de Renderers que terão Smoothness alterado para 0 quando malfunction = 2")]
     [SerializeField] private List<Renderer> smoothnessTargets = new List<Renderer>();
+
+    /// <summary>
+    /// Tipos de componentes especiais
+    /// </summary>
+    public enum SpecialComponentType
+    {
+        None,
+        Battery,
+        Cooler
+    }
 
     private SoundEffects soundEffects;
     private GameOver gameOver;
@@ -434,8 +449,67 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 sparks.gameObject.SetActive(true);
             }
             soundEffects.PlayComponentExplosionSound();
+
+            // Aplicar efeito de componente especial
+            ApplySpecialComponentEffect();
         }
 
+    }
+
+    /// <summary>
+    /// Aplica o efeito especial do componente quando malfunction = 1
+    /// </summary>
+    private void ApplySpecialComponentEffect()
+    {
+        switch (specialType)
+        {
+            case SpecialComponentType.Battery:
+                // Reduz o tempo do timer pela metade
+                var turnTimer = FindFirstObjectByType<TurnTimer>();
+                if (turnTimer != null)
+                {
+                    turnTimer.ApplyBatteryMalfunction();
+                    DebugHelper.Log($"[MachineComponent] Bateria com malfunction! Timer reduzido.");
+                }
+                break;
+
+            case SpecialComponentType.Cooler:
+                // Aumenta os níveis de temperatura em 20°C
+                if (ThermometerManager.Instance != null)
+                {
+                    ThermometerManager.Instance.ApplyCoolerMalfunction();
+                    DebugHelper.Log($"[MachineComponent] Cooler com malfunction! Níveis de temperatura aumentados.");
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Remove o efeito especial do componente quando reparado
+    /// </summary>
+    private void RemoveSpecialComponentEffect()
+    {
+        switch (specialType)
+        {
+            case SpecialComponentType.Battery:
+                // Restaura o tempo do timer
+                var turnTimer = FindFirstObjectByType<TurnTimer>();
+                if (turnTimer != null)
+                {
+                    turnTimer.RestoreBatteryEffect();
+                    DebugHelper.Log($"[MachineComponent] Bateria reparada! Timer restaurado.");
+                }
+                break;
+
+            case SpecialComponentType.Cooler:
+                // Reduz os níveis de temperatura em 20°C
+                if (ThermometerManager.Instance != null)
+                {
+                    ThermometerManager.Instance.RemoveCoolerMalfunction();
+                    DebugHelper.Log($"[MachineComponent] Cooler reparado! Níveis de temperatura reduzidos.");
+                }
+                break;
+        }
     }
 
     public void EndGame()
@@ -480,6 +554,12 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             sparks.gameObject.SetActive(false);
         }
         soundEffects.PlayComponentRepairSound();
+
+        // Remover efeito especial se tinha malfunction = 1
+        if (malfunctions == 1)
+        {
+            RemoveSpecialComponentEffect();
+        }
 
         malfunctions--;
         if (cachedMeshCollider != null)

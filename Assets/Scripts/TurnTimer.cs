@@ -1,6 +1,5 @@
 using UnityEngine;
 using Photon.Pun;
-using TMPro;
 using TimeCrax.Core;
 
 /// <summary>
@@ -11,21 +10,20 @@ using TimeCrax.Core;
 public class TurnTimer : MonoBehaviour
 {
     [Header("Configurações")]
-    [SerializeField] private float timeLimit = 120f;
+    [SerializeField] private float timeLimit = 60f; // Timer fixo em 60 segundos
     [SerializeField] private float syncInterval = 1f; // Intervalo de sincronização
 
-    [Header("UI")]
-    [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private Color warningColor = Color.yellow;
-    [SerializeField] private Color criticalColor = Color.red;
-    [SerializeField] private float warningThreshold = 30f;
-    [SerializeField] private float criticalThreshold = 10f;
+    [Header("Animator do Relógio")]
+    [SerializeField] private Animator highestPointerAnimator;
 
     // Estado do timer
     private float remainingTime;
     private bool isRunning;
     private float lastSyncTime;
+
+    // Valor original do timeLimit (para restaurar após reparo da bateria)
+    private float originalTimeLimit;
+    private bool isBatteryMalfunctioning = false;
 
     // Referência ao GameManager (para enviar RPCs e auto-end)
     private GameManager gameManager;
@@ -40,12 +38,7 @@ public class TurnTimer : MonoBehaviour
     private void Start()
     {
         gameManager = FindFirstObjectByType<GameManager>();
-
-        // Inicialmente oculto
-        if (timerText != null)
-        {
-            timerText.gameObject.SetActive(false);
-        }
+        originalTimeLimit = timeLimit;
     }
 
     private void Update()
@@ -72,9 +65,6 @@ public class TurnTimer : MonoBehaviour
                 OnTimeExpired();
             }
         }
-
-        // Atualizar UI localmente
-        UpdateTimerDisplay();
     }
 
     /// <summary>
@@ -97,12 +87,8 @@ public class TurnTimer : MonoBehaviour
         hasAutoEnded = false;
         lastSyncTime = Time.time;
 
-        if (timerText != null)
-        {
-            timerText.gameObject.SetActive(true);
-        }
-
-        UpdateTimerDisplay();
+        // Iniciar animação do relógio
+        SetClockAnimatorStartCount(true);
     }
 
     /// <summary>
@@ -122,10 +108,8 @@ public class TurnTimer : MonoBehaviour
         DebugHelper.Log("[TurnTimer] StopTimerLocal");
         isRunning = false;
 
-        if (timerText != null)
-        {
-            timerText.gameObject.SetActive(false);
-        }
+        // Parar animação do relógio
+        SetClockAnimatorStartCount(false);
     }
 
     /// <summary>
@@ -141,28 +125,14 @@ public class TurnTimer : MonoBehaviour
     }
 
     /// <summary>
-    /// Atualiza a exibição do timer na UI
+    /// Define o parâmetro startCount do animator do relógio
     /// </summary>
-    private void UpdateTimerDisplay()
+    private void SetClockAnimatorStartCount(bool value)
     {
-        if (timerText == null) return;
-
-        // Exibir segundos restantes (arredondado para cima)
-        int seconds = Mathf.CeilToInt(Mathf.Max(0, remainingTime));
-        timerText.text = seconds.ToString();
-
-        // Mudar cor baseado no tempo restante
-        if (remainingTime <= criticalThreshold)
+        if (highestPointerAnimator != null && highestPointerAnimator.runtimeAnimatorController != null)
         {
-            timerText.color = criticalColor;
-        }
-        else if (remainingTime <= warningThreshold)
-        {
-            timerText.color = warningColor;
-        }
-        else
-        {
-            timerText.color = normalColor;
+            highestPointerAnimator.SetBool("startCount", value);
+            DebugHelper.Log($"[TurnTimer] SetClockAnimatorStartCount: {value}");
         }
     }
 
@@ -206,6 +176,40 @@ public class TurnTimer : MonoBehaviour
     {
         remainingTime = timeLimit;
         hasAutoEnded = false;
-        UpdateTimerDisplay();
+    }
+
+    /// <summary>
+    /// Reduz o timeLimit pela metade (efeito da bateria com malfunction)
+    /// </summary>
+    public void ApplyBatteryMalfunction()
+    {
+        if (isBatteryMalfunctioning) return;
+
+        isBatteryMalfunctioning = true;
+        timeLimit = originalTimeLimit / 2f;
+        DebugHelper.Log($"[TurnTimer] Bateria com malfunction! TimeLimit reduzido para {timeLimit}s");
+    }
+
+    /// <summary>
+    /// Restaura o timeLimit original (quando bateria é reparada)
+    /// </summary>
+    public void RestoreBatteryEffect()
+    {
+        if (!isBatteryMalfunctioning) return;
+
+        isBatteryMalfunctioning = false;
+        timeLimit = originalTimeLimit;
+        DebugHelper.Log($"[TurnTimer] Bateria reparada! TimeLimit restaurado para {timeLimit}s");
+    }
+
+    /// <summary>
+    /// Reseta completamente o timer (usado ao iniciar nova partida)
+    /// </summary>
+    public void ResetToDefault()
+    {
+        isBatteryMalfunctioning = false;
+        timeLimit = originalTimeLimit;
+        remainingTime = timeLimit;
+        hasAutoEnded = false;
     }
 }
