@@ -1013,11 +1013,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        DebugHelper.Log($"[GameManager] Componentes críticos: {criticalComponents}/3");
+        DebugHelper.Log($"[GameManager] Componentes críticos: {criticalComponents}/1");
 
-        if (criticalComponents >= 3)
+        if (criticalComponents >= 2)
         {
-            DebugHelper.Log("[GameManager] GAME OVER - 3 componentes com malfunction crítico!");
+            DebugHelper.Log("[GameManager] GAME OVER - 1 componente com malfunction crítico!");
 
             if (gameOver != null)
             {
