@@ -137,6 +137,25 @@ public class TurnTimer : MonoBehaviour
     }
 
     /// <summary>
+    /// Define o parâmetro halfTime do animator do relógio (efeito da bateria)
+    /// </summary>
+    private void SetClockAnimatorHalfTime(bool value)
+    {
+        if (highestPointerAnimator != null && highestPointerAnimator.runtimeAnimatorController != null)
+        {
+            foreach (var param in highestPointerAnimator.parameters)
+            {
+                if (param.name == "halfTime" && param.type == AnimatorControllerParameterType.Bool)
+                {
+                    highestPointerAnimator.SetBool("halfTime", value);
+                    DebugHelper.Log($"[TurnTimer] SetClockAnimatorHalfTime: {value}");
+                    return;
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Chamado quando o tempo expira
     /// </summary>
     private void OnTimeExpired()
@@ -187,6 +206,7 @@ public class TurnTimer : MonoBehaviour
 
         isBatteryMalfunctioning = true;
         timeLimit = originalTimeLimit / 2f;
+        SetClockAnimatorHalfTime(true);
         DebugHelper.Log($"[TurnTimer] Bateria com malfunction! TimeLimit reduzido para {timeLimit}s");
     }
 
@@ -199,6 +219,7 @@ public class TurnTimer : MonoBehaviour
 
         isBatteryMalfunctioning = false;
         timeLimit = originalTimeLimit;
+        SetClockAnimatorHalfTime(false);
         DebugHelper.Log($"[TurnTimer] Bateria reparada! TimeLimit restaurado para {timeLimit}s");
     }
 
@@ -211,5 +232,6 @@ public class TurnTimer : MonoBehaviour
         timeLimit = originalTimeLimit;
         remainingTime = timeLimit;
         hasAutoEnded = false;
+        SetClockAnimatorHalfTime(false);
     }
 }

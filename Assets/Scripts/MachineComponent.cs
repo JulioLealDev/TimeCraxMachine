@@ -605,6 +605,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         if (cachedAnimator != null)
         {
             SafeSetMalfunctionBool(cachedAnimator, false);
+            SafeSetBrokenBool(cachedAnimator, false);
             cachedAnimator.enabled = false;
         }
 
@@ -614,6 +615,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             if (cachedChildAnimators[i] != null)
             {
                 SafeSetMalfunctionBool(cachedChildAnimators[i], false);
+                SafeSetBrokenBool(cachedChildAnimators[i], false);
                 cachedChildAnimators[i].enabled = false;
             }
         }
@@ -630,6 +632,9 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
         // Restaurar Smoothness original dos materiais
         RestoreMaterialSmoothness();
+
+        // Resetar parâmetro broken nos smoothnessTargets
+        SetTargetsBrokenState(false);
 
         // Desabilitar MeshCollider
         if (cachedMeshCollider != null)

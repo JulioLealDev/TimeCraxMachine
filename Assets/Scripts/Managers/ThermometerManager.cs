@@ -88,8 +88,8 @@ namespace TimeCrax.Managers
             // Inicializar progressões
             ResetProgressions();
 
-            // Garantir que começa em 0
-            SetTemperature(0);
+            // Temperatura inicial será definida em Initialize() quando a partida começar
+            currentTemperature = 0;
         }
 
         /// <summary>
