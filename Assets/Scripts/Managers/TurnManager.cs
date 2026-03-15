@@ -37,7 +37,6 @@ namespace TimeCrax.Managers
         private PlayerScript[] orderedPlayers;
 
         // Cache de referências
-        private GiveCards[] cachedPlateNames;
         private GameManager gameManager;
 
         // Propriedades públicas
@@ -75,11 +74,14 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
-        /// Atualiza o cache de plateNames
+        /// Atualiza o cache de plateNames (delega para PlayerManager)
         /// </summary>
         public void RefreshPlateNamesCache()
         {
-            cachedPlateNames = FindObjectsByType<GiveCards>(FindObjectsSortMode.None);
+            if (PlayerManager.Instance != null)
+            {
+                PlayerManager.Instance.InvalidateCache();
+            }
         }
 
         /// <summary>
@@ -228,12 +230,18 @@ namespace TimeCrax.Managers
         {
             string plateNameText = "plateName0" + (plateNameIndex + 1);
 
-            if (cachedPlateNames == null || cachedPlateNames.Length == 0)
+            GiveCards[] plateNames = null;
+            if (PlayerManager.Instance != null)
             {
-                RefreshPlateNamesCache();
+                plateNames = PlayerManager.Instance.GetCachedPlateNames();
             }
 
-            foreach (GiveCards plateName in cachedPlateNames)
+            if (plateNames == null || plateNames.Length == 0)
+            {
+                plateNames = FindObjectsByType<GiveCards>(FindObjectsSortMode.None);
+            }
+
+            foreach (GiveCards plateName in plateNames)
             {
                 if (plateName == null) continue;
                 if (plateName.name == plateNameText)

@@ -128,10 +128,17 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
-        /// Retorna o jogador que está no turno (GetYourTurn() == true)
+        /// Retorna o jogador que está no turno.
+        /// Delega para TurnManager para evitar duplicação.
         /// </summary>
         public PlayerScript GetCurrentTurnPlayer()
         {
+            if (TurnManager.Instance != null)
+            {
+                return TurnManager.Instance.GetCurrentTurnPlayer();
+            }
+
+            // Fallback caso TurnManager não exista
             if (players == null) RefreshCache();
 
             foreach (var player in players)

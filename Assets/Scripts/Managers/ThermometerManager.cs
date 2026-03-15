@@ -9,8 +9,9 @@ namespace TimeCrax.Managers
     /// Gerenciador do termômetro da máquina do tempo.
     /// Controla a progressão de temperatura que leva ao malfunction.
     /// Progressão baseada na dificuldade:
-    /// - Easy: 20 → 50 → 80 → 100
-    /// - Medium/Hard: 20 → 60 → 100
+    /// - Easy: 20 → 40 → 60 → 80 → 100
+    /// - Normal: 20 → 50 → 80 → 100
+    /// - Hard: 20 → 60 → 100
     /// </summary>
     public class ThermometerManager : MonoBehaviourPunCallbacks
     {
@@ -33,7 +34,6 @@ namespace TimeCrax.Managers
         [SerializeField] private ParticleSystem smokeParticle02;
 
         [Header("Configuração")]
-        [SerializeField] private int[] temperatureLevels = { 0, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
         [SerializeField] private float malfunctionDelay = 3f; // Delay antes de iniciar malfunction
 
         // Progressões por dificuldade (base)
