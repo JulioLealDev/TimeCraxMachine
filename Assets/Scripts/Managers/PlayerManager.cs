@@ -50,6 +50,15 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
+        /// Retorna a lista de jogadores ordenada por ActorNumber.
+        /// Garante ordem consistente em todos os clientes.
+        /// </summary>
+        public static Photon.Realtime.Player[] GetOrderedPlayerList()
+        {
+            return PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+        }
+
+        /// <summary>
         /// Atualiza o cache de jogadores e referências
         /// </summary>
         public void RefreshCache()
@@ -163,31 +172,27 @@ namespace TimeCrax.Managers
 
             DebugHelper.Log("[PlayerManager] Removendo platename");
 
-            string plateName = "plateName0" + index;
-            var plate = GameObject.Find(plateName);
+            var plate = GameObject.Find(GameObjectNames.GetPlateName(index));
             if (plate != null)
             {
                 plate.GetComponent<MeshRenderer>().enabled = false;
                 plate.GetComponent<MeshCollider>().enabled = false;
             }
 
-            string repairSymbolName = "repairCardSymbol0" + index;
-            var repairSymbol = GameObject.Find(repairSymbolName);
+            var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(index));
             if (repairSymbol != null)
             {
                 repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
             }
 
-            string namePlateText = "namePlayer0" + index;
-            var namePlate = GameObject.Find(namePlateText);
+            var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(index));
             if (namePlate != null)
             {
                 namePlate.GetComponent<TMP_Text>().text = " ";
                 namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
 
-            string numberRepairCardText = "numberRepairCards0" + index;
-            var numberRepairCard = GameObject.Find(numberRepairCardText);
+            var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(index));
             if (numberRepairCard != null)
             {
                 numberRepairCard.GetComponent<TextMeshProUGUI>().text = " ";
@@ -203,31 +208,29 @@ namespace TimeCrax.Managers
 
             for (int i = 0; i < 4; i++)
             {
-                string plateName = "plateName0" + (i + 1);
-                var plate = GameObject.Find(plateName);
+                int playerNum = i + 1;
+
+                var plate = GameObject.Find(GameObjectNames.GetPlateName(playerNum));
                 if (plate != null)
                 {
                     plate.GetComponent<MeshRenderer>().enabled = false;
                     plate.GetComponent<MeshCollider>().enabled = false;
                 }
 
-                string repairSymbolName = "repairCardSymbol0" + (i + 1);
-                var repairSymbol = GameObject.Find(repairSymbolName);
+                var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(playerNum));
                 if (repairSymbol != null)
                 {
                     repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
                 }
 
-                string namePlateText = "namePlayer0" + (i + 1);
-                var namePlate = GameObject.Find(namePlateText);
+                var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
                 if (namePlate != null)
                 {
                     namePlate.GetComponent<TMP_Text>().text = " ";
                     namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
                 }
 
-                string numberRepairCardText = "numberRepairCards0" + (i + 1);
-                var numberRepairCard = GameObject.Find(numberRepairCardText);
+                var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(playerNum));
                 if (numberRepairCard != null)
                 {
                     numberRepairCard.GetComponent<TextMeshProUGUI>().text = " ";
@@ -320,7 +323,7 @@ namespace TimeCrax.Managers
                 orderedList = playerCards.OrderByDescending(x => x.index).ToList();
                 RepairCard lastCard = orderedList[0];
 
-                var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+                var orderedPlayerList = GetOrderedPlayerList();
 
                 if (playerReceiving.index >= 0 && playerReceiving.index < orderedPlayerList.Length)
                 {
@@ -329,8 +332,7 @@ namespace TimeCrax.Managers
 
                 playerReceiving.numberRepairCards++;
 
-                string numberRepairCardsReceiver = "numberRepairCards0" + numberPlayer;
-                var findReceiverNumberCards = GameObject.Find(numberRepairCardsReceiver);
+                var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(numberPlayer));
                 if (findReceiverNumberCards != null)
                 {
                     findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberRepairCards.ToString();
@@ -338,8 +340,7 @@ namespace TimeCrax.Managers
 
                 playerSending.numberRepairCards--;
 
-                string numberRepairCardsSender = "numberRepairCards0" + (time + 1);
-                var findSenderNumberCards = GameObject.Find(numberRepairCardsSender);
+                var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(time + 1));
                 if (findSenderNumberCards != null)
                 {
                     findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberRepairCards.ToString();

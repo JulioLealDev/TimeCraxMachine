@@ -275,8 +275,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         DebugHelper.Log("Removendo platename");
 
-        string plateName = "plateName0" + index;
-        var plate = GameObject.Find(plateName);
+        var plate = GameObject.Find(GameObjectNames.GetPlateName(index));
         if (plate != null)
         {
             DebugHelper.Log("plate name: " + plate.name);
@@ -284,16 +283,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             plate.GetComponent<MeshCollider>().enabled = false;
         }
 
-        string repairSymbolName = "repairCardSymbol0" + index;
-        var repairSymbol = GameObject.Find(repairSymbolName);
+        var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(index));
         if (repairSymbol != null)
         {
             DebugHelper.Log("repairSymbol name: " + repairSymbol.name);
             repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
         }
 
-        string namePlateText = "namePlayer0" + index;
-        var namePlate = GameObject.Find(namePlateText);
+        var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(index));
         if (namePlate != null)
         {
             DebugHelper.Log("namePlate name: " + namePlate.name);
@@ -301,8 +298,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
         }
 
-        string numberRepairCardText = "numberRepairCards0" + index;
-        var numberRepairCard = GameObject.Find(numberRepairCardText);
+        var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(index));
         if (numberRepairCard != null)
         {
             DebugHelper.Log("repairCardSymbol name: " + numberRepairCard.name);
@@ -444,41 +440,39 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         var components = hud.GetComponentsInChildren<Transform>();
 
-        string plateName = "plateName0";
-        string namePlayer = "namePlayer0";
-        string repairCardSymbol = "repairCardSymbol0";
-        string numberRepairCards = "numberRepairCards0";
-
         DebugHelper.Log("player list lenght: " + PhotonNetwork.PlayerList.Length);
 
-        // Ordenar PlayerList por ActorNumber para garantir ordem consistente em todos os clientes
-        var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+        var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
 
         for (int i = 0; i < orderedPlayerList.Length; i++)
         {
-            int name = i + 1;
+            int playerNum = i + 1;
+            string plateNameStr = GameObjectNames.GetPlateName(playerNum);
+            string namePlayerStr = GameObjectNames.GetNamePlayer(playerNum);
+            string repairSymbolStr = GameObjectNames.GetRepairCardSymbol(playerNum);
+            string numberCardsStr = GameObjectNames.GetNumberRepairCards(playerNum);
+
             for (int x = 0; x < components.Length; x++)
             {
-                //DebugHelper.Log("component name:" + components[x].name+" - name: "+ plateName+name.ToString());
-                if (components[x].name == plateName + name.ToString())
+                if (components[x].name == plateNameStr)
                 {
                     components[x].gameObject.GetComponent<MeshRenderer>().enabled = true;
                 }
-                else if(components[x].name == "FinishTurn" || components[x].name == "QuitGame")
+                else if (components[x].name == "FinishTurn" || components[x].name == "QuitGame")
                 {
                     components[x].gameObject.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
                 }
-                else if (components[x].name == namePlayer + name.ToString())
+                else if (components[x].name == namePlayerStr)
                 {
                     TextMeshProUGUI textName = components[x].gameObject.GetComponentInChildren<TextMeshProUGUI>();
                     textName.text = orderedPlayerList[i].NickName;
                     textName.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
                 }
-                else if (components[x].name == repairCardSymbol + name.ToString())
+                else if (components[x].name == repairSymbolStr)
                 {
                     components[x].GetComponent<SpriteRenderer>().enabled = true;
                 }
-                else if (components[x].name == numberRepairCards + name.ToString())
+                else if (components[x].name == numberCardsStr)
                 {
                     components[x].GetComponent<TextMeshProUGUI>().text = "0";
                 }
@@ -693,7 +687,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ChangePlateNameMaterial(int plateNameIndex)
     {
-        string plateNameText = "plateName0" + (plateNameIndex + 1);
+        string plateNameText = GameObjectNames.GetPlateName(plateNameIndex + 1);
 
         var plateNames = GetCachedPlateNames();
 
@@ -851,19 +845,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        //for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-        //{
-        //    string plateName = "plateName0" + (i + 1);
-        //    var findObject = GameObject.Find(plateName);
-
-        //    findObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
-        //}
-
-        //foreach (var component in timeCraxComponents)
-        //{
-        //    component.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[time]);
-        //}
-
         // Encontrar o jogador LOCAL (controlado por este cliente)
         PlayerScript localPlayer = null;
         PlayerScript currentTurnPlayer = null;
@@ -922,8 +903,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
-                string name = "plateName0" + (i + 1);
-                var plate = GameObject.Find(name);
+                var plate = GameObject.Find(GameObjectNames.GetPlateName(i + 1));
                 if (plate != null)
                 {
                     plate.GetComponent<MeshCollider>().enabled = true;
@@ -931,8 +911,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 }
             }
 
-            string plateName = "plateName0" + (time + 1);
-            var findObject = GameObject.Find(plateName);
+            var findObject = GameObject.Find(GameObjectNames.GetPlateName(time + 1));
             if (findObject != null)
             {
                 findObject.GetComponent<MeshCollider>().enabled = false;
@@ -953,8 +932,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
-                string name = "plateName0" + (i + 1);
-                var plate = GameObject.Find(name);
+                var plate = GameObject.Find(GameObjectNames.GetPlateName(i + 1));
                 if (plate != null)
                 {
                     plate.GetComponent<MeshCollider>().enabled = false;
@@ -1687,8 +1665,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         DebugHelper.Log("11 -- Resetando platenames");
         for (int i = 0; i < 4; i++)
         {
-            string plateName = "plateName0" + (i + 1);
-            var plate = GameObject.Find(plateName);
+            int playerNum = i + 1;
+
+            var plate = GameObject.Find(GameObjectNames.GetPlateName(playerNum));
             if (plate != null)
             {
                 DebugHelper.Log("plate name: " + plate.name);
@@ -1696,16 +1675,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                 plate.GetComponent<MeshCollider>().enabled = false;
             }
 
-            string repairSymbolName = "repairCardSymbol0" + (i + 1);
-            var repairSymbol = GameObject.Find(repairSymbolName);
+            var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(playerNum));
             if (repairSymbol != null)
             {
                 DebugHelper.Log("repairSymbol name: " + repairSymbol.name);
                 repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
             }
 
-            string namePlateText = "namePlayer0" + (i + 1);
-            var namePlate = GameObject.Find(namePlateText);
+            var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
             if (namePlate != null)
             {
                 DebugHelper.Log("namePlate name: " + namePlate.name);
@@ -1713,8 +1690,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
 
-            string numberRepairCardText = "numberRepairCards0" + (i + 1);
-            var numberRepairCard = GameObject.Find(numberRepairCardText);
+            var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(playerNum));
             if (numberRepairCard != null)
             {
                 DebugHelper.Log("repairCardSymbol name: " + numberRepairCard.name);
@@ -1813,8 +1789,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
-            string plateName = "plateName0" + (i + 1);
-            var findObject = GameObject.Find(plateName);
+            var findObject = GameObject.Find(GameObjectNames.GetPlateName(i + 1));
             if (findObject != null)
             {
                 findObject.tag = "Disabled";
@@ -1842,8 +1817,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         DebugHelper.Log("9 -- Desativando platenames");
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
-            string plateName = "plateName0" + (i + 1);
-            var findObject = GameObject.Find(plateName);
+            var findObject = GameObject.Find(GameObjectNames.GetPlateName(i + 1));
             if (findObject != null)
             {
                 findObject.GetComponent<MeshCollider>().enabled = false;
@@ -1941,8 +1915,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             orderedList = playerCards.OrderByDescending(x => x.index).ToList();
             RepairCard lastCard = orderedList[0];
 
-            // Ordenar PlayerList por ActorNumber para garantir ordem consistente
-            var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+            var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
 
             if (playerReceiving.index >= 0 && playerReceiving.index < orderedPlayerList.Length)
             {
@@ -1951,8 +1924,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             playerReceiving.numberRepairCards++;
 
-            string numberRepairCardsReceiver = "numberRepairCards0" + numberPlayer;
-            var findReceiverNumberCards = GameObject.Find(numberRepairCardsReceiver);
+            var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(numberPlayer));
             if (findReceiverNumberCards != null)
             {
                 DebugHelper.Log("receiver: " + findReceiverNumberCards.name);
@@ -1961,8 +1933,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             playerSending.numberRepairCards--;
 
-            string numberRepairCardsSender = "numberRepairCards0" + (time + 1);
-            var findSenderNumberCards = GameObject.Find(numberRepairCardsSender);
+            var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(time + 1));
             if (findSenderNumberCards != null)
             {
                 DebugHelper.Log("sender: " + findSenderNumberCards.name);

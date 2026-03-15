@@ -228,7 +228,7 @@ namespace TimeCrax.Managers
         [PunRPC]
         public void RPC_ChangePlateNameMaterial(int plateNameIndex)
         {
-            string plateNameText = "plateName0" + (plateNameIndex + 1);
+            string plateNameText = GameObjectNames.GetPlateName(plateNameIndex + 1);
 
             GiveCards[] plateNames = null;
             if (PlayerManager.Instance != null)

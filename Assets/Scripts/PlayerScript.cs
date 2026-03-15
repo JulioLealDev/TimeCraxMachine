@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Photon.Pun;
-using System.Linq;
 using TMPro;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class PlayerScript : MonoBehaviourPunCallbacks
 {
@@ -17,13 +18,29 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     public int actorNumber;
 
 
-    // Start is called before the first frame update
     void Start()
     {
         numberRepairCards = 0;
+        InitializePlayerIndex();
+        numberRepairCardsText = GameObjectNames.GetNumberRepairCards(index + 1);
+    }
 
-        // Ordenar PlayerList por ActorNumber para garantir ordem consistente em todos os clientes
-        var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
+    public void UpdateIndex()
+    {
+        var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
+
+        for (int i = 0; i < orderedPlayerList.Length; i++)
+        {
+            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            {
+                index = i;
+            }
+        }
+    }
+
+    private void InitializePlayerIndex()
+    {
+        var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
 
         for (int i = 0; i < orderedPlayerList.Length; i++)
         {
@@ -33,22 +50,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks
                 index = i;
                 plateNameIndex = i;
                 actorNumber = orderedPlayerList[i].ActorNumber;
-            }
-        }
-
-        numberRepairCardsText = "numberRepairCards0" + (index + 1);
-    }
-    public void UpdateIndex()
-    {
-        // Ordenar PlayerList por ActorNumber para garantir ordem consistente em todos os clientes
-        var orderedPlayerList = PhotonNetwork.PlayerList.OrderBy(p => p.ActorNumber).ToArray();
-
-        for (int i = 0; i < orderedPlayerList.Length; i++)
-        {
-            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
-            {
-                //nickname = orderedPlayerList[i].NickName;
-                index = i;
             }
         }
     }
@@ -64,12 +65,22 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         DebugHelper.Log("------ mais: "+numberRepairCardsText);
 
         var findObject = GameObject.Find(numberRepairCardsText);
-        DebugHelper.Log("name: "+findObject.name);
+        if (findObject == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DrawRepairCard: GameObject '{numberRepairCardsText}' não encontrado");
+            return;
+        }
 
-        int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
+        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        if (textComponent == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DrawRepairCard: TextMeshProUGUI não encontrado em '{numberRepairCardsText}'");
+            return;
+        }
+
+        int numberOfCards = int.Parse(textComponent.text);
         numberOfCards++;
-
-        findObject.GetComponent<TextMeshProUGUI>().text = numberOfCards.ToString();
+        textComponent.text = numberOfCards.ToString();
     }
 
     public int GetNumberOfRepairsCards()
@@ -84,12 +95,22 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         DebugHelper.Log("------ menos: " + numberRepairCardsText);
 
         var findObject = GameObject.Find(numberRepairCardsText);
-        DebugHelper.Log("name: " + findObject.name);
+        if (findObject == null)
+        {
+            DebugHelper.Log($"[PlayerScript] GiveRepairCard: GameObject '{numberRepairCardsText}' não encontrado");
+            return;
+        }
 
-        int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
+        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        if (textComponent == null)
+        {
+            DebugHelper.Log($"[PlayerScript] GiveRepairCard: TextMeshProUGUI não encontrado em '{numberRepairCardsText}'");
+            return;
+        }
+
+        int numberOfCards = int.Parse(textComponent.text);
         numberOfCards--;
-
-        findObject.GetComponent<TextMeshProUGUI>().text = numberOfCards.ToString();
+        textComponent.text = numberOfCards.ToString();
     }
 
     public void RepairComponent(int cards)
@@ -106,12 +127,24 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         DebugHelper.Log("------ repair: " + numberRepairCardsText);
 
         var findObject = GameObject.Find(numberRepairCardsText);
-        DebugHelper.Log("name: " + findObject.name);
+        if (findObject == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DescreaseAndDestroyCards: GameObject '{numberRepairCardsText}' não encontrado");
+            DestroyRepairCards(cards);
+            return;
+        }
 
-        int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
+        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        if (textComponent == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DescreaseAndDestroyCards: TextMeshProUGUI não encontrado em '{numberRepairCardsText}'");
+            DestroyRepairCards(cards);
+            return;
+        }
+
+        int numberOfCards = int.Parse(textComponent.text);
         numberOfCards -= cards;
-
-        findObject.GetComponent<TextMeshProUGUI>().text = numberOfCards.ToString();
+        textComponent.text = numberOfCards.ToString();
 
         DestroyRepairCards(cards);
     }

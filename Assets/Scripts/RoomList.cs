@@ -19,7 +19,14 @@ public class RoomList : MonoBehaviourPunCallbacks
 
             if (!roomAlreadyExist)
             {
-                GameObject roomObj = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity, GameObject.Find("Content").transform);
+                var contentObj = GameObject.Find("Content");
+                if (contentObj == null)
+                {
+                    DebugHelper.Log("[RoomList] Content não encontrado");
+                    continue;
+                }
+
+                GameObject roomObj = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity, contentObj.transform);
                 roomObj.name = roomList[i].Name;
                 string locked = roomList[i].CustomProperties["pass"].ToString();
                 string themeName = roomList[i].CustomProperties["the"].ToString();

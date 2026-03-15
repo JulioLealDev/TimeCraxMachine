@@ -364,22 +364,6 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
     }
 
-    /// <summary>
-    /// Verifica se é o turno do jogador local
-    /// </summary>
-    private bool IsMyTurn()
-    {
-        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-        foreach (var player in players)
-        {
-            if (player != null && player.photonView != null && player.photonView.IsMine && player.GetYourTurn())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void SetUpSlots(bool activateSlot, string tag)
     {
         var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);

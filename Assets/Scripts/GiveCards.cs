@@ -1,4 +1,3 @@
-using UnityEngine.EventSystems;
 using UnityEngine;
 using TimeCrax.Core;
 
@@ -9,6 +8,9 @@ public class GiveCards : MonoBehaviour
 
     // Proteção contra clique duplo
     private bool isProcessingClick = false;
+
+    // Nome do background atual para esconder
+    private string currentInfoBackground;
 
     private void OnMouseDown()
     {
@@ -30,131 +32,84 @@ public class GiveCards : MonoBehaviour
             }
         }
 
-
-        if (gameObject.tag == "Disabled")
+        if (gameObject.CompareTag("Disabled"))
         {
-
-            DebugHelper.Log("Voc� j� realizaou uma a��o neste turno");
-
-            Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-            gameInfo.gameObject.SetActive(true);
-
-            foreach (var info in infos)
-            {
-                if (info.gameObject.name == "ActionInfoBackground")
-                {
-                    info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
-                }
-            }
-
-            this.DelayedCall(1.5f, HideActionInfo);
+            DebugHelper.Log("Você já realizou uma ação neste turno");
+            ShowInfo("ActionInfoBackground");
         }
         else if (sendNumberCards == 0)
         {
-            DebugHelper.Log("Voc� n�o possui cartas de reparo");
-
-            Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-            gameInfo.gameObject.SetActive(true);
-
-            foreach (var info in infos)
-            {
-                if (info.gameObject.name == "CardInfoBackground")
-                {
-                    info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
-                }
-            }
-
-            this.DelayedCall(1.5f, HideCardInfo);
+            DebugHelper.Log("Você não possui cartas de reparo");
+            ShowInfo("CardInfoBackground");
         }
         else
         {
-            int numberPlayer = 0;
-
-            if (gameObject.name == "plateName01")
-            {
-                numberPlayer = 1;
-            }
-            else if (gameObject.name == "plateName02")
-            {
-                numberPlayer = 2;
-            }
-            else if (gameObject.name == "plateName03")
-            {
-                numberPlayer = 3;
-            }
-            else if (gameObject.name == "plateName04")
-            {
-                numberPlayer = 4;
-            }
+            // Extrair número do plateName (plateName01 -> 1, plateName02 -> 2, etc.)
+            int numberPlayer = GetPlayerNumberFromPlateName();
+            if (numberPlayer == 0) return;
 
             foreach (var player in players)
             {
                 if (player.index == numberPlayer - 1)
                 {
                     int receiverNumberCards = player.GetNumberOfRepairsCards();
-                    if(receiverNumberCards == 5)
+                    if (receiverNumberCards == 5)
                     {
-                        DebugHelper.Log("Este jogador j� possui 5 cartas");
-
-                        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-                        gameInfo.gameObject.SetActive(true);
-
-                        foreach (var info in infos)
-                        {
-                            if (info.gameObject.name == "FiveInfoBackground")
-                            {
-                                info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
-                            }
-                        }
-
-                        this.DelayedCall(1.5f, HideFiveInfo);
+                        DebugHelper.Log("Este jogador já possui 5 cartas");
+                        ShowInfo("FiveInfoBackground");
                     }
                     else
                     {
                         var gameManager = FindFirstObjectByType<GameManager>();
-                        gameManager.GiveCard(numberPlayer);
-                        // Resetar proteção após dar a carta
+                        if (gameManager != null)
+                        {
+                            gameManager.GiveCard(numberPlayer);
+                        }
+                        else
+                        {
+                            DebugHelper.Log("[GiveCards] GameManager não encontrado");
+                        }
                         isProcessingClick = false;
                     }
                 }
             }
-
-
         }
     }
 
-    public void HideFiveInfo()
+    private int GetPlayerNumberFromPlateName()
     {
-        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-        foreach (var info in infos)
+        string name = gameObject.name;
+        if (name.StartsWith("plateName") && name.Length == 11)
         {
-            if (info.gameObject.name == "FiveInfoBackground")
+            if (int.TryParse(name.Substring(9, 2), out int num))
             {
-                info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
+                return num;
             }
         }
-        this.DelayedCall(0.5f, DisableGameInfo);
+        return 0;
     }
 
-    public void HideActionInfo()
+    private void ShowInfo(string backgroundName)
     {
-        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-        foreach (var info in infos)
+        currentInfoBackground = backgroundName;
+        gameInfo.gameObject.SetActive(true);
+
+        foreach (Transform info in gameInfo.GetComponentsInChildren<Transform>())
         {
-            if (info.gameObject.name == "ActionInfoBackground")
+            if (info.gameObject.name == backgroundName)
             {
-                info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
+                info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
             }
         }
-        this.DelayedCall(0.5f, DisableGameInfo);
+
+        this.DelayedCall(1.5f, HideCurrentInfo);
     }
 
-    public void HideCardInfo()
+    private void HideCurrentInfo()
     {
-        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-        foreach (var info in infos)
+        foreach (Transform info in gameInfo.GetComponentsInChildren<Transform>())
         {
-            if (info.gameObject.name == "CardInfoBackground")
+            if (info.gameObject.name == currentInfoBackground)
             {
                 info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
@@ -168,9 +123,6 @@ public class GiveCards : MonoBehaviour
         isProcessingClick = false;
     }
 
-    /// <summary>
-    /// Reseta a proteção contra clique duplo
-    /// </summary>
     public void ResetClickProtection()
     {
         isProcessingClick = false;
