@@ -82,7 +82,7 @@ public class OutlineAction : MonoBehaviour
     {
         timeline.tag = "Selectable";
         deckEvent.tag = "Selectable";
-        deckRepair.tag = "Selectable";
+        // deckRepair só fica selecionável após acertar quiz
     }
 
 }

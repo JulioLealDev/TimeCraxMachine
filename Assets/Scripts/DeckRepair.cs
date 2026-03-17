@@ -98,6 +98,9 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         // Desabilitar botão FinishTurn temporariamente (será reativado após animação)
         gameManager.ActivateFinishButton(false);
 
+        // Fechar compartimento esquerdo após comprar carta
+        gameManager.CloseLeftCompartment();
+
         // Apenas o jogador da vez instancia a carta
         var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
         foreach (var player in players)

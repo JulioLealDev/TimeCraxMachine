@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [Header("UI")]
     [SerializeField] private GameObject playerLeftBackground;
     [SerializeField] private Animator rightCompartmentAnimator;
+    [SerializeField] private Animator leftCompartmentAnimator;
 
     [Header("Sistemas")]
     [SerializeField] private RandomMaterial randomMaterial;
@@ -159,6 +160,129 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void OnRoundInfoHidden()
     {
         StartTurn();
+    }
+
+    #endregion
+
+    #region Callbacks para QuizManager
+
+    /// <summary>
+    /// Callback chamado quando o quiz é completado.
+    /// Se acertou: aguarda camera zoomOut e então abre compartimento esquerdo e habilita deckRepair.
+    /// </summary>
+    private void OnQuizCompleted(bool correct)
+    {
+        DebugHelper.Log($"[GameManager] OnQuizCompleted: correct={correct}");
+
+        if (correct)
+        {
+            // Aguardar camera zoomOut antes de abrir compartimento
+            // 3.3s (animação da carta) + 1.5s (zoom out) = 4.8s
+            this.DelayedCall(4.8f, OpenLeftCompartmentAfterZoomOut);
+        }
+    }
+
+    /// <summary>
+    /// Abre o compartimento esquerdo após o zoomOut da câmera.
+    /// </summary>
+    private void OpenLeftCompartmentAfterZoomOut()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RPC_OpenLeftCompartment", RpcTarget.All);
+        }
+    }
+
+    /// <summary>
+    /// RPC para abrir o compartimento esquerdo e habilitar deckRepair.
+    /// Sincroniza a abertura em todos os clientes.
+    /// </summary>
+    [PunRPC]
+    public void RPC_OpenLeftCompartment()
+    {
+        DebugHelper.Log("[GameManager] RPC_OpenLeftCompartment");
+
+        // Abrir compartimento esquerdo
+        if (leftCompartmentAnimator != null)
+        {
+            leftCompartmentAnimator.SetBool("open", true);
+        }
+
+        // Habilitar deckRepair apenas para o jogador do turno
+        foreach (var player in players)
+        {
+            if (player != null && player.photonView.IsMine && player.GetYourTurn())
+            {
+                if (cachedDeckRepairMeshCollider != null)
+                {
+                    cachedDeckRepairMeshCollider.enabled = true;
+                }
+                if (deckRepair != null)
+                {
+                    // Verificar se jogador já tem 5 cartas
+                    if (player.GetNumberOfRepairsCards() < 5)
+                    {
+                        deckRepair.tag = "Selectable";
+                    }
+                    else
+                    {
+                        deckRepair.tag = "Disabled";
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Fecha o compartimento esquerdo e desabilita deckRepair.
+    /// Chamado após o jogador comprar uma carta de reparo.
+    /// </summary>
+    public void CloseLeftCompartment()
+    {
+        DebugHelper.Log("[GameManager] CloseLeftCompartment");
+
+        // Fechar compartimento esquerdo
+        if (leftCompartmentAnimator != null)
+        {
+            leftCompartmentAnimator.SetBool("open", false);
+        }
+
+        // Desabilitar deckRepair
+        if (cachedDeckRepairMeshCollider != null)
+        {
+            cachedDeckRepairMeshCollider.enabled = false;
+        }
+        if (deckRepair != null)
+        {
+            deckRepair.tag = "Untagged";
+        }
+    }
+
+    /// <summary>
+    /// RPC para fechar o compartimento esquerdo e desabilitar deckRepair.
+    /// Chamado quando o turno termina ou quando o jogador compra uma carta.
+    /// </summary>
+    [PunRPC]
+    public void RPC_CloseLeftCompartment()
+    {
+        DebugHelper.Log("[GameManager] RPC_CloseLeftCompartment");
+
+        // Fechar compartimento esquerdo
+        if (leftCompartmentAnimator != null)
+        {
+            leftCompartmentAnimator.SetBool("open", false);
+        }
+
+        // Desabilitar deckRepair
+        if (cachedDeckRepairMeshCollider != null)
+        {
+            cachedDeckRepairMeshCollider.enabled = false;
+        }
+        if (deckRepair != null)
+        {
+            deckRepair.tag = "Untagged";
+        }
     }
 
     #endregion
@@ -429,6 +553,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (ThermometerManager.Instance != null)
         {
             ThermometerManager.Instance.Initialize();
+        }
+
+        // Subscrever ao evento de quiz completado
+        if (QuizManager.Instance != null)
+        {
+            QuizManager.Instance.OnQuizCompleted -= OnQuizCompleted; // Evitar duplicação
+            QuizManager.Instance.OnQuizCompleted += OnQuizCompleted;
         }
 
         hud.SetActive(true);
@@ -873,15 +1004,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (isMyTurn && currentTurnPlayer != null)
         {
-            // É meu turno - ativar controles
-            if (currentTurnPlayer.GetNumberOfRepairsCards() == 5)
-            {
-                deckRepair.tag = "Disabled";
-            }
-            else
-            {
-                deckRepair.tag = "Selectable";
-            }
 
             foreach (var timeCraxComponent in timeCraxComponents)
             {
@@ -897,7 +1019,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (cachedTimelineMeshCollider != null) cachedTimelineMeshCollider.enabled = true;
             if (cachedDeckEventMeshCollider != null) cachedDeckEventMeshCollider.enabled = true;
-            if (cachedDeckRepairMeshCollider != null) cachedDeckRepairMeshCollider.enabled = true;
+            // deckRepair só é habilitado após acertar quiz
+            if (cachedDeckRepairMeshCollider != null) cachedDeckRepairMeshCollider.enabled = false;
+            if (deckRepair != null) deckRepair.tag = "Untagged";
             deckEvent.tag = "Selectable";
             timeline.tag = "Selectable";
 
@@ -1464,8 +1588,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log("4 -- Finish turn, time ++");
 
+        // Fechar compartimento esquerdo e desabilitar deckRepair
+        if (leftCompartmentAnimator != null)
+        {
+            leftCompartmentAnimator.SetBool("open", false);
+        }
+        if (cachedDeckRepairMeshCollider != null)
+        {
+            cachedDeckRepairMeshCollider.enabled = false;
+        }
+        if (deckRepair != null) deckRepair.tag = "Untagged";
+
         // Verificações de segurança
-        if (deckRepair != null) deckRepair.tag = "Disabled";
         if (deckEvent != null) deckEvent.tag = "Disabled";
         if (timeline != null) timeline.tag = "Disabled";
 
