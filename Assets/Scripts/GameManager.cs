@@ -178,7 +178,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             // Aguardar camera zoomOut antes de abrir compartimento
             // 3.3s (animação da carta) + 1.5s (zoom out) = 4.8s
-            this.DelayedCall(4.8f, OpenLeftCompartmentAfterZoomOut);
+            this.DelayedCall(3.5f, OpenLeftCompartmentAfterZoomOut);
         }
     }
 
@@ -255,7 +255,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         if (deckRepair != null)
         {
-            deckRepair.tag = "Untagged";
+            deckRepair.tag = "Disabled";
         }
     }
 
@@ -281,7 +281,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         if (deckRepair != null)
         {
-            deckRepair.tag = "Untagged";
+            deckRepair.tag = "Disabled";
         }
     }
 
@@ -1455,11 +1455,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// Chamado após o delay do timeout para adicionar malfunction e passar turno.
+    /// Chamado após o delay do timeout para avançar termômetro e passar turno.
     /// </summary>
     private void TimeoutMalfunction()
     {
-        DebugHelper.Log("[GameManager] TimeoutMalfunction - Adicionando malfunction e passando turno");
+        DebugHelper.Log("[GameManager] TimeoutMalfunction - Avançando termômetro e passando turno");
 
         // Verificar novamente se o jogo ainda está ativo
         if (!gameIsOn || (gameOver != null && gameOver.gameIsOver))
@@ -1468,12 +1468,18 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        // Chamar a roleta de malfunction
-        RandomComponentNumber();
+        // Obter tempo de processamento antes de chamar OnPlayerError
+        float processingTime = 0f;
+        if (ThermometerManager.Instance != null)
+        {
+            processingTime = ThermometerManager.Instance.GetErrorProcessingTime();
+            // Avançar termômetro (malfunction só acontece se temperatura chegar a 100)
+            ThermometerManager.Instance.OnPlayerError();
+        }
 
-        // Aguardar a animação da roleta terminar antes de passar o turno
-        // A roleta leva aproximadamente 15 * 0.3s = 4.5s + margem
-        this.DelayedCall(5f, FinishTurnAfterTimeout);
+        // Aguardar processamento (se houver malfunction, espera a animação)
+        float delay = processingTime > 0 ? processingTime + 0.5f : 0.5f;
+        this.DelayedCall(delay, FinishTurnAfterTimeout);
     }
 
     /// <summary>

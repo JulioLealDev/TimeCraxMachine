@@ -107,7 +107,7 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         {
             if (player.GetYourTurn() && player.photonView.IsMine)
             {
-                PhotonNetwork.Instantiate("repairCard", new Vector3(0.604300022f, 0.0707999989f, 0.280999988f), Quaternion.identity);
+                PhotonNetwork.Instantiate("repairCard", new Vector3(0.604300022f, 0.08f, 0.280999988f), Quaternion.identity);
                 break;
             }
         }
