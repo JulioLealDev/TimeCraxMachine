@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8575116050447315666}
   - component: {fileID: 5335865523042217885}
   m_Layer: 0
-  m_Name: repairCard
+  m_Name: bonusCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5335865523042217886}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f4027034bebe134586a7d95183f96db, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c989d8c5b02ce849b6ebba032770ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   index: 0

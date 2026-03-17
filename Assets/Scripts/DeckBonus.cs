@@ -2,7 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
 
-public class DeckRepair : MonoBehaviourPunCallbacks
+public class DeckBonus : MonoBehaviourPunCallbacks
 {
     [SerializeField] private DeckEvent deckEvent;
     [SerializeField] private GameManager gameManager;
@@ -30,7 +30,7 @@ public class DeckRepair : MonoBehaviourPunCallbacks
             {
                 if (player.GetYourTurn())
                 {
-                    if (player.GetNumberOfRepairsCards() == 5)
+                    if (player.GetNumberOfBonusCards() == 5)
                     {
                         DebugHelper.Log("Você já possui 5 cartas");
                     }
@@ -60,24 +60,24 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         else
         {
             // Enviar requisição ao MasterClient para processar a compra
-            photonView.RPC("RequestDrawRepairCard", RpcTarget.MasterClient);
+            photonView.RPC("RequestDrawBonusCard", RpcTarget.MasterClient);
         }
 
     }
 
     /// <summary>
-    /// RPC enviado ao MasterClient para processar a compra de carta de reparo
+    /// RPC enviado ao MasterClient para processar a compra de carta de bonus
     /// </summary>
     [PunRPC]
-    public void RequestDrawRepairCard()
+    public void RequestDrawBonusCard()
     {
         // Apenas MasterClient processa e sincroniza para todos
         if (PhotonNetwork.IsMasterClient)
         {
-            DebugHelper.Log("[DeckRepair] MasterClient processando compra de repairCard");
+            DebugHelper.Log("[DeckBonus] MasterClient processando compra de bonusCard");
 
             // Sincronizar para todos os clientes
-            photonView.RPC("ExecuteDrawRepairCard", RpcTarget.All);
+            photonView.RPC("ExecuteDrawBonusCard", RpcTarget.All);
         }
     }
 
@@ -85,9 +85,9 @@ public class DeckRepair : MonoBehaviourPunCallbacks
     /// RPC executado em todos os clientes para comprar a carta
     /// </summary>
     [PunRPC]
-    public void ExecuteDrawRepairCard()
+    public void ExecuteDrawBonusCard()
     {
-        DebugHelper.Log("[DeckRepair] ExecuteDrawRepairCard");
+        DebugHelper.Log("[DeckBonus] ExecuteDrawBonusCard");
 
         // Tocar som
         soundEffects.PlayDrawCardSound();
@@ -107,7 +107,7 @@ public class DeckRepair : MonoBehaviourPunCallbacks
         {
             if (player.GetYourTurn() && player.photonView.IsMine)
             {
-                PhotonNetwork.Instantiate("repairCard", new Vector3(0.604300022f, 0.08f, 0.280999988f), Quaternion.identity);
+                PhotonNetwork.Instantiate("bonusCard", new Vector3(0.604300022f, 0.08f, 0.280999988f), Quaternion.identity);
                 break;
             }
         }

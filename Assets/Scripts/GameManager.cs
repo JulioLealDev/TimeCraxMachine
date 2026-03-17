@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject gameInfo;
     [SerializeField] private GameObject enviroment;
     [SerializeField] private DeckEvent deckEvent;
-    [SerializeField] private GameObject deckRepair;
+    [SerializeField] private GameObject deckBonus;
     [SerializeField] private GameObject timeline;
     [SerializeField] private CameraController gameCamera;
     [SerializeField] private GameObject inputName;
@@ -69,17 +69,17 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     // Cache para evitar chamadas repetitivas a FindObjectsByType
     private GiveCards[] cachedPlateNames;
-    private RepairCard[] cachedRepairCards;
+    private BonusCard[] cachedBonusCards;
     private bool needsCacheRefresh = true;
 
     // Cache de GetComponent para componentes frequentemente acessados
     private MeshCollider cachedDeckEventMeshCollider;
-    private MeshCollider cachedDeckRepairMeshCollider;
+    private MeshCollider cachedDeckBonusMeshCollider;
     private MeshCollider cachedTimelineMeshCollider;
     private MeshCollider cachedEndButtonMeshCollider;
     private MeshCollider cachedQuitButtonMeshCollider;
     private PhotonView cachedDeckEventPhotonView;
-    private PhotonView cachedDeckRepairPhotonView;
+    private PhotonView cachedDeckBonusPhotonView;
     private PhotonView cachedTimelinePhotonView;
     private PhotonView cachedEndButtonPhotonView;
     private Animator cachedGameCameraAnimator;
@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
         cachedPlateNames = FindObjectsByType<GiveCards>(FindObjectsSortMode.None);
-        cachedRepairCards = FindObjectsByType<RepairCard>(FindObjectsSortMode.None);
+        cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
         needsCacheRefresh = false;
         DebugHelper.Log("[GameManager] Cache atualizado");
     }
@@ -108,10 +108,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             cachedDeckEventPhotonView = deckEvent.GetComponent<PhotonView>();
         }
 
-        if (deckRepair != null)
+        if (deckBonus != null)
         {
-            cachedDeckRepairMeshCollider = deckRepair.GetComponent<MeshCollider>();
-            cachedDeckRepairPhotonView = deckRepair.GetComponent<PhotonView>();
+            cachedDeckBonusMeshCollider = deckBonus.GetComponent<MeshCollider>();
+            cachedDeckBonusPhotonView = deckBonus.GetComponent<PhotonView>();
         }
 
         if (timeline != null)
@@ -168,7 +168,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     /// <summary>
     /// Callback chamado quando o quiz é completado.
-    /// Se acertou: aguarda camera zoomOut e então abre compartimento esquerdo e habilita deckRepair.
+    /// Se acertou: aguarda camera zoomOut e então abre compartimento esquerdo e habilita deckBonus.
     /// </summary>
     private void OnQuizCompleted(bool correct)
     {
@@ -194,7 +194,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// RPC para abrir o compartimento esquerdo e habilitar deckRepair.
+    /// RPC para abrir o compartimento esquerdo e habilitar deckBonus.
     /// Sincroniza a abertura em todos os clientes.
     /// </summary>
     [PunRPC]
@@ -208,25 +208,25 @@ public class GameManager : MonoBehaviourPunCallbacks
             leftCompartmentAnimator.SetBool("open", true);
         }
 
-        // Habilitar deckRepair apenas para o jogador do turno
+        // Habilitar deckBonus apenas para o jogador do turno
         foreach (var player in players)
         {
             if (player != null && player.photonView.IsMine && player.GetYourTurn())
             {
-                if (cachedDeckRepairMeshCollider != null)
+                if (cachedDeckBonusMeshCollider != null)
                 {
-                    cachedDeckRepairMeshCollider.enabled = true;
+                    cachedDeckBonusMeshCollider.enabled = true;
                 }
-                if (deckRepair != null)
+                if (deckBonus != null)
                 {
                     // Verificar se jogador já tem 5 cartas
-                    if (player.GetNumberOfRepairsCards() < 5)
+                    if (player.GetNumberOfBonusCards() < 5)
                     {
-                        deckRepair.tag = "Selectable";
+                        deckBonus.tag = "Selectable";
                     }
                     else
                     {
-                        deckRepair.tag = "Disabled";
+                        deckBonus.tag = "Disabled";
                     }
                 }
                 break;
@@ -235,7 +235,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// Fecha o compartimento esquerdo e desabilita deckRepair.
+    /// Fecha o compartimento esquerdo e desabilita deckBonus.
     /// Chamado após o jogador comprar uma carta de reparo.
     /// </summary>
     public void CloseLeftCompartment()
@@ -248,19 +248,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             leftCompartmentAnimator.SetBool("open", false);
         }
 
-        // Desabilitar deckRepair
-        if (cachedDeckRepairMeshCollider != null)
+        // Desabilitar deckBonus
+        if (cachedDeckBonusMeshCollider != null)
         {
-            cachedDeckRepairMeshCollider.enabled = false;
+            cachedDeckBonusMeshCollider.enabled = false;
         }
-        if (deckRepair != null)
+        if (deckBonus != null)
         {
-            deckRepair.tag = "Disabled";
+            deckBonus.tag = "Disabled";
         }
     }
 
     /// <summary>
-    /// RPC para fechar o compartimento esquerdo e desabilitar deckRepair.
+    /// RPC para fechar o compartimento esquerdo e desabilitar deckBonus.
     /// Chamado quando o turno termina ou quando o jogador compra uma carta.
     /// </summary>
     [PunRPC]
@@ -274,14 +274,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             leftCompartmentAnimator.SetBool("open", false);
         }
 
-        // Desabilitar deckRepair
-        if (cachedDeckRepairMeshCollider != null)
+        // Desabilitar deckBonus
+        if (cachedDeckBonusMeshCollider != null)
         {
-            cachedDeckRepairMeshCollider.enabled = false;
+            cachedDeckBonusMeshCollider.enabled = false;
         }
-        if (deckRepair != null)
+        if (deckBonus != null)
         {
-            deckRepair.tag = "Disabled";
+            deckBonus.tag = "Disabled";
         }
     }
 
@@ -300,15 +300,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// Retorna os repairCards do cache, atualizando se necessário.
+    /// Retorna os bonusCards do cache, atualizando se necessário.
     /// </summary>
-    private RepairCard[] GetCachedRepairCards()
+    private BonusCard[] GetCachedBonusCards()
     {
-        if (needsCacheRefresh || cachedRepairCards == null)
+        if (needsCacheRefresh || cachedBonusCards == null)
         {
-            cachedRepairCards = FindObjectsByType<RepairCard>(FindObjectsSortMode.None);
+            cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
         }
-        return cachedRepairCards;
+        return cachedBonusCards;
     }
 
     void Update()
@@ -407,11 +407,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             plate.GetComponent<MeshCollider>().enabled = false;
         }
 
-        var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(index));
-        if (repairSymbol != null)
+        var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(index));
+        if (bonusSymbol != null)
         {
-            DebugHelper.Log("repairSymbol name: " + repairSymbol.name);
-            repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
+            DebugHelper.Log("bonusSymbol name: " + bonusSymbol.name);
+            bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
         }
 
         var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(index));
@@ -422,11 +422,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
         }
 
-        var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(index));
-        if (numberRepairCard != null)
+        var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(index));
+        if (numberBonusCard != null)
         {
-            DebugHelper.Log("repairCardSymbol name: " + numberRepairCard.name);
-            numberRepairCard.GetComponent<TextMeshProUGUI>().text = " ";
+            DebugHelper.Log("bonusCardSymbol name: " + numberBonusCard.name);
+            numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
         }
     }
 
@@ -580,8 +580,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             int playerNum = i + 1;
             string plateNameStr = GameObjectNames.GetPlateName(playerNum);
             string namePlayerStr = GameObjectNames.GetNamePlayer(playerNum);
-            string repairSymbolStr = GameObjectNames.GetRepairCardSymbol(playerNum);
-            string numberCardsStr = GameObjectNames.GetNumberRepairCards(playerNum);
+            string bonusSymbolStr = GameObjectNames.GetBonusCardSymbol(playerNum);
+            string numberCardsStr = GameObjectNames.GetNumberBonusCards(playerNum);
 
             for (int x = 0; x < components.Length; x++)
             {
@@ -599,7 +599,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     textName.text = orderedPlayerList[i].NickName;
                     textName.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
                 }
-                else if (components[x].name == repairSymbolStr)
+                else if (components[x].name == bonusSymbolStr)
                 {
                     components[x].GetComponent<SpriteRenderer>().enabled = true;
                 }
@@ -788,7 +788,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 if (player.index == time)
                 {
                     player.SetYourTurn(true);
-                    ChangeRepairCardsView(player);
+                    ChangeBonusCardsView(player);
                     photonView.RPC("ChangePlateNameMaterial", RpcTarget.All, player.plateNameIndex);
                 }
                 else
@@ -952,7 +952,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 DebugHelper.Log("Jogador: " + currentOrderedPlayer.nickname + " está na vez  -- recebendo photon views");
                 if (cachedDeckEventPhotonView != null) cachedDeckEventPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
-                if (cachedDeckRepairPhotonView != null) cachedDeckRepairPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
+                if (cachedDeckBonusPhotonView != null) cachedDeckBonusPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
                 if (cachedTimelinePhotonView != null) cachedTimelinePhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
                 photonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
                 if (cachedEndButtonPhotonView != null) cachedEndButtonPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
@@ -1019,9 +1019,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (cachedTimelineMeshCollider != null) cachedTimelineMeshCollider.enabled = true;
             if (cachedDeckEventMeshCollider != null) cachedDeckEventMeshCollider.enabled = true;
-            // deckRepair só é habilitado após acertar quiz
-            if (cachedDeckRepairMeshCollider != null) cachedDeckRepairMeshCollider.enabled = false;
-            if (deckRepair != null) deckRepair.tag = "Untagged";
+            // deckBonus só é habilitado após acertar quiz
+            if (cachedDeckBonusMeshCollider != null) cachedDeckBonusMeshCollider.enabled = false;
+            if (deckBonus != null) deckBonus.tag = "Untagged";
             deckEvent.tag = "Selectable";
             timeline.tag = "Selectable";
 
@@ -1052,7 +1052,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (cachedEndButtonMeshCollider != null) cachedEndButtonMeshCollider.enabled = false;
             if (cachedTimelineMeshCollider != null) cachedTimelineMeshCollider.enabled = false;
             if (cachedDeckEventMeshCollider != null) cachedDeckEventMeshCollider.enabled = false;
-            if (cachedDeckRepairMeshCollider != null) cachedDeckRepairMeshCollider.enabled = false;
+            if (cachedDeckBonusMeshCollider != null) cachedDeckBonusMeshCollider.enabled = false;
 
             for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
             {
@@ -1594,16 +1594,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         DebugHelper.Log("4 -- Finish turn, time ++");
 
-        // Fechar compartimento esquerdo e desabilitar deckRepair
+        // Fechar compartimento esquerdo e desabilitar deckBonus
         if (leftCompartmentAnimator != null)
         {
             leftCompartmentAnimator.SetBool("open", false);
         }
-        if (cachedDeckRepairMeshCollider != null)
+        if (cachedDeckBonusMeshCollider != null)
         {
-            cachedDeckRepairMeshCollider.enabled = false;
+            cachedDeckBonusMeshCollider.enabled = false;
         }
-        if (deckRepair != null) deckRepair.tag = "Untagged";
+        if (deckBonus != null) deckBonus.tag = "Untagged";
 
         // Verificações de segurança
         if (deckEvent != null) deckEvent.tag = "Disabled";
@@ -1619,13 +1619,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         SetUpComponents();
     }
 
-    public void ChangeRepairCardsView(PlayerScript player)
+    public void ChangeBonusCardsView(PlayerScript player)
     {
         if (player == null) return;
 
-        var repairCards = GetCachedRepairCards();
+        var bonusCards = GetCachedBonusCards();
 
-        foreach (var card in repairCards)
+        foreach (var card in bonusCards)
         {
             if (card == null) continue;
             if (card.photonView.OwnerActorNr == player.photonView.OwnerActorNr)
@@ -1815,11 +1815,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 plate.GetComponent<MeshCollider>().enabled = false;
             }
 
-            var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(playerNum));
-            if (repairSymbol != null)
+            var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(playerNum));
+            if (bonusSymbol != null)
             {
-                DebugHelper.Log("repairSymbol name: " + repairSymbol.name);
-                repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
+                DebugHelper.Log("bonusSymbol name: " + bonusSymbol.name);
+                bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
             }
 
             var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
@@ -1830,11 +1830,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
 
-            var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(playerNum));
-            if (numberRepairCard != null)
+            var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(playerNum));
+            if (numberBonusCard != null)
             {
-                DebugHelper.Log("repairCardSymbol name: " + numberRepairCard.name);
-                numberRepairCard.GetComponent<TextMeshProUGUI>().text = " ";
+                DebugHelper.Log("bonusCardSymbol name: " + numberBonusCard.name);
+                numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
             }
         }
     }
@@ -1924,7 +1924,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void BlockActions()
     {
-        deckRepair.tag = "Disabled";
+        deckBonus.tag = "Disabled";
         deckEvent.tag = "Disabled";
 
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
@@ -1977,7 +1977,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         DebugHelper.Log("Desativando decks");
         if (cachedDeckEventMeshCollider != null) cachedDeckEventMeshCollider.enabled = false;
-        if (cachedDeckRepairMeshCollider != null) cachedDeckRepairMeshCollider.enabled = false;
+        if (cachedDeckBonusMeshCollider != null) cachedDeckBonusMeshCollider.enabled = false;
         if (cachedTimelineMeshCollider != null) cachedTimelineMeshCollider.enabled = false;
         if (cachedEndButtonMeshCollider != null) cachedEndButtonMeshCollider.enabled = false;
         if (cachedQuitButtonMeshCollider != null) cachedQuitButtonMeshCollider.enabled = false;
@@ -1990,12 +1990,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         //DebugHelper.Log("Nome: " + button);
         //int buttonName = int.Parse(EventSystem.current.currentSelectedGameObject.name);
 
-        photonView.RPC("GiveRepairCard", RpcTarget.All, numberPlayer);
+        photonView.RPC("GiveBonusCard", RpcTarget.All, numberPlayer);
 
     }
 
     [PunRPC]
-    public void GiveRepairCard(int numberPlayer)
+    public void GiveBonusCard(int numberPlayer)
     {
 
         PlayerScript playerSending = null;
@@ -2023,37 +2023,37 @@ public class GameManager : MonoBehaviourPunCallbacks
         // Verificar se encontrou os jogadores necessários
         if (playerSending == null || playerReceiving == null)
         {
-            DebugHelper.Log("[GiveRepairCard] playerSending ou playerReceiving é null");
+            DebugHelper.Log("[GiveBonusCard] playerSending ou playerReceiving é null");
             return;
         }
 
-        if (playerSending.GetNumberOfRepairsCards() > 0 && playerReceiving.GetNumberOfRepairsCards() < 5)
+        if (playerSending.GetNumberOfBonusCards() > 0 && playerReceiving.GetNumberOfBonusCards() < 5)
         {
             BlockActions();
 
-            // Invalidar cache de repair cards para buscar as mais recentes
+            // Invalidar cache de bonus cards para buscar as mais recentes
             needsCacheRefresh = true;
-            var repairCards = GetCachedRepairCards();
-            List<RepairCard> orderedList = new List<RepairCard>();
-            List<RepairCard> playerCards = new List<RepairCard>();
+            var bonusCards = GetCachedBonusCards();
+            List<BonusCard> orderedList = new List<BonusCard>();
+            List<BonusCard> playerCards = new List<BonusCard>();
 
-            foreach (var repairCard in repairCards)
+            foreach (var bonusCard in bonusCards)
             {
-                if (repairCard != null && repairCard.photonView.OwnerActorNr == playerSending.photonView.OwnerActorNr)
+                if (bonusCard != null && bonusCard.photonView.OwnerActorNr == playerSending.photonView.OwnerActorNr)
                 {
-                    DebugHelper.Log(" - " + repairCard.photonView.ViewID);
-                    playerCards.Add(repairCard);
+                    DebugHelper.Log(" - " + bonusCard.photonView.ViewID);
+                    playerCards.Add(bonusCard);
                 }
             }
 
             if (playerCards.Count == 0)
             {
-                DebugHelper.Log("[GiveRepairCard] Nenhuma carta encontrada para o jogador");
+                DebugHelper.Log("[GiveBonusCard] Nenhuma carta encontrada para o jogador");
                 return;
             }
 
             orderedList = playerCards.OrderByDescending(x => x.index).ToList();
-            RepairCard lastCard = orderedList[0];
+            BonusCard lastCard = orderedList[0];
 
             var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
 
@@ -2062,23 +2062,23 @@ public class GameManager : MonoBehaviourPunCallbacks
                 lastCard.photonView.TransferOwnership(orderedPlayerList[playerReceiving.index]);
             }
 
-            playerReceiving.numberRepairCards++;
+            playerReceiving.numberBonusCards++;
 
-            var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(numberPlayer));
+            var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(numberPlayer));
             if (findReceiverNumberCards != null)
             {
                 DebugHelper.Log("receiver: " + findReceiverNumberCards.name);
-                findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberRepairCards.ToString();
+                findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberBonusCards.ToString();
             }
 
-            playerSending.numberRepairCards--;
+            playerSending.numberBonusCards--;
 
-            var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(time + 1));
+            var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(time + 1));
             if (findSenderNumberCards != null)
             {
                 DebugHelper.Log("sender: " + findSenderNumberCards.name);
                 DebugHelper.Log("time + 1: " + (time + 1));
-                findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberRepairCards.ToString();
+                findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberBonusCards.ToString();
             }
 
             lastCard.GetComponent<Animator>().enabled = true;

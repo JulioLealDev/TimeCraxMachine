@@ -2,7 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
 
-public class RepairCard : MonoBehaviourPunCallbacks
+public class BonusCard : MonoBehaviourPunCallbacks
 {
     private PlayerScript[] players;
     public int index = 0;
@@ -11,25 +11,37 @@ public class RepairCard : MonoBehaviourPunCallbacks
     {
         players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
-        DrawRepairCard();
+        DrawBonusCard();
 
     }
-    public void DrawRepairCard()
+    public void DrawBonusCard()
     {
         gameObject.GetComponent<Animator>().enabled = true;
-        gameObject.GetComponent<Animator>().SetBool("drawingRepairCard", true);
+        gameObject.GetComponent<Animator>().SetBool("drawingBonusCard", true);
 
     }
 
     public void CheckingPlayer()
     {
-        //var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        // Garantir que players está populado
+        if (players == null || players.Length == 0)
+        {
+            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        }
+
+        if (players == null || players.Length == 0)
+        {
+            DebugHelper.Log("[BonusCard] CheckingPlayer: Nenhum player encontrado");
+            ActivateEndButton();
+            return;
+        }
+
         foreach (var player in players)
         {
-            if (player.GetComponent<PhotonView>().OwnerActorNr == photonView.OwnerActorNr)
+            if (player != null && player.GetComponent<PhotonView>().OwnerActorNr == photonView.OwnerActorNr)
             {
-                player.DrawRepairCard();
-                ShowRepairCardOnHand(player.GetNumberOfRepairsCards());
+                player.DrawBonusCard();
+                ShowBonusCardOnHand(player.GetNumberOfBonusCards());
             }
         }
 
@@ -37,36 +49,36 @@ public class RepairCard : MonoBehaviourPunCallbacks
         ActivateEndButton();
     }
 
-    public void ShowRepairCardOnHand(int numberOfRepairCards)
+    public void ShowBonusCardOnHand(int numberOfBonusCards)
     {
         gameObject.GetComponent<Animator>().enabled = false;
         gameObject.SetActive(false);
-        ShowRepairCards(numberOfRepairCards);
+        ShowBonusCards(numberOfBonusCards);
     }
 
-    public void ShowRepairCards(int numberOfRepairCards)
+    public void ShowBonusCards(int numberOfBonusCards)
     {
-        DebugHelper.Log("number of cards: " + numberOfRepairCards);
+        DebugHelper.Log("number of cards: " + numberOfBonusCards);
 
-        switch (numberOfRepairCards)
+        switch (numberOfBonusCards)
         {
             case 1:
-                DebugHelper.Log("trocando a posi��o");
+                DebugHelper.Log("trocando a posição");
                 gameObject.transform.SetPositionAndRotation(new Vector3(0f, 0.648899972f, 0.638700008f), new Quaternion(0.906307876f, 0, 0, -0.42261827f));
                 index = 0;
                 break;
             case 2:
-                DebugHelper.Log("trocando a posi��o");
+                DebugHelper.Log("trocando a posição");
                 gameObject.transform.SetPositionAndRotation(new Vector3(0.0196000002f, 0.647700012f, 0.635900021f), new Quaternion(-0.893287599f, 0.0578520186f, -0.131124616f, 0.426024318f));
                 index = 1;
                 break;
             case 3:
-                DebugHelper.Log("trocando a posi��o");
+                DebugHelper.Log("trocando a posição");
                 gameObject.transform.SetPositionAndRotation(new Vector3(-0.0238000005f, 0.648599982f, 0.644800007f), new Quaternion(-0.9102512f, -0.0436024554f, 0.0974093974f, 0.400066316f));
                 index = 2;
                 break;
             case 4:
-                DebugHelper.Log("trocando a posi��o");
+                DebugHelper.Log("trocando a posição");
                 gameObject.transform.SetPositionAndRotation(new Vector3(0.0368999988f, 0.642799973f, 0.637899995f), new Quaternion(-0.872396052f, 0.0844448283f, -0.222514987f, 0.426944137f));
                 index = 3;
                 break;
@@ -75,15 +87,15 @@ public class RepairCard : MonoBehaviourPunCallbacks
                 index = 4;
                 break;
             default:
-                DebugHelper.Log("N�o possui cartas");
+                DebugHelper.Log("Não possui cartas");
                 break;
         }
 
         gameObject.SetActive(true);
     }
-    public void DestroyRepairCards()
+    public void DestroyBonusCards()
     {
-        Destroy(gameObject);   
+        Destroy(gameObject);
     }
 
     public void DeactivateMesh()
@@ -91,10 +103,24 @@ public class RepairCard : MonoBehaviourPunCallbacks
         gameObject.GetComponent<MeshRenderer>().enabled = false;
         gameObject.SetActive(false);
 
+        // Garantir que players está populado
+        if (players == null || players.Length == 0)
+        {
+            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        }
+
+        if (players == null || players.Length == 0)
+        {
+            DebugHelper.Log("[BonusCard] DeactivateMesh: Nenhum player encontrado");
+            return;
+        }
+
         PlayerScript owner = null;
 
         foreach(var player in players)
         {
+            if (player == null) continue;
+
             DebugHelper.Log("player owner numb: "+ player.photonView.OwnerActorNr+ " - card owner numb: "+ gameObject.GetPhotonView().OwnerActorNr);
             if(player.photonView.OwnerActorNr == gameObject.GetPhotonView().OwnerActorNr)
             {
@@ -102,7 +128,14 @@ public class RepairCard : MonoBehaviourPunCallbacks
             }
         }
 
-        ShowRepairCards(owner.GetNumberOfRepairsCards());
+        if (owner != null)
+        {
+            ShowBonusCards(owner.GetNumberOfBonusCards());
+        }
+        else
+        {
+            DebugHelper.Log("[BonusCard] DeactivateMesh: Owner não encontrado");
+        }
     }
 
     /// <summary>
@@ -111,8 +144,15 @@ public class RepairCard : MonoBehaviourPunCallbacks
     /// </summary>
     public void ActivateEndButton()
     {
-        DebugHelper.Log("[RepairCard] ActivateEndButton");
+        DebugHelper.Log("[BonusCard] ActivateEndButton");
         var gameManager = FindFirstObjectByType<GameManager>();
-        gameManager.ActivateEnd();
+        if (gameManager != null)
+        {
+            gameManager.ActivateEnd();
+        }
+        else
+        {
+            DebugHelper.Log("[BonusCard] ActivateEndButton: GameManager não encontrado");
+        }
     }
 }

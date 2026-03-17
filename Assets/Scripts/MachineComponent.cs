@@ -277,9 +277,9 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 if (player.GetYourTurn())
                 {
 
-                    DebugHelper.Log("Number od cards: " + player.GetNumberOfRepairsCards());
+                    DebugHelper.Log("Number od cards: " + player.GetNumberOfBonusCards());
 
-                    if(player.GetNumberOfRepairsCards() >= players.Length)
+                    if(player.GetNumberOfBonusCards() >= players.Length)
                     {
 
                         photonView.RPC("RemoveMalfunction", RpcTarget.All);

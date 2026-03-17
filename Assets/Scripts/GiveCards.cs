@@ -28,7 +28,7 @@ public class GiveCards : MonoBehaviour
         {
             if (player.GetYourTurn())
             {
-                sendNumberCards = player.GetNumberOfRepairsCards();
+                sendNumberCards = player.GetNumberOfBonusCards();
             }
         }
 
@@ -39,7 +39,7 @@ public class GiveCards : MonoBehaviour
         }
         else if (sendNumberCards == 0)
         {
-            DebugHelper.Log("Você não possui cartas de reparo");
+            DebugHelper.Log("Você não possui cartas de bonus");
             ShowInfo("CardInfoBackground");
         }
         else
@@ -52,7 +52,7 @@ public class GiveCards : MonoBehaviour
             {
                 if (player.index == numberPlayer - 1)
                 {
-                    int receiverNumberCards = player.GetNumberOfRepairsCards();
+                    int receiverNumberCards = player.GetNumberOfBonusCards();
                     if (receiverNumberCards == 5)
                     {
                         DebugHelper.Log("Este jogador já possui 5 cartas");

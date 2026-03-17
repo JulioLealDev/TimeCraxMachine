@@ -9,7 +9,7 @@ namespace TimeCrax.Managers
 {
     /// <summary>
     /// Gerenciador de jogadores.
-    /// Controla a lógica relacionada aos jogadores, cartas de reparo e plateNames.
+    /// Controla a lógica relacionada aos jogadores, cartas de bonus e plateNames.
     /// </summary>
     public class PlayerManager : MonoBehaviourPunCallbacks
     {
@@ -33,7 +33,7 @@ namespace TimeCrax.Managers
         // Cache de jogadores
         private PlayerScript[] players;
         private GiveCards[] cachedPlateNames;
-        private RepairCard[] cachedRepairCards;
+        private BonusCard[] cachedBonusCards;
         private bool needsCacheRefresh = true;
 
         // Propriedades públicas
@@ -65,7 +65,7 @@ namespace TimeCrax.Managers
         {
             players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
             cachedPlateNames = FindObjectsByType<GiveCards>(FindObjectsSortMode.None);
-            cachedRepairCards = FindObjectsByType<RepairCard>(FindObjectsSortMode.None);
+            cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
             needsCacheRefresh = false;
             DebugHelper.Log("[PlayerManager] Cache atualizado");
         }
@@ -83,15 +83,15 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
-        /// Retorna as cartas de reparo do cache
+        /// Retorna as cartas de bonus do cache
         /// </summary>
-        public RepairCard[] GetCachedRepairCards()
+        public BonusCard[] GetCachedBonusCards()
         {
-            if (needsCacheRefresh || cachedRepairCards == null)
+            if (needsCacheRefresh || cachedBonusCards == null)
             {
-                cachedRepairCards = FindObjectsByType<RepairCard>(FindObjectsSortMode.None);
+                cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
             }
-            return cachedRepairCards;
+            return cachedBonusCards;
         }
 
         /// <summary>
@@ -179,10 +179,10 @@ namespace TimeCrax.Managers
                 plate.GetComponent<MeshCollider>().enabled = false;
             }
 
-            var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(index));
-            if (repairSymbol != null)
+            var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(index));
+            if (bonusSymbol != null)
             {
-                repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
+                bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
             }
 
             var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(index));
@@ -192,10 +192,10 @@ namespace TimeCrax.Managers
                 namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
 
-            var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(index));
-            if (numberRepairCard != null)
+            var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(index));
+            if (numberBonusCard != null)
             {
-                numberRepairCard.GetComponent<TextMeshProUGUI>().text = " ";
+                numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
             }
         }
 
@@ -217,10 +217,10 @@ namespace TimeCrax.Managers
                     plate.GetComponent<MeshCollider>().enabled = false;
                 }
 
-                var repairSymbol = GameObject.Find(GameObjectNames.GetRepairCardSymbol(playerNum));
-                if (repairSymbol != null)
+                var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(playerNum));
+                if (bonusSymbol != null)
                 {
-                    repairSymbol.GetComponent<SpriteRenderer>().enabled = false;
+                    bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
                 }
 
                 var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
@@ -230,28 +230,28 @@ namespace TimeCrax.Managers
                     namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
                 }
 
-                var numberRepairCard = GameObject.Find(GameObjectNames.GetNumberRepairCards(playerNum));
-                if (numberRepairCard != null)
+                var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(playerNum));
+                if (numberBonusCard != null)
                 {
-                    numberRepairCard.GetComponent<TextMeshProUGUI>().text = " ";
+                    numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
                 }
             }
         }
 
         #endregion
 
-        #region Repair Cards
+        #region Bonus Cards
 
         /// <summary>
-        /// Altera a visualização das cartas de reparo para o jogador do turno
+        /// Altera a visualização das cartas de bonus para o jogador do turno
         /// </summary>
-        public void ChangeRepairCardsView(PlayerScript player)
+        public void ChangeBonusCardsView(PlayerScript player)
         {
             if (player == null) return;
 
-            var repairCards = GetCachedRepairCards();
+            var bonusCards = GetCachedBonusCards();
 
-            foreach (var card in repairCards)
+            foreach (var card in bonusCards)
             {
                 if (card == null) continue;
                 if (card.photonView.OwnerActorNr == player.photonView.OwnerActorNr)
@@ -267,10 +267,10 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
-        /// Transfere uma carta de reparo entre jogadores
+        /// Transfere uma carta de bonus entre jogadores
         /// </summary>
         [PunRPC]
-        public void RPC_GiveRepairCard(int numberPlayer, int time)
+        public void RPC_GiveBonusCard(int numberPlayer, int time)
         {
             PlayerScript playerSending = null;
             PlayerScript playerReceiving = null;
@@ -299,18 +299,18 @@ namespace TimeCrax.Managers
                 return;
             }
 
-            if (playerSending.GetNumberOfRepairsCards() > 0 && playerReceiving.GetNumberOfRepairsCards() < 5)
+            if (playerSending.GetNumberOfBonusCards() > 0 && playerReceiving.GetNumberOfBonusCards() < 5)
             {
                 InvalidateCache();
-                var repairCards = GetCachedRepairCards();
-                List<RepairCard> orderedList = new List<RepairCard>();
-                List<RepairCard> playerCards = new List<RepairCard>();
+                var bonusCards = GetCachedBonusCards();
+                List<BonusCard> orderedList = new List<BonusCard>();
+                List<BonusCard> playerCards = new List<BonusCard>();
 
-                foreach (var repairCard in repairCards)
+                foreach (var bonusCard in bonusCards)
                 {
-                    if (repairCard != null && repairCard.photonView.OwnerActorNr == playerSending.photonView.OwnerActorNr)
+                    if (bonusCard != null && bonusCard.photonView.OwnerActorNr == playerSending.photonView.OwnerActorNr)
                     {
-                        playerCards.Add(repairCard);
+                        playerCards.Add(bonusCard);
                     }
                 }
 
@@ -321,7 +321,7 @@ namespace TimeCrax.Managers
                 }
 
                 orderedList = playerCards.OrderByDescending(x => x.index).ToList();
-                RepairCard lastCard = orderedList[0];
+                BonusCard lastCard = orderedList[0];
 
                 var orderedPlayerList = GetOrderedPlayerList();
 
@@ -330,20 +330,20 @@ namespace TimeCrax.Managers
                     lastCard.photonView.TransferOwnership(orderedPlayerList[playerReceiving.index]);
                 }
 
-                playerReceiving.numberRepairCards++;
+                playerReceiving.numberBonusCards++;
 
-                var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(numberPlayer));
+                var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(numberPlayer));
                 if (findReceiverNumberCards != null)
                 {
-                    findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberRepairCards.ToString();
+                    findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberBonusCards.ToString();
                 }
 
-                playerSending.numberRepairCards--;
+                playerSending.numberBonusCards--;
 
-                var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberRepairCards(time + 1));
+                var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(time + 1));
                 if (findSenderNumberCards != null)
                 {
-                    findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberRepairCards.ToString();
+                    findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberBonusCards.ToString();
                 }
 
                 lastCard.GetComponent<Animator>().enabled = true;

@@ -9,8 +9,8 @@ namespace TimeCrax.Core
         // Prefixos base
         private const string PlateNamePrefix = "plateName0";
         private const string NamePlayerPrefix = "namePlayer0";
-        private const string RepairCardSymbolPrefix = "repairCardSymbol0";
-        private const string NumberRepairCardsPrefix = "numberRepairCards0";
+        private const string BonusCardSymbolPrefix = "bonusCardSymbol0";
+        private const string NumberBonusCardsPrefix = "numberBonusCards0";
 
         /// <summary>
         /// Retorna o nome do plateName para o índice do jogador (1-based).
@@ -25,15 +25,15 @@ namespace TimeCrax.Core
         public static string GetNamePlayer(int playerNumber) => NamePlayerPrefix + playerNumber;
 
         /// <summary>
-        /// Retorna o nome do repairCardSymbol para o índice do jogador (1-based).
-        /// Ex: GetRepairCardSymbol(1) retorna "repairCardSymbol01"
+        /// Retorna o nome do bonusCardSymbol para o índice do jogador (1-based).
+        /// Ex: GetBonusCardSymbol(1) retorna "bonusCardSymbol01"
         /// </summary>
-        public static string GetRepairCardSymbol(int playerNumber) => RepairCardSymbolPrefix + playerNumber;
+        public static string GetBonusCardSymbol(int playerNumber) => BonusCardSymbolPrefix + playerNumber;
 
         /// <summary>
-        /// Retorna o nome do numberRepairCards para o índice do jogador (1-based).
-        /// Ex: GetNumberRepairCards(1) retorna "numberRepairCards01"
+        /// Retorna o nome do numberBonusCards para o índice do jogador (1-based).
+        /// Ex: GetNumberBonusCards(1) retorna "numberBonusCards01"
         /// </summary>
-        public static string GetNumberRepairCards(int playerNumber) => NumberRepairCardsPrefix + playerNumber;
+        public static string GetNumberBonusCards(int playerNumber) => NumberBonusCardsPrefix + playerNumber;
     }
 }

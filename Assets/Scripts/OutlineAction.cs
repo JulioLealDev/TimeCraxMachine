@@ -10,7 +10,7 @@ public class OutlineAction : MonoBehaviour
     public GameObject menuStart;
     public GameObject timeline;
     public GameObject deckEvent;
-    public GameObject deckRepair;
+    public GameObject deckBonus;
 
     [Header("Cursors")]
     [SerializeField] private Texture2D defaultCursor;
@@ -133,7 +133,7 @@ public class OutlineAction : MonoBehaviour
     {
         timeline.tag = "Selectable";
         deckEvent.tag = "Selectable";
-        // deckRepair só fica selecionável após acertar quiz
+        // deckBonus só fica selecionável após acertar quiz
     }
 
     /// <summary>
