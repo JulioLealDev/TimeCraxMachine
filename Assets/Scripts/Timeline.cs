@@ -19,7 +19,8 @@ public class Timeline : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
-        // Bloquear clique durante animações de câmera
+        DebugHelper.Log($"[Timeline] clique: blocked={InputBlocker.IsBlocked}, animating={CameraController.IsAnimating}, processing={isProcessingClick}");
+        if (InputBlocker.IsBlocked) return;
         if (CameraController.IsAnimating) return;
 
         // Proteção contra clique duplo

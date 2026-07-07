@@ -12,6 +12,8 @@ public class FinishTurn : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        DebugHelper.Log($"[FinishTurn] clique: blocked={InputBlocker.IsBlocked}, animating={CameraController.IsAnimating}, processing={isProcessingClick}");
+        if (InputBlocker.IsBlocked) return;
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 
@@ -27,9 +29,7 @@ public class FinishTurn : MonoBehaviourPunCallbacks
 
         isProcessingClick = true;
 
-        // Desabilitar cursor imediatamente ao clicar
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        InputBlocker.Block();
 
         DebugHelper.Log("Clicou no Finish");
         gameObject.GetComponent<MeshCollider>().enabled = false;
@@ -70,9 +70,7 @@ public class FinishTurn : MonoBehaviourPunCallbacks
         // Marcar que está em transição de turno
         GameManager.IsInTurnTransition = true;
 
-        // Desabilitar cursor para todos os jogadores
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        InputBlocker.Block();
     }
 
     public void Finish()

@@ -198,7 +198,7 @@ namespace TimeCrax.Managers
             {
                 if (component != null)
                 {
-                    component.GetComponent<PhotonView>().TransferOwnership(player);
+                    var pv = component.GetComponent<PhotonView>(); if (pv != null && pv.ViewID > 0) { pv.TransferOwnership(player); }
                 }
             }
         }

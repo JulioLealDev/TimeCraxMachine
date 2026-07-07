@@ -198,6 +198,24 @@ public class TurnTimer : MonoBehaviour
     }
 
     /// <summary>
+    /// Adiciona tempo ao timer (efeito da TimeCard)
+    /// </summary>
+    public void AddTime(float seconds)
+    {
+        if (!isRunning) return;
+
+        remainingTime += seconds;
+
+        // Sincronizar com outros clientes se for MasterClient
+        if (PhotonNetwork.IsMasterClient && gameManager != null)
+        {
+            gameManager.SyncTurnTimer(remainingTime);
+        }
+
+        DebugHelper.Log($"[TurnTimer] +{seconds}s adicionados. Tempo restante: {remainingTime}s");
+    }
+
+    /// <summary>
     /// Reduz o timeLimit pela metade (efeito da bateria com malfunction)
     /// </summary>
     public void ApplyBatteryMalfunction()

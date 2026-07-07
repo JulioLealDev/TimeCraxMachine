@@ -10,19 +10,25 @@ public class Menu : MonoBehaviour
     [SerializeField] private GameObject inputNameText;
     [SerializeField] private BackgroundMusic backgroundMusic;
 
+    private Transform[] GetMenuOptionsChildren()
+    {
+        Transform menuOptions = transform.Find("MenuOptions");
+        if (menuOptions == null) return new Transform[0];
+        return menuOptions.GetComponentsInChildren<Transform>();
+    }
+
     public void AwaitOpenSuit()
     {
         DebugHelper.Log("Entrou no AwaitOpenSuit");
-        Transform[] suitTop = gameObject.GetComponentsInChildren<Transform>();
-        for (int i = 0; i < suitTop.Length; i++)
+        foreach (Transform child in GetMenuOptionsChildren())
         {
-            if (suitTop[i].CompareTag("Selectable"))
+            if (child.CompareTag("Selectable"))
             {
-                DebugHelper.Log("Retirando Mesh dos objeto: " + suitTop[i].name);
-                suitTop[i].GetComponent<MeshCollider>().enabled = false;
+                DebugHelper.Log("Retirando Mesh dos objeto: " + child.name);
+                var col = child.GetComponent<MeshCollider>();
+                if (col != null) col.enabled = false;
             }
         }
-
     }
 
     public void AwaitCloseSuit()
@@ -41,27 +47,27 @@ public class Menu : MonoBehaviour
         }
         else
         {
-            Transform[] suitTop = gameObject.GetComponentsInChildren<Transform>();
-            for (int i = 0; i < suitTop.Length; i++)
+            foreach (Transform child in GetMenuOptionsChildren())
             {
-                if (suitTop[i].CompareTag("InRoom") || suitTop[i].name == "timeline")
+                if (child.CompareTag("InRoom") || child.name == "timeline")
                 {
-                    if (suitTop[i].name == "timeline")
+                    if (child.name == "timeline")
                     {
-                        suitTop[i].tag = "Undestructable";
-                        suitTop[i].GetComponent<MeshCollider>().enabled = false;
+                        child.tag = "Undestructable";
+                        if (child.GetComponent<MeshCollider>() != null)
+                            child.GetComponent<MeshCollider>().enabled = false;
                     }
                     else
                     {
-                        suitTop[i].tag = "Selectable";
-                        suitTop[i].GetComponent<MeshCollider>().enabled = true;
-
-                        if (suitTop[i].GetComponent<Animator>() != null)
-                        {
-                            suitTop[i].GetComponent<Animator>().enabled = true;
-                        }
+                        child.tag = "Selectable";
+                        if (child.GetComponent<MeshCollider>() != null)
+                            child.GetComponent<MeshCollider>().enabled = true;
                     }
+                }
 
+                if (child.GetComponent<Animator>() != null && !child.CompareTag("Undestructable"))
+                {
+                    child.GetComponent<Animator>().enabled = true;
                 }
             }
             this.DelayedCall(3.7f, ActivateInputName);
@@ -98,38 +104,33 @@ public class Menu : MonoBehaviour
     } 
     public void DisableMenu()
     {
-        Transform[] opcoes = gameObject.GetComponentsInChildren<Transform>();
-        for (int i = 0; i < opcoes.Length; i++)
+        foreach (Transform child in GetMenuOptionsChildren())
         {
-
-            if (opcoes[i].GetComponent<MeshCollider>() != null && !opcoes[i].CompareTag("Undestructable"))
+            if (child.GetComponent<MeshCollider>() != null && !child.CompareTag("Undestructable"))
             {
-                opcoes[i].tag = "InRoom";
-                opcoes[i].GetComponent<MeshCollider>().enabled = false;
+                child.tag = "InRoom";
+                child.GetComponent<MeshCollider>().enabled = false;
             }
-            if (opcoes[i].GetComponent<Animator>() != null)
+            if (child.GetComponent<Animator>() != null)
             {
-                opcoes[i].GetComponent<Animator>().enabled = false;
+                child.GetComponent<Animator>().enabled = false;
             }
-
         }
     }
+
     public void EnableMenu()
     {
-        Transform[] opcoes = gameObject.GetComponentsInChildren<Transform>();
-        for (int i = 0; i < opcoes.Length; i++)
+        foreach (Transform child in GetMenuOptionsChildren())
         {
-
-            if (opcoes[i].GetComponent<MeshCollider>() != null && !opcoes[i].CompareTag("Undestructable"))
+            if (child.GetComponent<MeshCollider>() != null && !child.CompareTag("Undestructable"))
             {
-                opcoes[i].tag = "Selectable";
-                opcoes[i].GetComponent<MeshCollider>().enabled = true;
+                child.tag = "Selectable";
+                child.GetComponent<MeshCollider>().enabled = true;
             }
-            if (opcoes[i].GetComponent<Animator>() != null)
+            if (child.GetComponent<Animator>() != null)
             {
-                opcoes[i].GetComponent<Animator>().enabled = true;
+                child.GetComponent<Animator>().enabled = true;
             }
-
         }
     }
 }

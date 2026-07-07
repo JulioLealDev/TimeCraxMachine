@@ -9,7 +9,7 @@ using System.Collections;
 using TimeCrax.Core;
 using TimeCrax.Themes;
 using TimeCrax.Managers;
-using TimeCrax.Quiz;
+// using TimeCrax.Quiz; // desabilitado
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -27,6 +27,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject quitButton;
     [SerializeField] private GameOver gameOver;
     [SerializeField] private Victory victory;
+    [SerializeField] private GameObject map;
+    [SerializeField] private GameObject personsFrame;
+    [SerializeField] private Animator newTimelineAnimator;
+    [SerializeField] private TMP_Text personName01;
+    [SerializeField] private TMP_Text personName02;
+    [SerializeField] private TMP_Text personName03;
+    [SerializeField] private TMP_Text personText01;
+    [SerializeField] private TMP_Text personText02;
+    [SerializeField] private TMP_Text personText03;
+
+    public static ThemeCard CurrentPersonsThemeCard { get; private set; }
 
     [Header("Áudio")]
     [SerializeField] private SoundEffects soundEffects;
@@ -282,6 +293,149 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (deckBonus != null)
         {
             deckBonus.tag = "Disabled";
+        }
+    }
+
+    #endregion
+
+    #region Ativação de PersonsFrame
+
+    /// <summary>
+    /// Ativa PersonsFrame e abre a NewTimeline.
+    /// Chamado pelo MasterClient após carta de evento ser posicionada corretamente.
+    /// </summary>
+    public void ActivateRandomMapObject(int slotCount)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        photonView.RPC("RPC_ActivateRandomMapObject", RpcTarget.All, slotCount);
+    }
+
+    public static int CurrentPersonsSlotCount { get; private set; }
+
+    [PunRPC]
+    private void RPC_ActivateRandomMapObject(int slotCount)
+    {
+        DebugHelper.Log($"[GameManager] RPC_ActivateRandomMapObject slotCount={slotCount}");
+
+        CurrentPersonsSlotCount = slotCount;
+
+        if (personsFrame != null) personsFrame.SetActive(true);
+        CurrentPersonsThemeCard = FindPersonsThemeCard(slotCount);
+        ApplyPersonsText(CurrentPersonsThemeCard);
+
+        if (newTimelineAnimator != null)
+            newTimelineAnimator.SetBool("Open", true);
+
+        this.DelayedCall(2.5f, ActivatePersonsSelectable);
+    }
+
+    private void ActivatePersonsSelectable()
+    {
+        foreach (var img in FindObjectsByType<PersonCardImage>(FindObjectsSortMode.None))
+        {
+            img.gameObject.tag = "Selectable";
+            var outline = img.gameObject.GetComponent<OutlineComponent>();
+            if (outline != null) { outline.SetColor(Color.white); outline.enabled = false; }
+        }
+        foreach (var desc in FindObjectsByType<PersonDescriptionClick>(FindObjectsSortMode.None))
+        {
+            desc.gameObject.tag = "Selectable";
+            var outline = desc.gameObject.GetComponent<OutlineComponent>();
+            if (outline != null) { outline.SetColor(Color.white); outline.enabled = false; }
+        }
+    }
+
+    public void ClosePersonsNewTimeline()
+    {
+        if (newTimelineAnimator != null)
+            newTimelineAnimator.SetBool("Open", false);
+    }
+
+    private void PersonsZoomOut()
+    {
+        DebugHelper.Log($"[GameManager] PersonsZoomOut chamado. gameCamera={gameCamera != null}, zoomMode={gameCamera?.IsInZoomMode()}");
+        gameCamera?.DistanceTimeline();
+    }
+
+    public void HandlePersonsWrong()
+    {
+        // Re-enable the slot so SetUpSlots can select it again on the next turn
+        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
+        foreach (var slot in slots)
+        {
+            if (slot.SlotNumber == CurrentPersonsSlotCount)
+            {
+                slot.gameObject.tag = "Untagged";
+                break;
+            }
+        }
+
+        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
+        foreach (var card in cards)
+        {
+            if (card.slotCount == CurrentPersonsSlotCount)
+            {
+                card.GetComponent<Animator>().SetBool("wrongSlot", true);
+                int slotCount = CurrentPersonsSlotCount;
+                this.DelayedCall(2f, () =>
+                {
+                    card.ResetStatusCard();
+                    deckEvent.AddCardBack(slotCount);
+                });
+                break;
+            }
+        }
+    }
+
+    public void ResetPersonsFrame()
+    {
+        if (personName01 != null) personName01.text = string.Empty;
+        if (personName02 != null) personName02.text = string.Empty;
+        if (personName03 != null) personName03.text = string.Empty;
+        if (personText01 != null) personText01.text = string.Empty;
+        if (personText02 != null) personText02.text = string.Empty;
+        if (personText03 != null) personText03.text = string.Empty;
+
+        foreach (var img in FindObjectsByType<PersonCardImage>(FindObjectsSortMode.None))
+            img.gameObject.tag = "Untagged";
+        foreach (var desc in FindObjectsByType<PersonDescriptionClick>(FindObjectsSortMode.None))
+            desc.gameObject.tag = "Untagged";
+
+        if (personsFrame != null) personsFrame.SetActive(false);
+        EventSlot.ResetClickProtection();
+
+        // 0.5s após reset (3s após Open=false): zoom out e reabilita interações
+        this.DelayedCall(0.5f, PersonsZoomOut);
+    }
+
+    private static ThemeCard FindPersonsThemeCard(int slotCount)
+    {
+        foreach (var card in FindObjectsByType<EventCard>(FindObjectsSortMode.None))
+        {
+            if (card.slotCount == slotCount)
+                return card.GetThemeCard();
+        }
+        return null;
+    }
+
+    public static List<TimeCrax.Themes.PersonEntry> ShuffledPersonEntries { get; private set; }
+
+    private void ApplyPersonsText(ThemeCard themeCard)
+    {
+        var entries = themeCard?.persons?.entries;
+        if (entries == null) return;
+
+        TMP_Text[] names = { personName01, personName02, personName03 };
+        TMP_Text[] texts = { personText01, personText02, personText03 };
+
+        ShuffledPersonEntries = entries
+            .OrderBy(_ => UnityEngine.Random.value)
+            .ToList();
+
+        for (int i = 0; i < 3 && i < texts.Length; i++)
+        {
+            if (names[i] != null) names[i].text = string.Empty;
+            if (texts[i] != null) texts[i].text = i < ShuffledPersonEntries.Count ? ShuffledPersonEntries[i].description : string.Empty;
         }
     }
 
@@ -555,12 +709,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             ThermometerManager.Instance.Initialize();
         }
 
-        // Subscrever ao evento de quiz completado
-        if (QuizManager.Instance != null)
-        {
-            QuizManager.Instance.OnQuizCompleted -= OnQuizCompleted; // Evitar duplicação
-            QuizManager.Instance.OnQuizCompleted += OnQuizCompleted;
-        }
+        // Quiz desabilitado
+        // if (QuizManager.Instance != null)
+        // {
+        //     QuizManager.Instance.OnQuizCompleted -= OnQuizCompleted;
+        //     QuizManager.Instance.OnQuizCompleted += OnQuizCompleted;
+        // }
 
         hud.SetActive(true);
         var outline = FindFirstObjectByType<OutlineAction>();
@@ -568,6 +722,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             outline.MakeObjectsSelectable();
         }
+
+        SetNewTimelineColliders(true);
 
         var components = hud.GetComponentsInChildren<Transform>();
 
@@ -915,8 +1071,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         // Finalizar transição de turno e reabilitar cursor
         IsInTurnTransition = false;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        InputBlocker.Unblock();
+
+        // Garantir que coliders não-slot da timeline estejam reativados no início de cada turno
+        SetNewTimelineNonSlotColliders(true);
 
         // Garantir que os slots da timeline estejam desativados no início de cada turno
         // Os slots só devem ser ativados quando o jogador comprar uma carta de evento
@@ -951,26 +1109,32 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
 
                 DebugHelper.Log("Jogador: " + currentOrderedPlayer.nickname + " está na vez  -- recebendo photon views");
-                if (cachedDeckEventPhotonView != null) cachedDeckEventPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
-                if (cachedDeckBonusPhotonView != null) cachedDeckBonusPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
-                if (cachedTimelinePhotonView != null) cachedTimelinePhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
-                photonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
-                if (cachedEndButtonPhotonView != null) cachedEndButtonPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
+                if (cachedDeckEventPhotonView != null && cachedDeckEventPhotonView.ViewID > 0) cachedDeckEventPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
+                if (cachedDeckBonusPhotonView != null && cachedDeckBonusPhotonView.ViewID > 0) cachedDeckBonusPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
+                if (cachedTimelinePhotonView != null && cachedTimelinePhotonView.ViewID > 0) cachedTimelinePhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
+                if (photonView != null && photonView.ViewID > 0) photonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
+                if (cachedEndButtonPhotonView != null && cachedEndButtonPhotonView.ViewID > 0) cachedEndButtonPhotonView.TransferOwnership(PhotonNetwork.PlayerList[i]);
 
                 var plateNames = GetCachedPlateNames();
 
                 foreach (GiveCards plateName in plateNames)
                 {
                     if (plateName == null) continue;
-                    DebugHelper.Log("transferindo platename: "+plateName.name);
-                    plateName.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[i]);
+                    var pv = plateName.GetComponent<PhotonView>();
+                    if (pv != null && pv.ViewID > 0)
+                    {
+                        DebugHelper.Log("transferindo platename: "+plateName.name);
+                        pv.TransferOwnership(PhotonNetwork.PlayerList[i]);
+                    }
                 }
 
                 foreach (var component in timeCraxComponents)
                 {
-                    if (component != null)
+                    if (component == null) continue;
+                    var pv = component.GetComponent<PhotonView>();
+                    if (pv != null && pv.ViewID > 0)
                     {
-                        component.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerList[i]);
+                        pv.TransferOwnership(PhotonNetwork.PlayerList[i]);
                     }
                 }
             }
@@ -1092,8 +1256,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         randomId = eligibleComponents[randomIndex];
         DebugHelper.Log($"[GameManager] Componente sorteado: {randomId} (de {eligibleComponents.Count} elegíveis)");
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        InputBlocker.Block();
 
         photonView.RPC("ComponentRandom", RpcTarget.All, randomId);
     }
@@ -1133,10 +1296,55 @@ public class GameManager : MonoBehaviourPunCallbacks
     /// <summary>
     /// Executa o Game Over
     /// </summary>
+    public void SetNewTimelineColliders(bool enabled)
+    {
+        if (suitTop == null) return;
+        Transform newTimeline = suitTop.transform.Find("NewTimeline");
+        if (newTimeline == null) return;
+        string tag = enabled ? "Selectable" : "Undestructable";
+        foreach (Transform child in newTimeline.GetComponentsInChildren<Transform>(true))
+        {
+            var col = child.GetComponent<Collider>();
+            if (col != null)
+            {
+                col.enabled = enabled;
+                child.tag = tag;
+                DebugHelper.Log($"[SetNewTimelineColliders({enabled})] {child.name}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Ativa/desativa MeshColliders dos filhos de NewTimeline que NÃO pertencem a NewSlotEvents.
+    /// Chamado durante zoom in/out para impedir cliques em elementos visuais da timeline
+    /// enquanto o jogador posiciona uma carta de evento nos slots.
+    /// </summary>
+    public void SetNewTimelineNonSlotColliders(bool enabled)
+    {
+        if (suitTop == null) return;
+        Transform newTimeline = suitTop.transform.Find("NewTimeline");
+        if (newTimeline == null) return;
+
+        foreach (Transform child in newTimeline.GetComponentsInChildren<Transform>())
+        {
+            if (child == newTimeline) continue;
+            // Pular objetos com EventSlot e seus filhos (independente da hierarquia)
+            if (child.GetComponentInParent<EventSlot>(true) != null) continue;
+
+            var col = child.GetComponent<Collider>();
+            if (col != null) col.enabled = enabled;
+
+            var tc = child.GetComponent<TimelineChild>();
+            if (tc != null) tc.enabled = enabled;
+        }
+        DebugHelper.Log($"[GameManager] SetNewTimelineNonSlotColliders({enabled}) executado");
+    }
+
     private void TriggerGameOver()
     {
         BackgroundMusic bgMusic = FindFirstObjectByType<BackgroundMusic>();
 
+        SetNewTimelineColliders(false);
         DeactivateAll();
         ResetAllComponents();
         ResetAllPlatenames();
@@ -1156,9 +1364,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             hud.SetActive(false);
         }
 
-        // Habilitar cursor no game over
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        InputBlocker.Unblock();
 
         // Fechar compartimento direito
         if (rightCompartmentAnimator != null)
@@ -1247,8 +1453,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         // Só reabilitar cursor se NÃO estiver em transição de turno
         if (!IsInTurnTransition)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            InputBlocker.Unblock();
         }
 
         foreach (var component in timeCraxComponents)
@@ -1370,16 +1575,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         // Marcar que está em transição de turno
         IsInTurnTransition = true;
 
-        // Desabilitar cursor para todos os jogadores
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        InputBlocker.Block();
 
-        // 1. Fechar quiz se estiver aberto
-        if (QuizManager.Instance != null && QuizManager.Instance.IsQuizActive)
-        {
-            DebugHelper.Log("[GameManager] Quiz estava aberto, fechando...");
-            QuizManager.Instance.ForceCloseQuiz();
-        }
+        // Quiz desabilitado
+        // if (QuizManager.Instance != null && QuizManager.Instance.IsQuizActive)
+        // {
+        //     QuizManager.Instance.ForceCloseQuiz();
+        // }
 
         // 2. Verificar se há uma carta de evento comprada (tag "Drew")
         EventCard drewCard = null;
@@ -2059,7 +2261,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (playerReceiving.index >= 0 && playerReceiving.index < orderedPlayerList.Length)
             {
-                lastCard.photonView.TransferOwnership(orderedPlayerList[playerReceiving.index]);
+                if (lastCard.photonView != null && lastCard.photonView.ViewID > 0)
+                {
+                    lastCard.photonView.TransferOwnership(orderedPlayerList[playerReceiving.index]);
+                }
             }
 
             playerReceiving.numberBonusCards++;

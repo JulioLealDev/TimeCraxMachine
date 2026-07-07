@@ -230,6 +230,77 @@ namespace TimeCrax.Quiz
             currentQuizType = QuizType.None;
         }
 
+        /// <summary>
+        /// Pula o quiz atual e inicia um novo (efeito SkipQuizCard)
+        /// </summary>
+        public void SkipCurrentQuiz()
+        {
+            if (!isQuizActive)
+            {
+                DebugHelper.Log("[QuizManager] SkipCurrentQuiz - Nenhum quiz ativo");
+                return;
+            }
+
+            DebugHelper.Log("[QuizManager] SkipCurrentQuiz - Pulando quiz e sorteando novo");
+
+            // Esconder quiz atual
+            if (quizUI != null)
+            {
+                quizUI.ForceHideQuiz();
+            }
+
+            // Resetar estado
+            isQuizActive = false;
+
+            // Guardar carta e slot para reiniciar
+            var card = currentCard;
+            var slot = currentSlotCount;
+
+            // Pequeno delay antes de iniciar novo quiz
+            this.DelayedCall(0.5f, () =>
+            {
+                if (card != null)
+                {
+                    StartQuiz(card, slot);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Elimina uma opção incorreta do quiz atual (efeito KillOptionCard)
+        /// </summary>
+        public void KillIncorrectOption()
+        {
+            if (!isQuizActive)
+            {
+                DebugHelper.Log("[QuizManager] KillIncorrectOption - Nenhum quiz ativo");
+                return;
+            }
+
+            // Apenas funciona para TextQuiz e ImageQuiz
+            if (currentQuizType != QuizType.TextQuiz && currentQuizType != QuizType.ImageQuiz)
+            {
+                DebugHelper.Log($"[QuizManager] KillIncorrectOption - Não aplicável para {currentQuizType}");
+                return;
+            }
+
+            // Obter índice correto
+            int correctIndex = -1;
+            if (currentQuizType == QuizType.TextQuiz && currentCard?.quizData?.textQuiz != null)
+            {
+                correctIndex = currentCard.quizData.textQuiz.correctIndex;
+            }
+            else if (currentQuizType == QuizType.ImageQuiz && currentCard?.quizData?.imageQuiz != null)
+            {
+                correctIndex = currentCard.quizData.imageQuiz.correctIndex;
+            }
+
+            if (correctIndex >= 0)
+            {
+                photonView.RPC("RPC_KillIncorrectOption", RpcTarget.All, correctIndex);
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -421,6 +492,18 @@ namespace TimeCrax.Quiz
 
             // Notificar listeners
             OnQuizCompleted?.Invoke(correct);
+        }
+
+        [PunRPC]
+        public void RPC_KillIncorrectOption(int correctIndex)
+        {
+            DebugHelper.Log($"[QuizManager] RPC_KillIncorrectOption - correctIndex: {correctIndex}");
+
+            // Delegar para a UI
+            if (quizUI != null)
+            {
+                quizUI.DisableOneIncorrectOption(correctIndex);
+            }
         }
 
         #endregion

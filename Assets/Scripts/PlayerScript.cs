@@ -88,6 +88,35 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         return numberBonusCards;
     }
 
+    /// <summary>
+    /// Remove uma carta bonus do contador (chamado quando carta é consumida)
+    /// </summary>
+    public void RemoveBonusCard()
+    {
+        photonView.RPC("RPC_RemoveBonusCard", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void RPC_RemoveBonusCard()
+    {
+        if (numberBonusCards > 0)
+        {
+            numberBonusCards--;
+
+            var findObject = GameObject.Find(numberBonusCardsText);
+            if (findObject != null)
+            {
+                var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = numberBonusCards.ToString();
+                }
+            }
+
+            DebugHelper.Log($"[PlayerScript] RemoveBonusCard: {numberBonusCards} cartas restantes");
+        }
+    }
+
     public void GiveBonusCard(PlayerScript otherPlayer)
     {
         otherPlayer.numberBonusCards++;

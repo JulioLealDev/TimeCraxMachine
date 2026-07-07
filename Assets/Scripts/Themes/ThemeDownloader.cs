@@ -242,16 +242,9 @@ namespace TimeCrax.Themes
                     OnDownloadProgress?.Invoke(0.1f + (0.5f * downloadedImages / totalImages));
                 }
 
-                // Download das imagens dos quizzes
-                OnDownloadStatus?.Invoke("Baixando imagens dos quizzes...");
+                // Download das imagens dos quizzes desabilitado
                 for (int i = 0; i < themeData.cards.Count; i++)
                 {
-                    var themeCard = themeData.cards[i];
-                    if (themeCard.quizData != null && themeCard.quizData.HasQuiz)
-                    {
-                        OnDownloadStatus?.Invoke($"Baixando quiz da carta {i + 1}/{themeData.cards.Count}...");
-                        yield return StartCoroutine(DownloadQuizImages(themeId, themeCard, i));
-                    }
                     OnDownloadProgress?.Invoke(0.6f + (0.35f * (i + 1) / themeData.cards.Count));
                 }
 
@@ -292,95 +285,15 @@ namespace TimeCrax.Themes
                     era = card.era,
                     title = card.title,
                     imageUrl = card.imageUrl,
-                    quizData = ConvertQuizData(card)
+                    // quizData desabilitado
                 });
             }
 
             return themeData;
         }
 
-        private CardQuizData ConvertQuizData(ThemeCardResponse card)
-        {
-            var quizData = new CardQuizData();
-
-            // Converter ImageQuiz
-            if (card.imageQuiz != null)
-            {
-                quizData.imageQuiz = new ImageQuiz
-                {
-                    question = card.imageQuiz.question,
-                    correctIndex = card.imageQuiz.correctIndex,
-                    options = new List<QuizOption>()
-                };
-
-                if (card.imageQuiz.options != null)
-                {
-                    foreach (var option in card.imageQuiz.options)
-                    {
-                        quizData.imageQuiz.options.Add(new QuizOption
-                        {
-                            text = option.text,
-                            imageUrl = option.imageUrl
-                        });
-                    }
-                }
-            }
-
-            // Converter TextQuiz
-            if (card.textQuiz != null)
-            {
-                quizData.textQuiz = new TextQuiz
-                {
-                    question = card.textQuiz.question,
-                    correctIndex = card.textQuiz.correctIndex,
-                    options = new List<QuizOption>()
-                };
-
-                if (card.textQuiz.options != null)
-                {
-                    foreach (var option in card.textQuiz.options)
-                    {
-                        quizData.textQuiz.options.Add(new QuizOption
-                        {
-                            text = option.text
-                        });
-                    }
-                }
-            }
-
-            // Converter TrueFalseQuiz
-            if (card.trueFalseQuiz != null)
-            {
-                quizData.trueFalseQuiz = new TrueFalseQuiz
-                {
-                    statement = card.trueFalseQuiz.statement,
-                    answer = card.trueFalseQuiz.answer
-                };
-            }
-
-            // Converter CorrelationQuiz
-            if (card.correlationQuiz != null)
-            {
-                quizData.correlationQuiz = new CorrelationQuiz
-                {
-                    items = new List<CorrelationItem>()
-                };
-
-                if (card.correlationQuiz.items != null)
-                {
-                    foreach (var item in card.correlationQuiz.items)
-                    {
-                        quizData.correlationQuiz.items.Add(new CorrelationItem
-                        {
-                            imageUrl = item.imageUrl,
-                            text = item.text
-                        });
-                    }
-                }
-            }
-
-            return quizData;
-        }
+        // Quiz desabilitado
+        // private CardQuizData ConvertQuizData(ThemeCardResponse card) { ... }
 
         private IEnumerator DownloadImage(string url, string localPath, Action<bool, string> onComplete)
         {
@@ -420,56 +333,8 @@ namespace TimeCrax.Themes
         /// <summary>
         /// Baixa imagens de quiz de uma carta (ImageQuiz options e CorrelationQuiz items)
         /// </summary>
-        private IEnumerator DownloadQuizImages(string themeId, ThemeCard card, int cardIndex)
-        {
-            // Download de imagens do ImageQuiz
-            if (card.quizData?.imageQuiz?.options != null)
-            {
-                for (int i = 0; i < card.quizData.imageQuiz.options.Count; i++)
-                {
-                    var option = card.quizData.imageQuiz.options[i];
-                    if (!string.IsNullOrEmpty(option.imageUrl))
-                    {
-                        string imageName = $"quiz_{cardIndex}_option_{i}.webp";
-                        string localPath = ThemeStorage.GetLocalImagePath(themeId, imageName);
-
-                        yield return StartCoroutine(DownloadImage(
-                            option.imageUrl,
-                            localPath,
-                            (success, path) =>
-                            {
-                                if (success)
-                                    option.localImagePath = path;
-                            }
-                        ));
-                    }
-                }
-            }
-
-            // Download de imagens do CorrelationQuiz
-            if (card.quizData?.correlationQuiz?.items != null)
-            {
-                for (int i = 0; i < card.quizData.correlationQuiz.items.Count; i++)
-                {
-                    var item = card.quizData.correlationQuiz.items[i];
-                    if (!string.IsNullOrEmpty(item.imageUrl))
-                    {
-                        string imageName = $"correlation_{cardIndex}_item_{i}.webp";
-                        string localPath = ThemeStorage.GetLocalImagePath(themeId, imageName);
-
-                        yield return StartCoroutine(DownloadImage(
-                            item.imageUrl,
-                            localPath,
-                            (success, path) =>
-                            {
-                                if (success)
-                                    item.localImagePath = path;
-                            }
-                        ));
-                    }
-                }
-            }
-        }
+        // Quiz desabilitado
+        // private IEnumerator DownloadQuizImages(string themeId, ThemeCard card, int cardIndex) { ... }
 
         #endregion
 

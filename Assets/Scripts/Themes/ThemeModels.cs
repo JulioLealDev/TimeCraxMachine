@@ -4,6 +4,37 @@ using System.Collections.Generic;
 namespace TimeCrax.Themes
 {
     [Serializable]
+    public class MapPin
+    {
+        public float x;
+        public float y;
+    }
+
+    [Serializable]
+    public class CardMapData
+    {
+        public string imageUrl;
+        public string localImagePath;
+        public List<MapPin> pins;
+        public int correctPinIndex;
+    }
+
+    [Serializable]
+    public class PersonEntry
+    {
+        public string imageUrl;
+        public string localImagePath;
+        public string name;
+        public string description;
+    }
+
+    [Serializable]
+    public class CardPersonsData
+    {
+        public List<PersonEntry> entries;
+    }
+
+    [Serializable]
     public class ThemeCard
     {
         public string id;
@@ -13,7 +44,9 @@ namespace TimeCrax.Themes
         public string title;
         public string imageUrl;
         public string localImagePath;
-        public CardQuizData quizData; // Dados do quiz da carta
+        public CardQuizData quizData; // não populado pelo manifest (quiz desabilitado)
+        public CardMapData map;
+        public CardPersonsData persons;
     }
 
     [Serializable]

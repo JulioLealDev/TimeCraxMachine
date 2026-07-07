@@ -327,7 +327,7 @@ namespace TimeCrax.Managers
 
                 if (playerReceiving.index >= 0 && playerReceiving.index < orderedPlayerList.Length)
                 {
-                    lastCard.photonView.TransferOwnership(orderedPlayerList[playerReceiving.index]);
+                    if (lastCard.photonView != null && lastCard.photonView.ViewID > 0) { lastCard.photonView.TransferOwnership(orderedPlayerList[playerReceiving.index]); }
                 }
 
                 playerReceiving.numberBonusCards++;

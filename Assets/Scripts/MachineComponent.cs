@@ -261,6 +261,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        if (InputBlocker.IsBlocked) return;
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 
@@ -279,11 +280,15 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
                     DebugHelper.Log("Number od cards: " + player.GetNumberOfBonusCards());
 
-                    if(player.GetNumberOfBonusCards() >= players.Length)
+                    // Verificar se jogador tem carta de reparo
+                    BonusCard repairCard = BonusCardManager.Instance?.GetRepairCard(player);
+
+                    if (repairCard != null)
                     {
+                        DebugHelper.Log("[MachineComponent] Usando carta de reparo");
 
                         photonView.RPC("RemoveMalfunction", RpcTarget.All);
-                        player.RepairComponent(players.Length);
+                        repairCard.ConsumeCard();
                         DebugHelper.Log("component: " + componentId);
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
@@ -301,7 +306,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                     }
                     else
                     {
-                        DebugHelper.Log("You need " + players.Length + " Repair Cards to repair one component!");
+                        DebugHelper.Log("You need a Repair Card to repair a component!");
 
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
@@ -311,7 +316,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                         {
                             if (info.gameObject.name == "ComponentInfoBackground")
                             {
-                                info.GetComponentInChildren<TextMeshProUGUI>().text = "You need " + players.Length + " Repair Cards to repair one component!";
+                                info.GetComponentInChildren<TextMeshProUGUI>().text = "You need a Repair Card to repair a component!";
                                 info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
                             }
                         }

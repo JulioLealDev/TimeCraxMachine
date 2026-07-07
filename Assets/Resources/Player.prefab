@@ -45,12 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8179f1cac31e8374aa495fe1f152344a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberRepairCards: 0
+  numberBonusCards: 0
   nickname: 
   index: 0
   plateNameIndex: 0
   yourTurn: 0
-  numberRepairCardsText: 
+  numberBonusCardsText: 
   actorNumber: 0
 --- !u!114 &-8254398148774460658
 MonoBehaviour:

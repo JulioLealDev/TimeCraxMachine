@@ -59,6 +59,10 @@ public class EventCard : MonoBehaviourPunCallbacks
 
         gameObject.tag = "Drew";
         gameObject.GetComponent<Animator>().SetBool("drawingEventCard", true);
+
+        // Desativar coliders não-slot assim que a carta é comprada
+        var gm = FindFirstObjectByType<GameManager>();
+        if (gm != null) gm.SetNewTimelineNonSlotColliders(false);
     }
 
     public void ZoomTimeline()
@@ -73,11 +77,41 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     public void DistanceTimeline()
     {
+        // Re-habilitar coliders não-slot ao iniciar zoom-out (antes de AwaitDistanceTimeline)
+        var gm = FindFirstObjectByType<GameManager>();
+        if (gm != null) gm.SetNewTimelineNonSlotColliders(true);
+        DebugHelper.Log("[EventCard] DistanceTimeline: SetNewTimelineNonSlotColliders(true) chamado");
+
         cameraController.DistanceTimeline();
+    }
+
+    /// <summary>
+    /// Chamado via Animation Event no último frame de draw_eventCard_to_slot0X.
+    /// Faz a carta seguir o slot onde foi fixada.
+    /// </summary>
+    public void OnFixedToSlot()
+    {
+        int slotNumber = GetComponent<Animator>().GetInteger("slotClicked");
+        if (slotNumber <= 0) return;
+
+        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
+        foreach (var slot in slots)
+        {
+            if (slot.SlotNumber == slotNumber)
+            {
+                var follower = GetComponent<EventCardFollower>();
+                if (follower != null)
+                    follower.AttachToSlot(slot.transform);
+                break;
+            }
+        }
     }
 
     public void ResetStatusCard()
     {
+        var follower = GetComponent<EventCardFollower>();
+        if (follower != null) follower.Detach();
+
         gameObject.GetComponent<MeshRenderer>().enabled = false;
 
         // Desativar MeshRenderer do CardText
@@ -125,34 +159,6 @@ public class EventCard : MonoBehaviourPunCallbacks
     public ThemeCard GetThemeCard()
     {
         return themeCard;
-    }
-
-    /// <summary>
-    /// Verifica se esta carta tem quiz associado
-    /// </summary>
-    public bool HasQuiz()
-    {
-        bool hasThemeCard = themeCard != null;
-        bool hasQuizData = themeCard?.quizData != null;
-        bool hasQuiz = themeCard?.quizData?.HasQuiz ?? false;
-
-        DebugHelper.Log($"[EventCard.HasQuiz] slotCount={slotCount}, hasThemeCard={hasThemeCard}, hasQuizData={hasQuizData}, hasQuiz={hasQuiz}");
-
-        if (hasQuizData)
-        {
-            var qd = themeCard.quizData;
-            DebugHelper.Log($"[EventCard.HasQuiz] imageQuiz={qd.imageQuiz != null}, textQuiz={qd.textQuiz != null}, trueFalseQuiz={qd.trueFalseQuiz != null}, correlationQuiz={qd.correlationQuiz != null}");
-        }
-
-        return hasQuiz;
-    }
-
-    /// <summary>
-    /// Retorna o tipo de quiz disponível para esta carta
-    /// </summary>
-    public QuizType GetQuizType()
-    {
-        return themeCard?.quizData?.GetAvailableQuizType() ?? QuizType.None;
     }
 
     #endregion

@@ -4,6 +4,8 @@ Shader "TimeCrax/EventCardComposite"
     {
         _MainTex ("Template (Card Frame with Alpha)", 2D) = "white" {}
         _ImageTex ("Event Image", 2D) = "white" {}
+        _ImageScale ("Image Scale", Vector) = (1, 1, 0, 0)
+        _ImageOffset ("Image Offset", Vector) = (0, 0, 0, 0)
         _Glossiness ("Smoothness", Range(0,1)) = 0.2
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _Color ("Tint Color", Color) = (1,1,1,1)
@@ -20,6 +22,8 @@ Shader "TimeCrax/EventCardComposite"
 
         sampler2D _MainTex;
         sampler2D _ImageTex;
+        float4 _ImageScale;
+        float4 _ImageOffset;
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
@@ -33,8 +37,11 @@ Shader "TimeCrax/EventCardComposite"
         {
             float2 uv = IN.uv_MainTex;
 
-            // Event image (background)
-            fixed4 imageColor = tex2D(_ImageTex, uv);
+            // UV ajustado para a imagem (com scale e offset)
+            float2 imageUV = uv * _ImageScale.xy + _ImageOffset.xy;
+
+            // Event image (background) com UV ajustado
+            fixed4 imageColor = tex2D(_ImageTex, imageUV);
 
             // Template texture (card frame overlay)
             fixed4 templateColor = tex2D(_MainTex, uv);

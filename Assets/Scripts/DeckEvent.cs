@@ -10,7 +10,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     [SerializeField] private SoundEffects soundEffects;
 
     private List<int> eventList = new List<int>();
-    private int[] numbers = { 1, 2, 3, 4, 5, 6, 7 };
+    private int[] numbers = { 1, 2, 3, 4, 5, 6 };
 
     // Proteção contra clique duplo
     private bool isProcessingClick = false;
@@ -23,6 +23,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        if (InputBlocker.IsBlocked) return;
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 

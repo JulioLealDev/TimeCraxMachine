@@ -886,6 +886,32 @@ namespace TimeCrax.Quiz
             }
         }
 
+        /// <summary>
+        /// Desabilita uma opção incorreta (efeito KillOptionCard)
+        /// </summary>
+        public void DisableOneIncorrectOption(int correctIndex)
+        {
+            if (optionButtons == null || optionButtons.Count == 0) return;
+
+            // Encontrar uma opção incorreta e desativá-la
+            for (int i = 0; i < optionButtons.Count; i++)
+            {
+                if (i != correctIndex && optionButtons[i] != null && optionButtons[i].interactable)
+                {
+                    optionButtons[i].interactable = false;
+
+                    var buttonImage = optionButtons[i].GetComponent<Image>();
+                    if (buttonImage != null)
+                    {
+                        buttonImage.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+                    }
+
+                    DebugHelper.Log($"[QuizUI] Opção {i} desabilitada");
+                    break;
+                }
+            }
+        }
+
         private void CleanupQuiz()
         {
             if (currentQuizInstance != null)

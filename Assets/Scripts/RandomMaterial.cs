@@ -19,18 +19,20 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
     // Legacy system
     public int randomNumber = -1;
-    private int[] randomNumberList = new int[7] { -1, -1, -1, -1, -1, -1, -1 };
-    private int[] selectedYears = new int[7];
+    private int[] randomNumberList = new int[6] { -1, -1, -1, -1, -1, -1 };
+    private int[] selectedYears = new int[6];
     private EventCard[] eventCards;
     private EventCardContent[] wwMaterialList;
     private EventCardContent[] whMaterialList;
-    private TextMeshPro[] timelineTearsList;
-    private int eventCardsLength = 7;
+
+    [Header("Timeline Years")]
+    [SerializeField] private TextMeshPro[] timelineYearsList = new TextMeshPro[6];
+    private int eventCardsLength = 6;
     private int count = 0;
 
     // New Theme System
     private ThemeData currentTheme;
-    private List<ThemeCard> selectedCards; // 7 cartas selecionadas aleatoriamente
+    private List<ThemeCard> selectedCards; // 6 cartas selecionadas aleatoriamente
 
     [Header("Theme Card Material")]
     [SerializeField] private Material eventCardBaseMaterial; // Material base com shader EventCardComposite
@@ -76,7 +78,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         }
 
         count = 0;
-        while (count < 7)
+        while (count < 6)
         {
             RandomMaterialIdList(length);
         };
@@ -88,7 +90,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     [PunRPC]
     public void SetAllValues(string theme, int[] randomNumberList)
     {
-        timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
         eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
         switch (theme.ToUpper())
@@ -161,16 +162,25 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
     public void SetTimelineYears()
     {
-        if (timeline == null) return;
-
-        timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
-
-        for (int i = 0; i < timelineTearsList.Length && i < selectedYears.Length; i++)
+        if (timelineYearsList == null || timelineYearsList.Length == 0)
         {
-            if (timelineTearsList[i] != null)
+            DebugHelper.Log("[RandomMaterial] timelineYearsList não configurado!");
+            return;
+        }
+
+        DebugHelper.Log($"[RandomMaterial] SetTimelineYears: selectedYears = [{string.Join(", ", selectedYears)}]");
+
+        for (int i = 0; i < selectedYears.Length && i < timelineYearsList.Length; i++)
+        {
+            if (timelineYearsList[i] == null)
             {
-                timelineTearsList[i].text = selectedYears[i].ToString();
+                DebugHelper.Log($"[RandomMaterial] timelineYearsList[{i}] é null!");
+                continue;
             }
+
+            timelineYearsList[i].text = selectedYears[i].ToString();
+
+            DebugHelper.Log($"[RandomMaterial] Timeline slot {i} = {selectedYears[i]}");
         }
     }
 
@@ -200,7 +210,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         selectedCards = SelectRandomCards(currentTheme.cards, 7);
 
         // Criar array de índices das cartas selecionadas para sincronizar via RPC
-        int[] selectedIndices = new int[7];
+        int[] selectedIndices = new int[selectedCards.Count];
         for (int i = 0; i < selectedCards.Count; i++)
         {
             selectedIndices[i] = currentTheme.cards.IndexOf(selectedCards[i]);
@@ -219,7 +229,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     {
         if (allCards.Count <= count)
         {
-            // Se o tema tem 7 ou menos cartas, usar todas
+            // Se o tema tem 6 ou menos cartas, usar todas
             return new List<ThemeCard>(allCards);
         }
 
@@ -260,7 +270,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         }
 
         // Buscar EventCards na cena
-        timelineTearsList = timeline.GetComponentsInChildren<TextMeshPro>();
         eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
         // Aplicar materiais e dados às cartas

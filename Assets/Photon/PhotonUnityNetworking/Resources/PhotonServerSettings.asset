@@ -122,6 +122,17 @@ MonoBehaviour:
   - RPC_SetTemperature
   - RPC_Initialize
   - RPC_SetTemperatureWithIndex
+  - RPC_CloseLeftCompartment
+  - RPC_OpenLeftCompartment
+  - ExecuteDrawBonusCard
+  - GiveBonusCard
+  - RequestDrawBonusCard
+  - RPC_GiveBonusCard
+  - RPC_ActivateCard
+  - RPC_KillIncorrectOption
+  - RPC_RemoveBonusCard
+  - RPC_SetCardType
+  - RPC_ActivateRandomMapObject
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

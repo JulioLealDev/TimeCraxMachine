@@ -1,18 +1,206 @@
 using UnityEngine;
 using Photon.Pun;
+using TMPro;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class BonusCard : MonoBehaviourPunCallbacks
 {
     private PlayerScript[] players;
     public int index = 0;
-    // Start is called before the first frame update
+
+    [Header("Tipo da Carta")]
+    [SerializeField] private BonusCardType cardType = BonusCardType.Repair;
+
+    [Header("Referências Visuais")]
+    [SerializeField] private MeshRenderer cardRenderer;
+    [SerializeField] private TextMeshPro cardText;
+
+    // Estado da carta
+    private bool isInCenter = false;
+    private Vector3 savedHandPosition;
+    private Quaternion savedHandRotation;
+    private Vector3 savedHandScale;
+
+    // Posição central para ativação
+    private readonly Vector3 centerPosition = new Vector3(0.1079f, 0.7694f, 0.5021f);
+    private readonly Quaternion centerRotation = new Quaternion(-0.9202125f, 0f, 0f, 0.3914192f);
+    private const float centerScaleMultiplier = 1.2f; // +20%
+
+    // Propriedades
+    public BonusCardType CardType => cardType;
+    public bool IsInCenter => isInCenter;
+
     void Start()
     {
         players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
 
-        DrawBonusCard();
+        // Auto-referências se não definidas no Inspector
+        if (cardRenderer == null)
+            cardRenderer = GetComponent<MeshRenderer>();
+        if (cardText == null)
+            cardText = GetComponentInChildren<TextMeshPro>();
 
+        DrawBonusCard();
+    }
+
+    /// <summary>
+    /// Define o tipo da carta (chamado pelo DeckBonus após instanciar)
+    /// </summary>
+    public void SetCardType(BonusCardType type)
+    {
+        cardType = type;
+        ApplyCardVisuals();
+        DebugHelper.Log($"[BonusCard] Tipo definido: {type}");
+    }
+
+    /// <summary>
+    /// Aplica a imagem e texto da carta baseado no tipo
+    /// </summary>
+    private void ApplyCardVisuals()
+    {
+        // Carregar textura da pasta Resources/BonusCardImages
+        string imageName = cardType.ToString();
+        Texture2D texture = Resources.Load<Texture2D>($"BonusCardImages/{imageName}");
+
+        if (texture != null && cardRenderer != null)
+        {
+            // Aplicar textura ao material (usa _ImageTex para shader composto)
+            Material mat = cardRenderer.material;
+            if (mat.HasProperty("_ImageTex"))
+            {
+                mat.SetTexture("_ImageTex", texture);
+            }
+            else if (mat.HasProperty("_MainTex"))
+            {
+                // Fallback para shader padrão
+                mat.SetTexture("_MainTex", texture);
+            }
+            DebugHelper.Log($"[BonusCard] Imagem aplicada: {imageName}");
+        }
+        else
+        {
+            DebugHelper.Log($"[BonusCard] Erro ao carregar imagem: BonusCardImages/{imageName}");
+        }
+
+        // Definir texto da carta
+        if (cardText != null)
+        {
+            cardText.text = GetCardDisplayName(cardType);
+            DebugHelper.Log($"[BonusCard] Texto definido: {cardText.text}");
+        }
+    }
+
+    /// <summary>
+    /// Retorna o nome de exibição para cada tipo de carta
+    /// </summary>
+    private string GetCardDisplayName(BonusCardType type)
+    {
+        return type switch
+        {
+            BonusCardType.Repair => "Repair Card",
+            BonusCardType.Time => "Time Card",
+            BonusCardType.SkipQuiz => "Skip Quiz Card",
+            BonusCardType.KillOption => "Kill Option Card",
+            BonusCardType.SecondChance => "Second Chance Card",
+            BonusCardType.Thermometer => "Thermometer Card",
+            _ => "Bonus Card"
+        };
+    }
+
+    /// <summary>
+    /// Handler de clique na carta
+    /// </summary>
+    private void OnMouseDown()
+    {
+        if (InputBlocker.IsBlocked) return;
+        if (!photonView.IsMine) return;
+        if (CameraController.IsAnimating) return;
+
+        // Se carta de reparo, não faz nada (auto-usa no componente)
+        if (cardType == BonusCardType.Repair) return;
+
+        if (!isInCenter)
+        {
+            // Mover para o centro
+            MoveToCenter();
+        }
+    }
+
+    /// <summary>
+    /// Move a carta para o centro da tela e abre painel de ativação
+    /// </summary>
+    public void MoveToCenter()
+    {
+        if (isInCenter) return;
+
+        // Verificar se pode ativar
+        if (BonusCardManager.Instance != null && !BonusCardManager.Instance.CanActivateCard(cardType))
+        {
+            DebugHelper.Log($"[BonusCard] Carta {cardType} não pode ser ativada agora");
+            return;
+        }
+
+        // Salvar posição, rotação e scale atuais
+        savedHandPosition = transform.position;
+        savedHandRotation = transform.rotation;
+        savedHandScale = transform.localScale;
+
+        // Mover para centro com scale aumentado
+        transform.SetPositionAndRotation(centerPosition, centerRotation);
+        transform.localScale = savedHandScale * centerScaleMultiplier;
+        isInCenter = true;
+
+        // Abrir painel de ativação
+        if (BonusCardManager.Instance != null)
+        {
+            BonusCardManager.Instance.ShowActivationPanel(this);
+        }
+
+        DebugHelper.Log($"[BonusCard] Carta movida para o centro");
+    }
+
+    /// <summary>
+    /// Retorna a carta para a mão
+    /// </summary>
+    public void ReturnToHand()
+    {
+        if (!isInCenter) return;
+
+        transform.SetPositionAndRotation(savedHandPosition, savedHandRotation);
+        transform.localScale = savedHandScale;
+        isInCenter = false;
+
+        DebugHelper.Log($"[BonusCard] Carta retornada à mão");
+    }
+
+    /// <summary>
+    /// Consome a carta (após ativação)
+    /// </summary>
+    public void ConsumeCard()
+    {
+        DebugHelper.Log($"[BonusCard] Carta {cardType} consumida");
+
+        // Decrementar contador do jogador
+        if (players == null || players.Length == 0)
+        {
+            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        }
+
+        foreach (var player in players)
+        {
+            if (player != null && player.photonView.OwnerActorNr == photonView.OwnerActorNr)
+            {
+                player.RemoveBonusCard();
+                break;
+            }
+        }
+
+        // Destruir a carta
+        if (photonView.IsMine)
+        {
+            PhotonNetwork.Destroy(gameObject);
+        }
     }
     public void DrawBonusCard()
     {
@@ -155,4 +343,26 @@ public class BonusCard : MonoBehaviourPunCallbacks
             DebugHelper.Log("[BonusCard] ActivateEndButton: GameManager não encontrado");
         }
     }
+
+    #region RPCs
+
+    /// <summary>
+    /// RPC para sincronizar o tipo da carta em todos os clientes
+    /// </summary>
+    [PunRPC]
+    public void RPC_SetCardType(int type)
+    {
+        cardType = (BonusCardType)type;
+
+        // Garantir referências antes de aplicar visuais
+        if (cardRenderer == null)
+            cardRenderer = GetComponent<MeshRenderer>();
+        if (cardText == null)
+            cardText = GetComponentInChildren<TextMeshPro>();
+
+        ApplyCardVisuals();
+        DebugHelper.Log($"[BonusCard] RPC_SetCardType: {cardType}");
+    }
+
+    #endregion
 }

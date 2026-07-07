@@ -567,12 +567,8 @@ namespace TimeCrax.Managers
         [PunRPC]
         public void RPC_SetTemperature(int temperature)
         {
-            // Desabilitar cursor imediatamente quando temperatura atinge 100
             if (temperature >= 100)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
+                InputBlocker.Block();
             SetTemperature(temperature);
         }
 
@@ -589,6 +585,13 @@ namespace TimeCrax.Managers
 
         private void OnDestroy()
         {
+            // Parar coroutine ativa para evitar NullReferenceException
+            if (smokeSpeedTransitionCoroutine != null)
+            {
+                StopCoroutine(smokeSpeedTransitionCoroutine);
+                smokeSpeedTransitionCoroutine = null;
+            }
+
             if (_instance == this)
             {
                 _instance = null;

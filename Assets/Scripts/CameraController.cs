@@ -43,12 +43,14 @@ public class CameraController : MonoBehaviourPunCallbacks
 
     void AwaitZoomAnimation()
     {
-        Transform[] childrens = suitTop.GetComponentsInChildren<Transform>();
-        for (int i = 0; i < childrens.Length; i++)
+        Transform menuOptions = suitTop.transform.Find("MenuOptions");
+        if (menuOptions == null) return;
+        foreach (Transform child in menuOptions.GetComponentsInChildren<Transform>())
         {
-            if (childrens[i].CompareTag("Selectable"))
+            if (child.CompareTag("Selectable"))
             {
-                childrens[i].gameObject.GetComponent<MeshCollider>().enabled = true;
+                var col = child.GetComponent<MeshCollider>();
+                if (col != null) col.enabled = true;
             }
         }
     }
@@ -72,6 +74,8 @@ public class CameraController : MonoBehaviourPunCallbacks
         animator.SetBool("zoomTimeline", false);
         animator.SetBool("distanceZoom", true);
         this.DelayedCall(1.5f, ActivateEndButton);
+        // Segurança: garantir que IsAnimating seja resetado mesmo se o animation event falhar
+        this.DelayedCall(3f, () => { if (IsAnimating) { DebugHelper.Log("[CameraController] SAFETY: forçando IsAnimating=false"); IsAnimating = false; } });
     }
 
     public void ActivateEndButton()
@@ -82,36 +86,30 @@ public class CameraController : MonoBehaviourPunCallbacks
     void AwaitZoomTimeline()
     {
         IsAnimating = false;
-        // Verificar se é o turno do jogador local
         if (IsMyTurn())
         {
             if (CheckIfCardWasDrew())
             {
-                if (slot != null)
-                {
-                    slot.SetUpSlots(true, "Selectable");
-                }
+                if (slot != null) slot.SetUpSlots(true, "Selectable");
+                if (timeline != null) timeline.ActiveTimeline(false);
             }
             else
             {
-                if (timeline != null)
-                {
-                    timeline.ActiveTimeline(true);
-                }
+                if (timeline != null) timeline.ActiveTimeline(true);
             }
         }
     }
 
     void AwaitDistanceTimeline()
     {
+        DebugHelper.Log("[CameraController] AwaitDistanceTimeline disparado");
         IsAnimating = false;
-        // Verificar se é o turno do jogador local
+        // Reativar coliders não-slot ao retornar ao zoom normal
+        if (gameManagerCache != null) gameManagerCache.SetNewTimelineNonSlotColliders(true);
+
         if (IsMyTurn())
         {
-            if (timeline != null)
-            {
-                timeline.ActiveTimeline(true);
-            }
+            if (timeline != null) timeline.ActiveTimeline(true);
             if (CheckIfCardWasDrew() && slot != null)
             {
                 slot.SetUpSlots(false, "Undestructable");

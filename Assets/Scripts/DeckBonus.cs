@@ -14,6 +14,7 @@ public class DeckBonus : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        if (InputBlocker.IsBlocked) return;
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 
@@ -76,8 +77,12 @@ public class DeckBonus : MonoBehaviourPunCallbacks
         {
             DebugHelper.Log("[DeckBonus] MasterClient processando compra de bonusCard");
 
-            // Sincronizar para todos os clientes
-            photonView.RPC("ExecuteDrawBonusCard", RpcTarget.All);
+            // Sortear tipo da carta (0-5 para os 6 tipos)
+            int randomType = Random.Range(0, 6);
+            DebugHelper.Log($"[DeckBonus] Tipo sorteado: {(BonusCardType)randomType}");
+
+            // Sincronizar para todos os clientes com o tipo sorteado
+            photonView.RPC("ExecuteDrawBonusCard", RpcTarget.All, randomType);
         }
     }
 
@@ -85,9 +90,9 @@ public class DeckBonus : MonoBehaviourPunCallbacks
     /// RPC executado em todos os clientes para comprar a carta
     /// </summary>
     [PunRPC]
-    public void ExecuteDrawBonusCard()
+    public void ExecuteDrawBonusCard(int cardType)
     {
-        DebugHelper.Log("[DeckBonus] ExecuteDrawBonusCard");
+        DebugHelper.Log($"[DeckBonus] ExecuteDrawBonusCard - Tipo: {(BonusCardType)cardType}");
 
         // Tocar som
         soundEffects.PlayDrawCardSound();
@@ -107,7 +112,25 @@ public class DeckBonus : MonoBehaviourPunCallbacks
         {
             if (player.GetYourTurn() && player.photonView.IsMine)
             {
-                PhotonNetwork.Instantiate("bonusCard", new Vector3(0.604300022f, 0.08f, 0.280999988f), Quaternion.identity);
+                // Instanciar carta (posição inicial não importa, será ajustada após parenting)
+                var cardObject = PhotonNetwork.Instantiate("bonusCard", Vector3.zero, Quaternion.identity);
+
+                // Colocar carta dentro de Camera/HUD/
+                var hud = GameObject.Find("Camera/HUD");
+                if (hud != null)
+                {
+                    cardObject.transform.SetParent(hud.transform, false);
+                    // Definir posição e rotação local
+                    cardObject.transform.localPosition = new Vector3(36.93f, -20.59f, -40.29f);
+                    cardObject.transform.localRotation = Quaternion.Euler(45f, 0f, 0f);
+                }
+
+                // Definir o tipo da carta em todos os clientes
+                var bonusCard = cardObject.GetComponent<BonusCard>();
+                if (bonusCard != null)
+                {
+                    bonusCard.photonView.RPC("RPC_SetCardType", RpcTarget.All, cardType);
+                }
                 break;
             }
         }

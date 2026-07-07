@@ -105,15 +105,22 @@ public class OutlineComponent : MonoBehaviour
     {
         foreach (var renderer in renderers)
         {
-
-            // Append outline shaders
             var materials = renderer.sharedMaterials.ToList();
-
             materials.Add(outlineMaskMaterial);
             materials.Add(outlineFillMaterial);
-
             renderer.materials = materials.ToArray();
         }
+
+        UpdateMaterialProperties();
+        needsUpdate = false;
+    }
+
+    public void SetColor(Color color)
+    {
+        outlineColor = color;
+        if (outlineFillMaterial != null)
+            outlineFillMaterial.SetColor("_OutlineColor", color);
+        needsUpdate = false;
     }
 
     void OnValidate()

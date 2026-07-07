@@ -1,7 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
-using TimeCrax.Quiz;
 using TimeCrax.Managers;
 
 public class EventSlot : MonoBehaviourPunCallbacks
@@ -13,11 +12,6 @@ public class EventSlot : MonoBehaviourPunCallbacks
     private GameManager gameManager;
     private BackgroundMusic backgroundMusic;
     private Victory victory;
-    private QuizManager quizManager;
-
-    // Estado do quiz pendente
-    private int pendingQuizSlotCount = -1;
-    private EventCard pendingQuizCard;
 
     // Proteção contra clique duplo
     private static bool isProcessingClick = false;
@@ -30,25 +24,15 @@ public class EventSlot : MonoBehaviourPunCallbacks
         gameManager = FindFirstObjectByType<GameManager>();
         victory = FindFirstObjectByType<Victory>();
         backgroundMusic = FindFirstObjectByType<BackgroundMusic>();
-        quizManager = QuizManager.Instance;
-
-        // Inscrever no evento de quiz completado
-        if (quizManager != null)
-        {
-            quizManager.OnQuizCompleted += OnQuizCompleted;
-        }
     }
 
     private void OnDestroy()
     {
-        if (quizManager != null)
-        {
-            quizManager.OnQuizCompleted -= OnQuizCompleted;
-        }
     }
 
     public void OnMouseDown()
     {
+        if (InputBlocker.IsBlocked) return;
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 
@@ -79,8 +63,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         // Reabilitar cursor se NÃO estiver em transição de turno
         if (!GameManager.IsInTurnTransition)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            InputBlocker.Unblock();
         }
     }
 
@@ -124,9 +107,28 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         else
         {
-            // Desabilitar cursor imediatamente ao errar slot
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            // Verificar se jogador tem SecondChance ativa
+            if (BonusCardManager.Instance != null && BonusCardManager.Instance.HasSecondChanceActive)
+            {
+                DebugHelper.Log("[EventSlot] Segunda chance ativa! Permitindo nova tentativa");
+
+                // Consumir a segunda chance
+                BonusCardManager.Instance.ConsumeSecondChance();
+
+                // Tocar som de erro mas permitir nova tentativa
+                this.DelayedCall(0.5f, PlayWrongSound);
+
+                // Reativar slots para nova tentativa
+                this.DelayedCall(1f, () =>
+                {
+                    SetUpSlots(true, "Selectable");
+                    ResetClickProtection();
+                });
+
+                return;
+            }
+
+            InputBlocker.Block();
 
             // Slot errado - som de erro após delay
             this.DelayedCall(3.3f, PlayWrongSound);
@@ -139,7 +141,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
                 {
                     card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
                     card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
-                    card.tag = "Undestructable";
+                    //card.tag = "Undestructable";
                     card.waitToDistance();
                 }
             }
@@ -161,11 +163,10 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
     }
 
-    // Tempo para aguardar a animação da carta antes de mostrar o quiz
     private const float CARD_ANIMATION_DELAY = 3.5f;
 
     /// <summary>
-    /// Processa slot correto (pode ter quiz)
+    /// Processa slot correto
     /// </summary>
     private void ProcessRightSlot(int cardSlotCount, int clickedSlotNumber)
     {
@@ -189,41 +190,17 @@ public class EventSlot : MonoBehaviourPunCallbacks
             return;
         }
 
-        DebugHelper.Log($"[EventSlot] targetCard encontrado: {targetCard.name}, quizManager={quizManager != null}");
+        DebugHelper.Log($"[EventSlot] targetCard encontrado: {targetCard.name}");
 
-        // Animar a carta para o slot
         targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
+        FinalizeCorrectSlotLocal(cardSlotCount, targetCard, clickedSlotNumber);
 
-        // Verificar se a carta tem quiz
-        bool hasQuiz = targetCard.HasQuiz();
-        DebugHelper.Log($"[EventSlot] hasQuiz={hasQuiz}");
-
-        if (hasQuiz && quizManager != null)
+        if (PhotonNetwork.IsMasterClient && gameManager != null)
         {
-            DebugHelper.Log("[EventSlot] Carta tem quiz! Aguardando animação...");
-
-            // Guardar estado pendente para quando o quiz terminar
-            pendingQuizSlotCount = cardSlotCount;
-            pendingQuizCard = targetCard;
-            pendingQuizClickedSlotNumber = clickedSlotNumber;
-
-            // Aguardar a animação da carta terminar antes de iniciar o quiz
-            // Apenas MasterClient inicia o quiz (vai sincronizar via RPC)
-            if (PhotonNetwork.IsMasterClient)
+            this.DelayedCall(CARD_ANIMATION_DELAY, () =>
             {
-                this.DelayedCall(CARD_ANIMATION_DELAY, () =>
-                {
-                    DebugHelper.Log("[EventSlot] Animação terminou, iniciando quiz...");
-                    var themeCard = targetCard.GetThemeCard();
-                    quizManager.StartQuiz(themeCard, cardSlotCount);
-                });
-            }
-        }
-        else
-        {
-            DebugHelper.Log($"[EventSlot] Sem quiz ou quizManager null - finalizando slot diretamente");
-            // Sem quiz - fluxo original
-            FinalizeCorrectSlotLocal(cardSlotCount, targetCard, clickedSlotNumber);
+                gameManager.ActivateRandomMapObject(cardSlotCount);
+            });
         }
     }
 
@@ -252,7 +229,6 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
         card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
         card.tag = "Disabled";
-        card.waitToDistance();
 
         // Resetar proteção contra clique duplo
         ResetClickProtection();
@@ -275,92 +251,6 @@ public class EventSlot : MonoBehaviourPunCallbacks
         if (gameManager != null)
         {
             gameManager.RandomComponentNumber();
-        }
-    }
-
-    // Armazena o slotNumber do slot que foi clicado para quiz
-    private int pendingQuizClickedSlotNumber = -1;
-
-    /// <summary>
-    /// Callback quando o quiz é completado
-    /// </summary>
-    private void OnQuizCompleted(bool correct)
-    {
-        if (pendingQuizSlotCount < 0 || pendingQuizCard == null) return;
-
-        if (correct)
-        {
-            DebugHelper.Log($"[EventSlot] Quiz correto! Finalizando slot {pendingQuizSlotCount}");
-            FinalizeCorrectSlotLocal(pendingQuizSlotCount, pendingQuizCard, pendingQuizClickedSlotNumber);
-        }
-        else
-        {
-            DebugHelper.Log($"[EventSlot] Quiz errado! Carta volta ao deck");
-            // Quiz falhou - carta volta ao deck
-            if (PhotonNetwork.IsMasterClient)
-            {
-                photonView.RPC("QuizFailed", RpcTarget.All, pendingQuizSlotCount);
-            }
-        }
-
-        // Limpar estado pendente
-        pendingQuizSlotCount = -1;
-        pendingQuizCard = null;
-        pendingQuizClickedSlotNumber = -1;
-    }
-
-    [PunRPC]
-    public void QuizFailed(int slotCount)
-    {
-        DebugHelper.Log($"[EventSlot] RPC QuizFailed - slotCount: {slotCount}");
-
-        // Desabilitar cursor imediatamente ao falhar quiz
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        // Encontrar a carta
-        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-        foreach (var card in cards)
-        {
-            if (card.slotCount == slotCount)
-            {
-                // Animar erro
-                card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
-                card.tag = "Undestructable";
-                card.waitToDistance();
-
-                // Resetar estado da carta após animação para poder ser comprada novamente
-                this.DelayedCall(3.5f, () =>
-                {
-                    card.ResetStatusCard();
-                });
-                break;
-            }
-        }
-
-        // Adicionar carta de volta ao deck
-        var deckEvent = FindFirstObjectByType<DeckEvent>();
-        if (deckEvent != null)
-        {
-            deckEvent.AddCardBack(slotCount);
-        }
-
-        // Tocar som de erro
-        soundEffects.PlayWrongSlotSound();
-
-        // Aumentar temperatura após câmera voltar (3.3s animação + 1.5s zoom out + margem)
-        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
-        {
-            float thermometerProcessingTime = ThermometerManager.Instance.GetErrorProcessingTime();
-            this.DelayedCall(5f, () => ThermometerManager.Instance.OnPlayerError());
-
-            // Resetar proteção contra clique duplo após animação do termômetro
-            this.DelayedCall(5f + thermometerProcessingTime + 0.5f, ResetClickProtection);
-        }
-        else
-        {
-            // Fallback se ThermometerManager não existir
-            this.DelayedCall(5.5f, ResetClickProtection);
         }
     }
 
@@ -388,7 +278,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
                 slotsFilled++;
             }
         }
-        if (slotsFilled == 7 && gameManager != null)
+        if (slotsFilled == 6 && gameManager != null)
         {
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
@@ -405,6 +295,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (gameManager != null)
         {
+            gameManager.SetNewTimelineColliders(false);
             gameManager.Hud.SetActive(false);
         }
         if (backgroundMusic != null)
