@@ -1,29 +1,56 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using TimeCrax.Core;
 
 public class OutlineAction : MonoBehaviour
 {
-    public Material originalMaterial;
-    public Material selectionMaterial; 
     public GameObject menuStart;
     public GameObject timeline;
     public GameObject deckEvent;
-    public GameObject deckRepair;
-    private Transform highlight;    
+    public GameObject deckBonus;
+
+    [Header("Hover Settings")]
+    [SerializeField] private float hoverSmoothness = 1f;
+    [SerializeField] private float hoverMetallic = 0.5f;
+
+    [Header("Cursors")]
+    [SerializeField] private Texture2D defaultCursor;
+    [SerializeField] private Texture2D malfunctionCursor;
+    [SerializeField] private Vector2 cursorHotspot = Vector2.zero;
+
+    private Transform highlight;
     private RaycastHit raycastHit;
+    private bool isShowingMalfunctionCursor = false;
+
+    // Valores originais do material para restaurar apos hover
+    private float originalSmoothness;
+    private float originalMetallic;
+    private Material highlightedMaterial;
+
+    // Referencia ao OutlineComponent do pai (para TimelineChild)
+    private OutlineComponent parentOutlineActive;
 
     void Start()
     {
-        
+        if (defaultCursor != null)
+        {
+            Cursor.SetCursor(defaultCursor, cursorHotspot, CursorMode.Auto);
+        }
     }
 
     void Update()
     {
-
-        // Highlight
+        // Restaurar material/outline anterior quando mouse sair
         if (highlight != null)
         {
+            // Desativar outline do pai (TimelineChild)
+            if (parentOutlineActive != null)
+            {
+                parentOutlineActive.enabled = false;
+                parentOutlineActive = null;
+            }
+
             if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
             {
                 highlight.gameObject.GetComponent<OutlineComponent>().enabled = false;
@@ -31,32 +58,51 @@ public class OutlineAction : MonoBehaviour
             }
             else
             {
-                highlight.gameObject.GetComponent<MeshRenderer>().material = originalMaterial;
+                if (highlightedMaterial != null)
+                {
+                    highlightedMaterial.SetFloat("_Glossiness", originalSmoothness);
+                    highlightedMaterial.SetFloat("_Metallic", originalMetallic);
+                    highlightedMaterial = null;
+                }
                 highlight = null;
-
             }
-
         }
+
+        if (InputBlocker.IsBlocked) return;
+
+        bool shouldShowMalfunctionCursor = false;
 
         Transform[] opcoes = menuStart.GetComponentsInChildren<Transform>();
         for (int i = 0; i < opcoes.Length; i++)
         {
-            opcoes[i].GetComponentInChildren<TextMeshPro>().alpha = 0;
+            var tmp = opcoes[i].GetComponentInChildren<TextMeshPro>();
+            if (tmp != null) tmp.alpha = 0;
         }
 
-
         Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit)) //Make sure you have EventSystem in the hierarchy before using EventSystem
+        if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit))
         {
             highlight = raycastHit.transform;
             if (highlight.CompareTag("Selectable"))
             {
-                //Debug.Log("Selectable");
-
-                if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
+                // Verificar se e um TimelineChild ativo — primeiro no próprio objeto,
+                // depois nos filhos (ex: LeftDoor é raycasted mas Slot filho tem o script)
+                var timelineChild = highlight.gameObject.GetComponent<TimelineChild>();
+                if (timelineChild == null)
+                    timelineChild = highlight.gameObject.GetComponentInChildren<TimelineChild>(true);
+                if (timelineChild != null && timelineChild.enabled)
+                {
+                    var parentOutline = timelineChild.GetParentOutline();
+                    DebugHelper.Log($"[OutlineAction] hover TC='{timelineChild.name}' em '{highlight.name}', outline={parentOutline?.name ?? "NULL"}");
+                    if (parentOutline != null)
+                    {
+                        parentOutline.enabled = true;
+                        parentOutlineActive = parentOutline;
+                    }
+                }
+                else if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
                 {
                     highlight.gameObject.GetComponent<OutlineComponent>().enabled = true;
-                    //Debug.Log("raycast hitting: " +gameObject.name);
 
                     for (int i = 0; i < opcoes.Length; i++)
                     {
@@ -66,19 +112,29 @@ public class OutlineAction : MonoBehaviour
                             {
                                 opcoes[i].GetComponentInChildren<TextMeshPro>().alpha = 1;
                             }
-
                         }
-
                     }
 
+                    var machineComponent = highlight.gameObject.GetComponent<MachineComponent>();
+                    if (machineComponent != null && machineComponent.malfunctions == 1)
+                    {
+                        shouldShowMalfunctionCursor = true;
+                    }
                 }
                 else
                 {
-
-                    if (highlight.gameObject.GetComponent<MeshRenderer>().material != selectionMaterial)
+                    var renderer = highlight.gameObject.GetComponent<MeshRenderer>();
+                    if (renderer != null && renderer.material != null)
                     {
-                        originalMaterial = highlight.gameObject.GetComponent<MeshRenderer>().material;
-                        highlight.gameObject.GetComponent<MeshRenderer>().material = selectionMaterial;
+                        if (highlightedMaterial != renderer.material)
+                        {
+                            highlightedMaterial = renderer.material;
+                            originalSmoothness = highlightedMaterial.GetFloat("_Glossiness");
+                            originalMetallic = highlightedMaterial.GetFloat("_Metallic");
+
+                            highlightedMaterial.SetFloat("_Glossiness", hoverSmoothness);
+                            highlightedMaterial.SetFloat("_Metallic", hoverMetallic);
+                        }
                     }
                 }
             }
@@ -86,15 +142,70 @@ public class OutlineAction : MonoBehaviour
             {
                 highlight = null;
             }
-
         }
 
+        UpdateCursor(shouldShowMalfunctionCursor);
     }
+
+    private void UpdateCursor(bool showMalfunctionCursor)
+    {
+        if (showMalfunctionCursor && !isShowingMalfunctionCursor)
+        {
+            if (malfunctionCursor != null)
+            {
+                Cursor.SetCursor(malfunctionCursor, cursorHotspot, CursorMode.Auto);
+                isShowingMalfunctionCursor = true;
+            }
+        }
+        else if (!showMalfunctionCursor && isShowingMalfunctionCursor)
+        {
+            if (defaultCursor != null)
+            {
+                Cursor.SetCursor(defaultCursor, cursorHotspot, CursorMode.Auto);
+            }
+            else
+            {
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            }
+            isShowingMalfunctionCursor = false;
+        }
+    }
+
     public void MakeObjectsSelectable()
     {
         timeline.tag = "Selectable";
         deckEvent.tag = "Selectable";
-        deckRepair.tag = "Selectable";
     }
 
+    public void ResetCursor()
+    {
+        if (defaultCursor != null)
+        {
+            Cursor.SetCursor(defaultCursor, cursorHotspot, CursorMode.Auto);
+        }
+        else
+        {
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        }
+        isShowingMalfunctionCursor = false;
+    }
+
+    private void OnDisable()
+    {
+        if (parentOutlineActive != null)
+        {
+            parentOutlineActive.enabled = false;
+            parentOutlineActive = null;
+        }
+
+        if (highlightedMaterial != null)
+        {
+            highlightedMaterial.SetFloat("_Glossiness", originalSmoothness);
+            highlightedMaterial.SetFloat("_Metallic", originalMetallic);
+            highlightedMaterial = null;
+        }
+
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        isShowingMalfunctionCursor = false;
+    }
 }

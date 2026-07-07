@@ -1,103 +1,181 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Photon.Pun;
-using System.Linq;
 using TMPro;
+using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class PlayerScript : MonoBehaviourPunCallbacks
 {
 
-    public int numberRepairCards;
+    public int numberBonusCards;
     public string nickname;
     public int index;
+    public int plateNameIndex;
     public bool yourTurn = false;
-    public string numberRepairCardsText;
+    public string numberBonusCardsText;
+    public int actorNumber;
 
 
-    // Start is called before the first frame update
     void Start()
     {
-        numberRepairCards = 0;
+        numberBonusCards = 0;
+        InitializePlayerIndex();
+        numberBonusCardsText = GameObjectNames.GetNumberBonusCards(index + 1);
+    }
 
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+    public void UpdateIndex()
+    {
+        var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
+
+        for (int i = 0; i < orderedPlayerList.Length; i++)
         {
-            if (PhotonNetwork.PlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
             {
-                nickname = PhotonNetwork.PlayerList[i].NickName;
                 index = i;
             }
         }
+    }
 
-        numberRepairCardsText = "numberRepairCards0" + (index + 1);
-}
-
-    // Update is called once per frame
-    void Update()
+    private void InitializePlayerIndex()
     {
-        
+        var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
+
+        for (int i = 0; i < orderedPlayerList.Length; i++)
+        {
+            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            {
+                nickname = orderedPlayerList[i].NickName;
+                index = i;
+                plateNameIndex = i;
+                actorNumber = orderedPlayerList[i].ActorNumber;
+            }
+        }
     }
 
     public void DrawEventCard()
     {
-        Debug.Log("You draw one EventCard!");
+        DebugHelper.Log("You draw one EventCard!");
     }
-    public void DrawRepairCard()
+    public void DrawBonusCard()
     {
-        numberRepairCards++;
+        numberBonusCards++;
 
-        Debug.Log("------ mais: "+numberRepairCardsText);
+        DebugHelper.Log("------ mais: "+numberBonusCardsText);
 
-        var findObject = GameObject.Find(numberRepairCardsText);
-        Debug.Log("name: "+findObject.name);
+        var findObject = GameObject.Find(numberBonusCardsText);
+        if (findObject == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DrawBonusCard: GameObject '{numberBonusCardsText}' não encontrado");
+            return;
+        }
 
-        int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
+        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        if (textComponent == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DrawBonusCard: TextMeshProUGUI não encontrado em '{numberBonusCardsText}'");
+            return;
+        }
+
+        int numberOfCards = int.Parse(textComponent.text);
         numberOfCards++;
-
-        findObject.GetComponent<TextMeshProUGUI>().text = numberOfCards.ToString();
+        textComponent.text = numberOfCards.ToString();
     }
 
-    public int GetNumberOfRepairsCards()
+    public int GetNumberOfBonusCards()
     {
-        return numberRepairCards;
+        return numberBonusCards;
     }
 
-    public void GiveRepairCard(PlayerScript otherPlayer)
+    /// <summary>
+    /// Remove uma carta bonus do contador (chamado quando carta é consumida)
+    /// </summary>
+    public void RemoveBonusCard()
     {
-        otherPlayer.numberRepairCards++;
+        photonView.RPC("RPC_RemoveBonusCard", RpcTarget.All);
+    }
 
-        Debug.Log("------ menos: " + numberRepairCardsText);
+    [PunRPC]
+    public void RPC_RemoveBonusCard()
+    {
+        if (numberBonusCards > 0)
+        {
+            numberBonusCards--;
 
-        var findObject = GameObject.Find(numberRepairCardsText);
-        Debug.Log("name: " + findObject.name);
+            var findObject = GameObject.Find(numberBonusCardsText);
+            if (findObject != null)
+            {
+                var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = numberBonusCards.ToString();
+                }
+            }
 
-        int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
+            DebugHelper.Log($"[PlayerScript] RemoveBonusCard: {numberBonusCards} cartas restantes");
+        }
+    }
+
+    public void GiveBonusCard(PlayerScript otherPlayer)
+    {
+        otherPlayer.numberBonusCards++;
+
+        DebugHelper.Log("------ menos: " + numberBonusCardsText);
+
+        var findObject = GameObject.Find(numberBonusCardsText);
+        if (findObject == null)
+        {
+            DebugHelper.Log($"[PlayerScript] GiveBonusCard: GameObject '{numberBonusCardsText}' não encontrado");
+            return;
+        }
+
+        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        if (textComponent == null)
+        {
+            DebugHelper.Log($"[PlayerScript] GiveBonusCard: TextMeshProUGUI não encontrado em '{numberBonusCardsText}'");
+            return;
+        }
+
+        int numberOfCards = int.Parse(textComponent.text);
         numberOfCards--;
-
-        findObject.GetComponent<TextMeshProUGUI>().text = numberOfCards.ToString();
+        textComponent.text = numberOfCards.ToString();
     }
 
     public void RepairComponent(int cards)
     {
-        Debug.Log("cartas: " + cards);
+        DebugHelper.Log("cartas: " + cards);
         photonView.RPC("DescreaseAndDestroyCards", RpcTarget.All, cards);
     }
 
     [PunRPC]
     public void DescreaseAndDestroyCards(int cards)
     {
-        numberRepairCards -= cards;
+        numberBonusCards -= cards;
 
-        Debug.Log("------ repair: " + numberRepairCardsText);
+        DebugHelper.Log("------ repair: " + numberBonusCardsText);
 
-        var findObject = GameObject.Find(numberRepairCardsText);
-        Debug.Log("name: " + findObject.name);
+        var findObject = GameObject.Find(numberBonusCardsText);
+        if (findObject == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DescreaseAndDestroyCards: GameObject '{numberBonusCardsText}' não encontrado");
+            DestroyBonusCards(cards);
+            return;
+        }
 
-        int numberOfCards = int.Parse(findObject.GetComponent<TextMeshProUGUI>().text);
+        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        if (textComponent == null)
+        {
+            DebugHelper.Log($"[PlayerScript] DescreaseAndDestroyCards: TextMeshProUGUI não encontrado em '{numberBonusCardsText}'");
+            DestroyBonusCards(cards);
+            return;
+        }
+
+        int numberOfCards = int.Parse(textComponent.text);
         numberOfCards -= cards;
+        textComponent.text = numberOfCards.ToString();
 
-        findObject.GetComponent<TextMeshProUGUI>().text = numberOfCards.ToString();
-
-        DestroyRepairCards(cards);
+        DestroyBonusCards(cards);
     }
 
     public bool GetYourTurn()
@@ -110,10 +188,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         yourTurn = isYourTurn;
     }
 
-    public void DestroyRepairCards(int cardNumber)
+    public void DestroyBonusCards(int cardNumber)
     {
-        var allCards = FindObjectsOfType<RepairCard>();
-        List<RepairCard> cardList = new List<RepairCard>();
+        var allCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
+        List<BonusCard> cardList = new List<BonusCard>();
 
         foreach (var card in allCards)
         {
@@ -126,7 +204,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
         for (var i = 0; i < cardNumber; i++)
         {
-            Debug.Log("carta -> " + orderedlist[i].photonView.ViewID);
+            DebugHelper.Log("carta -> " + orderedlist[i].photonView.ViewID);
             orderedlist[i].GetComponent<Animator>().enabled = true;
             orderedlist[i].GetComponent<Animator>().SetBool("destroyCard", true);
         }

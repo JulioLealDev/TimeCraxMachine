@@ -1,29 +1,32 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using TimeCrax.Core;
 
 public class Tutorial : MonoBehaviour
 {
     public Canvas canvas;
-    public Canvas inputName;
+    public SoundEffects soundEffects;
+    public Menu menu;
+
+    // Proteção contra clique duplo
+    private bool isProcessingClick = false;
 
     private void OnMouseDown()
     {
-        Debug.Log("Clicou no tutorial");
+        // Proteção contra clique duplo
+        if (isProcessingClick) return;
+        isProcessingClick = true;
+
+        DebugHelper.Log("Clicou no tutorial");
+        soundEffects.TurnPageSound(1);
         canvas.gameObject.SetActive(true);
-        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        menu.DisableMenu();
 
-        inputName.gameObject.SetActive(false);
-
+        // Resetar após um delay
+        this.DelayedCall(0.5f, ResetClickProtection);
     }
-    void Update()
+
+    private void ResetClickProtection()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            canvas.gameObject.SetActive(false);
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
-
-            inputName.gameObject.SetActive(true);
-        }
+        isProcessingClick = false;
     }
-
-   }
+}

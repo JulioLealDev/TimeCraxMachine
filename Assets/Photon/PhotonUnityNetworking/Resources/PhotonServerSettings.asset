@@ -70,6 +70,69 @@ MonoBehaviour:
   - ClickedWrongSlot
   - RPCFinishButton
   - EndButton
+  - RandomAnimator
+  - Roulettecomponent
+  - ClickSlotSound
+  - PlayRightSound
+  - PlayWrongSound
+  - ClickDraw
+  - ClickFinish
+  - RemovePlateName
+  - UpdatePlayersIndex
+  - RemovePlayersPlatenames
+  - ChangePlateNameMaterial
+  - ShowLeftPlayerInfo
+  - GetRandomEventCards
+  - SetSlotCounts
+  - SetTimelineYears
+  - SetValues
+  - SetAllValues
+  - RPC_QuizResult
+  - RPC_StartQuiz
+  - SetAllValuesFromTheme
+  - QuizFailed
+  - AddCardBackRPC
+  - DrawEventCardRPC
+  - RemoveIndexRPC
+  - SetZoomState
+  - SyncTurn
+  - SyncTurnWithRound
+  - ExecuteDrawEventCard
+  - RequestDrawEventCard
+  - ExecuteSlotClick
+  - RequestSlotClick
+  - ExecuteDrawRepairCard
+  - RequestDrawRepairCard
+  - SyncPlayerEnteredMessage
+  - SyncPlayerLeftMessage
+  - RPC_ChangePlateNameMaterial
+  - RPC_ComponentRandom
+  - RPC_GiveRepairCard
+  - RPC_RemovePlayerPlatename
+  - RPC_ShowLeftPlayerInfo
+  - RPC_SyncTurn
+  - RPC_SyncTurnWithRound
+  - RPC_StartTimer
+  - RPC_StopTimer
+  - RPC_SyncTime
+  - RPC_StartTurnTimer
+  - RPC_StopTurnTimer
+  - RPC_SyncTurnTimer
+  - RPC_HandleTimeoutCleanup
+  - RPC_SetTemperature
+  - RPC_Initialize
+  - RPC_SetTemperatureWithIndex
+  - RPC_CloseLeftCompartment
+  - RPC_OpenLeftCompartment
+  - ExecuteDrawBonusCard
+  - GiveBonusCard
+  - RequestDrawBonusCard
+  - RPC_GiveBonusCard
+  - RPC_ActivateCard
+  - RPC_KillIncorrectOption
+  - RPC_RemoveBonusCard
+  - RPC_SetCardType
+  - RPC_ActivateRandomMapObject
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

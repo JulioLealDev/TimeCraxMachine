@@ -1,21 +1,49 @@
 using UnityEngine;
+using TimeCrax.Core;
 
 public class QuitInGaming : MonoBehaviour
 {
-    public Animator animator;
+    [SerializeField] private Animator animator;
+    [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private GameManager gameManager;
+
+    private bool isQuitting = false;
 
     private void OnMouseDown()
     {
-        Debug.Log("Clicou no Quit");
-        animator.SetBool("quitGame", true);
-        //chamar um texto pedindo confirmaÁ„o
-        Invoke("QuitGame", 1.5f);
+        // Prevenir m√∫ltiplos cliques
+        if (isQuitting) return;
+        isQuitting = true;
 
+        DebugHelper.Log("1 -- Clicou no Quit");
+
+        if (soundEffects != null) soundEffects.PressButtonSound();
+
+        if (animator != null) animator.SetBool("quitGame", true);
+
+        this.DelayedCall(1f, QuitGame);
     }
 
     public void QuitGame()
     {
-        animator.SetBool("finishTurn", false);
-        Application.Quit();
+        if (animator != null) animator.SetBool("quitGame", false);
+
+        this.DelayedCall(2f, CloseHUD);
+
+        if (gameManager != null) gameManager.BackToMenu();
+    }
+
+    public void CloseHUD()
+    {
+        if (gameManager == null) return;
+
+        if (gameManager.Hud != null) gameManager.Hud.SetActive(false);
+
+        gameManager.DeactivateAll();
+        gameManager.ResetAllComponents();
+        gameManager.ResetAllPlatenames();
+
+        // Resetar flag para permitir novo quit em pr√≥xima partida
+        isQuitting = false;
     }
 }

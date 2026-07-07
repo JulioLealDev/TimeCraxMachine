@@ -17,6 +17,11 @@ TagManager:
   - Victory
   - PlateName
   - GameInfo
+  - Component
+  - Sparks
+  - Smoke
+  - NamePlayerTag
+  - WorldHistoryMaterials
   layers:
   - Default
   - TransparentFX
