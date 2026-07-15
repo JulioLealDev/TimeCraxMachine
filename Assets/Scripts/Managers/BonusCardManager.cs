@@ -1,6 +1,5 @@
 using UnityEngine;
 using TimeCrax.Core;
-// using TimeCrax.Quiz; // desabilitado
 
 namespace TimeCrax.Managers
 {
@@ -120,7 +119,6 @@ namespace TimeCrax.Managers
             // Verificar se pode ativar
             if (!CanActivateCard(card.CardType))
             {
-                DebugHelper.Log($"[BonusCardManager] Carta {card.CardType} não pode ser ativada agora");
                 return;
             }
 
@@ -142,7 +140,6 @@ namespace TimeCrax.Managers
             // (evita cancelar imediatamente pelo clique que abriu o painel)
             this.DelayedCall(0.1f, () => waitingForClickOutside = true);
 
-            DebugHelper.Log($"[BonusCardManager] Painel de ativação aberto para {card.CardType}");
         }
 
         /// <summary>
@@ -171,10 +168,6 @@ namespace TimeCrax.Managers
                     // Sempre ativáveis
                     return true;
 
-                case BonusCardType.SkipQuiz:
-                case BonusCardType.KillOption:
-                    return false; // Quiz desabilitado
-
                 case BonusCardType.SecondChance:
                     // Ativável a qualquer momento (efeito dura até errar slot)
                     return !hasSecondChanceActive;
@@ -194,7 +187,6 @@ namespace TimeCrax.Managers
         public void ConsumeSecondChance()
         {
             hasSecondChanceActive = false;
-            DebugHelper.Log("[BonusCardManager] Segunda chance consumida");
         }
 
         /// <summary>
@@ -233,7 +225,6 @@ namespace TimeCrax.Managers
         {
             if (selectedCard == null) return;
 
-            DebugHelper.Log($"[BonusCardManager] Ativando carta {selectedCard.CardType}");
 
             // Guardar referência antes de esconder painel
             var card = selectedCard;
@@ -253,7 +244,6 @@ namespace TimeCrax.Managers
         /// </summary>
         private void CancelActivation()
         {
-            DebugHelper.Log("[BonusCardManager] Ativação cancelada");
 
             // Retornar carta para a mão
             if (selectedCard != null)
@@ -283,14 +273,6 @@ namespace TimeCrax.Managers
                     ApplyThermometerEffect();
                     break;
 
-                case BonusCardType.SkipQuiz:
-                    ApplySkipQuizEffect();
-                    break;
-
-                case BonusCardType.KillOption:
-                    ApplyKillOptionEffect();
-                    break;
-
                 case BonusCardType.SecondChance:
                     ApplySecondChanceEffect();
                     break;
@@ -302,7 +284,6 @@ namespace TimeCrax.Managers
             if (turnTimer != null)
             {
                 turnTimer.AddTime(60f);
-                DebugHelper.Log("[BonusCardManager] +60 segundos adicionados ao timer");
             }
         }
 
@@ -311,24 +292,12 @@ namespace TimeCrax.Managers
             if (ThermometerManager.Instance != null)
             {
                 ThermometerManager.Instance.ResetTemperatureToFirstLevel();
-                DebugHelper.Log("[BonusCardManager] Temperatura resetada para primeiro nível");
             }
-        }
-
-        private void ApplySkipQuizEffect()
-        {
-            // Quiz desabilitado
-        }
-
-        private void ApplyKillOptionEffect()
-        {
-            // Quiz desabilitado
         }
 
         private void ApplySecondChanceEffect()
         {
             hasSecondChanceActive = true;
-            DebugHelper.Log("[BonusCardManager] Segunda chance ativada");
         }
 
         #endregion
@@ -343,10 +312,6 @@ namespace TimeCrax.Managers
                     return "CARTA DE REPARO";
                 case BonusCardType.Time:
                     return "CARTA DE TEMPO";
-                case BonusCardType.SkipQuiz:
-                    return "PULAR QUIZ";
-                case BonusCardType.KillOption:
-                    return "ELIMINAR OPÇÃO";
                 case BonusCardType.SecondChance:
                     return "SEGUNDA CHANCE";
                 case BonusCardType.Thermometer:

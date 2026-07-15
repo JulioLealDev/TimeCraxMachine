@@ -95,7 +95,6 @@ public class PersonsCarousel : MonoBehaviour
 
         panel.SetActive(false);
         InputBlocker.Unblock();
-        Debug.Log($"[PersonsCarousel] OnConfirm: slotIndex={currentSlotIndex}, checker={PersonsAnswerChecker.Instance != null}");
         PersonsAnswerChecker.Instance?.OnSlotAssigned(currentSlotIndex);
         targetRenderer = null;
         targetNameText = null;

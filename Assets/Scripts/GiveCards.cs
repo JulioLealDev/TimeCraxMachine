@@ -6,9 +6,6 @@ public class GiveCards : MonoBehaviour
     [SerializeField] private Canvas gameInfo;
     private int sendNumberCards;
 
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
-
     // Nome do background atual para esconder
     private string currentInfoBackground;
 
@@ -17,11 +14,8 @@ public class GiveCards : MonoBehaviour
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
-        DebugHelper.Log("Clicou no player: " + gameObject.name);
 
         var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
         foreach (var player in players)
@@ -34,12 +28,10 @@ public class GiveCards : MonoBehaviour
 
         if (gameObject.CompareTag("Disabled"))
         {
-            DebugHelper.Log("Você já realizou uma ação neste turno");
             ShowInfo("ActionInfoBackground");
         }
         else if (sendNumberCards == 0)
         {
-            DebugHelper.Log("Você não possui cartas de bonus");
             ShowInfo("CardInfoBackground");
         }
         else
@@ -55,7 +47,6 @@ public class GiveCards : MonoBehaviour
                     int receiverNumberCards = player.GetNumberOfBonusCards();
                     if (receiverNumberCards == 5)
                     {
-                        DebugHelper.Log("Este jogador já possui 5 cartas");
                         ShowInfo("FiveInfoBackground");
                     }
                     else
@@ -67,9 +58,8 @@ public class GiveCards : MonoBehaviour
                         }
                         else
                         {
-                            DebugHelper.Log("[GiveCards] GameManager não encontrado");
                         }
-                        isProcessingClick = false;
+                        GameManager.ResetClick(this);
                     }
                 }
             }
@@ -120,11 +110,11 @@ public class GiveCards : MonoBehaviour
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 
     public void ResetClickProtection()
     {
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 }

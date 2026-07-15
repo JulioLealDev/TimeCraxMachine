@@ -162,7 +162,6 @@ namespace TimeCrax.Themes
 
             LoadThemesFromAPI();
 
-            DebugHelper.Log("[ThemeSelectionUI] Show");
         }
 
         private void SetupThemeInfoEvents()
@@ -202,7 +201,6 @@ namespace TimeCrax.Themes
                 gameObject.SetActive(false);
             }
 
-            DebugHelper.Log("[ThemeSelectionUI] Hide");
 
             OnPanelClosed?.Invoke();
         }
@@ -248,14 +246,12 @@ namespace TimeCrax.Themes
                     allThemes = result.Data.items ?? new List<ThemeListItem>();
                     ApplyFilter();
 
-                    DebugHelper.Log($"[ThemeSelectionUI] Loaded {allThemes.Count} themes");
 
                     RefreshGrid();
                     UpdateFooter();
                 }
                 else
                 {
-                    DebugHelper.Log($"[ThemeSelectionUI] Failed to load themes: {result.ErrorMessage}");
                     // Mostrar mensagem de erro na UI
                     if (loadingText != null)
                     {
@@ -277,7 +273,6 @@ namespace TimeCrax.Themes
 
             if (themeCardPrefab == null || themeGrid == null)
             {
-                DebugHelper.Log("[ThemeSelectionUI] Missing prefab or grid reference");
                 return;
             }
 
@@ -400,7 +395,6 @@ namespace TimeCrax.Themes
         {
             if (!string.IsNullOrEmpty(currentDownloadingThemeId))
             {
-                DebugHelper.Log("[ThemeSelectionUI] Already downloading a theme");
                 return;
             }
 
@@ -419,7 +413,6 @@ namespace TimeCrax.Themes
                     downloadedCard.FinishDownload(success);
 
                 if (!success)
-                    DebugHelper.Log($"[ThemeSelectionUI] Download failed: {error}");
 
                 currentDownloadingThemeId = null;
                 UpdateFooter();
@@ -437,7 +430,6 @@ namespace TimeCrax.Themes
 
             if (theme == null)
             {
-                DebugHelper.Log($"[ThemeSelectionUI] Theme not found: {themeId}");
                 return;
             }
 
@@ -451,10 +443,8 @@ namespace TimeCrax.Themes
             }
             else
             {
-                DebugHelper.Log("[ThemeSelectionUI] ThemeInfoUI.Instance is null");
             }
 
-            DebugHelper.Log($"[ThemeSelectionUI] Showing info for: {themeId}");
         }
 
         public void SelectTheme(string themeId)
@@ -476,12 +466,10 @@ namespace TimeCrax.Themes
 
             UpdateFooter();
 
-            DebugHelper.Log($"[ThemeSelectionUI] Theme selected: {themeId}");
         }
 
         private void OnThemeInfoDownloadRequested(string themeId)
         {
-            DebugHelper.Log($"[ThemeSelectionUI] Download completed from ThemeInfoUI: {themeId}");
             // Atualizar grid para refletir o download concluído
             RefreshGrid();
             UpdateFooter();
@@ -489,13 +477,11 @@ namespace TimeCrax.Themes
 
         private void OnThemeInfoPlayRequested(string themeId)
         {
-            DebugHelper.Log($"[ThemeSelectionUI] Play requested from ThemeInfoUI: {themeId}");
             SelectTheme(themeId);
         }
 
         private void OnThemeInfoClosed()
         {
-            DebugHelper.Log("[ThemeSelectionUI] ThemeInfoUI closed");
             // Atualizar grid para refletir possíveis mudanças
             RefreshGrid();
         }
@@ -516,7 +502,6 @@ namespace TimeCrax.Themes
         private void OnDownloadStatus(string status)
         {
             // Pode ser usado para mostrar status na UI se desejado
-            DebugHelper.Log($"[ThemeSelectionUI] Download status: {status}");
         }
 
         #endregion

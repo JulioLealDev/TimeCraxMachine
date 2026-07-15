@@ -7,9 +7,11 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class GameConnection : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private MenuManager menuManager;
 
     List<RoomInfo> rooms = new List<RoomInfo>();
     List<RoomInfo> closedRooms = new List<RoomInfo>();
@@ -53,19 +55,16 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.InLobby == false)
         {
-            DebugHelper.Log("Entrando no Lobby");
             PhotonNetwork.JoinLobby();
         }
     }
 
     public override void OnJoinedLobby()
     {
-        DebugHelper.Log("[GameConnection] Entrou no Lobby");
 
         // Se há sala pendente para criar, criar agora
         if (pendingRoomData != null)
         {
-            DebugHelper.Log("[GameConnection] Criando sala pendente...");
             CreateRoomInternal(
                 pendingRoomData.nameRoom,
                 pendingRoomData.maxPlayers,
@@ -80,44 +79,49 @@ public class GameConnection : MonoBehaviourPunCallbacks
         // Se há sala pendente para entrar, entrar agora
         if (!string.IsNullOrEmpty(pendingJoinRoomName))
         {
-            DebugHelper.Log($"[GameConnection] Entrando na sala pendente: {pendingJoinRoomName}");
             PhotonNetwork.JoinRoom(pendingJoinRoomName);
             pendingJoinRoomName = null;
         }
     }
 
-    public void Lobby()
+    public bool Lobby()
     {
-        DebugHelper.Log("Entrou no LobbyScreen");
+        if (lobbyBackgroundScreen == null || lobbyScreen == null || roomList == null)
+        {
+            return false;
+        }
+
         PhotonNetwork.LocalPlayer.NickName = SessionData.Nickname;
         lobbyBackgroundScreen.SetActive(true);
         lobbyScreen.SetActive(true);
         roomList.GetComponent<RoomList>().GetRoomsList(rooms);
 
-        // Garantir que os botões do lobby estejam ativados
         var lobbyOptions = FindFirstObjectByType<LobbyOptions>();
         if (lobbyOptions != null)
-        {
             lobbyOptions.ActivateButtons(true);
-        }
+
+        return true;
     }
 
-    public void CreateRoom()
+    public bool CreateRoom()
     {
-        DebugHelper.Log("Entrou no Create Room");
+        if (lobbyBackgroundScreen == null || createRoom == null)
+        {
+            return false;
+        }
+
         PhotonNetwork.LocalPlayer.NickName = SessionData.Nickname;
         lobbyBackgroundScreen.SetActive(true);
         createRoom.SetActive(true);
+        return true;
     }
 
     public void CreatedRoom(string nameRoom, int maxPlayers, string difficulty, string theme, string password, string themeId = "")
     {
-        DebugHelper.Log("Entrou na Sala Criada");
 
         // Prevenir cliques múltiplos
         if (isProcessingRoomOperation)
         {
-            DebugHelper.Log("[GameConnection] Operação de criar sala em andamento, ignorando clique duplicado");
             return;
         }
         isProcessingRoomOperation = true;
@@ -125,7 +129,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
         // Verificar se está conectado ao Master Server e pronto para operações
         if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby)
         {
-            DebugHelper.Log("[GameConnection] Não está pronto para criar sala. Reconectando...");
 
             // Armazenar dados para criar sala após reconexão
             pendingRoomData = new PendingRoomData
@@ -163,7 +166,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
         options.CustomRoomProperties.Add("pass", password);
         options.CustomRoomProperties.Add("themeId", themeId);
         PhotonNetwork.CreateRoom(nameRoom, options, null);
-        DebugHelper.Log($"[GameConnection] Sala criada com tema: {theme} (ID: {themeId})");
     }
 
     // Dados pendentes para criar sala após reconexão
@@ -181,9 +183,8 @@ public class GameConnection : MonoBehaviourPunCallbacks
     
     public void ReturnigToMenu()
     {
-        DebugHelper.Log("Entrou no Return to menu");
-        var menu = FindFirstObjectByType<Menu>();
-        menu.EnableMenu();
+        var suitTop = FindFirstObjectByType<SuitTop>();
+        menuManager.EnablingMenuOptions();
         fullGameScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
         nameDisplay.gameObject.SetActive(true);
@@ -191,7 +192,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        DebugHelper.Log($"[GameConnection] OnCreateRoomFailed: {returnCode} - {message}");
 
         // Resetar flag de operação
         isProcessingRoomOperation = false;
@@ -206,7 +206,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        DebugHelper.Log($"[GameConnection] OnJoinRoomFailed: {returnCode} - {message}");
 
         // Resetar flag de operação
         isProcessingRoomOperation = false;
@@ -225,7 +224,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        DebugHelper.Log($"[GameConnection] OnPlayerEnteredRoom: {newPlayer.NickName}");
 
         // Atualizar chat e lista localmente
         if (chatLog != null)
@@ -247,7 +245,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
     [PunRPC]
     public void SyncPlayerEnteredMessage(string playerName)
     {
-        DebugHelper.Log($"[GameConnection] SyncPlayerEnteredMessage: {playerName}");
 
         // Atualizar lista de jogadores em todos os clientes
         ListPlayersInRoom();
@@ -255,7 +252,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        DebugHelper.Log($"[GameConnection] OnPlayerLeftRoom: {otherPlayer.NickName}");
 
         if (chatLog != null)
         {
@@ -276,7 +272,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
     [PunRPC]
     public void SyncPlayerLeftMessage(string playerName)
     {
-        DebugHelper.Log($"[GameConnection] SyncPlayerLeftMessage: {playerName}");
 
         // Atualizar lista de jogadores em todos os clientes
         ListPlayersInRoom();
@@ -284,7 +279,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        DebugHelper.Log("[GameConnection] OnLeftRoom");
 
         // Resetar flag de operação
         isProcessingRoomOperation = false;
@@ -297,14 +291,12 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
     public void DisconectAndReconect()
     {
-        DebugHelper.Log("Disconecting and Reconecting");
         PhotonNetwork.Disconnect();
         PhotonNetwork.ConnectUsingSettings();
     }
 
     public void CheckIfIsMaster()
     {
-        DebugHelper.Log($"[GameConnection] CheckIfIsMaster - IsMasterClient: {PhotonNetwork.IsMasterClient}");
 
         // Tentar encontrar o botão se a referência não estiver configurada
         if (buttonStart == null && roomScreen != null)
@@ -315,7 +307,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
                 if (btn.gameObject.name == "StartGameButton" || btn.gameObject.name == "Start" || btn.gameObject.name == "ButtonStart" || btn.gameObject.name == "StartButton")
                 {
                     buttonStart = btn;
-                    DebugHelper.Log($"[GameConnection] Botão Start encontrado dinamicamente: {btn.gameObject.name}");
                     break;
                 }
             }
@@ -327,11 +318,9 @@ public class GameConnection : MonoBehaviourPunCallbacks
             if (buttonStart != null)
             {
                 buttonStart.interactable = true;
-                DebugHelper.Log("[GameConnection] Botão Start HABILITADO (MasterClient)");
             }
             else
             {
-                DebugHelper.Log("[GameConnection] ERRO: buttonStart é null!");
             }
         }
         else
@@ -339,11 +328,9 @@ public class GameConnection : MonoBehaviourPunCallbacks
             if (buttonStart != null)
             {
                 buttonStart.interactable = false;
-                DebugHelper.Log("[GameConnection] Botão Start DESABILITADO (não é MasterClient)");
             }
             else
             {
-                DebugHelper.Log("[GameConnection] ERRO: buttonStart é null!");
             }
         }
     }
@@ -353,17 +340,14 @@ public class GameConnection : MonoBehaviourPunCallbacks
         // Prevenir cliques múltiplos
         if (isProcessingRoomOperation)
         {
-            DebugHelper.Log("[GameConnection] Operação em andamento, ignorando clique duplicado");
             return;
         }
 
-        DebugHelper.Log("Entrando na sala: " + roomName);
         isProcessingRoomOperation = true;
 
         // Verificar se está conectado ao Master Server e pronto para operações
         if (!PhotonNetwork.IsConnectedAndReady || !PhotonNetwork.InLobby)
         {
-            DebugHelper.Log("[GameConnection] Não está pronto para entrar na sala. Reconectando...");
 
             // Armazenar nome da sala para entrar após reconexão
             pendingJoinRoomName = roomName;
@@ -404,7 +388,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
     /// </summary>
     public void ClearPendingOperations()
     {
-        DebugHelper.Log("[GameConnection] Limpando operações pendentes");
         pendingJoinRoomName = null;
         pendingRoomData = null;
     }
@@ -413,7 +396,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
     private string pendingJoinRoomName;
     public override void OnJoinedRoom()
     {
-        DebugHelper.Log($"[GameConnection] OnJoinedRoom - Jogador: {PhotonNetwork.LocalPlayer.NickName}");
 
         // Resetar flag de operação - entrada na sala foi bem sucedida
         isProcessingRoomOperation = false;
@@ -459,12 +441,10 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         }
 
-        DebugHelper.Log($"[GameConnection] OnJoinedRoom - Jogadores na sala: {PhotonNetwork.CurrentRoom.PlayerCount}");
     }
 
     public void ListPlayersInRoom()
     {
-        DebugHelper.Log("[GameConnection] ListPlayersInRoom");
 
         if (players != null)
         {
@@ -472,13 +452,11 @@ public class GameConnection : MonoBehaviourPunCallbacks
         }
         else
         {
-            DebugHelper.Log("[GameConnection] AVISO: players é null!");
             return;
         }
 
         if (PhotonNetwork.CurrentRoom != null)
         {
-            DebugHelper.Log($"[GameConnection] Jogadores na sala: {PhotonNetwork.CurrentRoom.PlayerCount}");
 
             if (maxPlayersTitle != null)
             {
@@ -488,27 +466,22 @@ public class GameConnection : MonoBehaviourPunCallbacks
             foreach (int key in PhotonNetwork.CurrentRoom.Players.Keys)
             {
                 players.text += " " + PhotonNetwork.CurrentRoom.Players[key].NickName + "\n";
-                DebugHelper.Log($"[GameConnection] - {PhotonNetwork.CurrentRoom.Players[key].NickName}");
             }
         }
         else
         {
-            DebugHelper.Log("[GameConnection] CurrentRoom é null");
         }
     }
 
     public bool CheckPassword(string nameRoom, string password)
     {
-        DebugHelper.Log("Entrou no CheckPassword");
 
         for (int i = 0; i < rooms.Count; i++)
         {
-            DebugHelper.Log("RoomName: "+ rooms[i].Name.ToUpper()+" ----- nameRoom: "+ nameRoom.ToUpper());
             if (rooms[i].Name.ToUpper() == nameRoom.ToUpper())
             {
                 string passwordRoom = rooms[i].CustomProperties["pass"].ToString();
 
-                DebugHelper.Log("Comparando senhas: ---- senha01: " + passwordRoom.ToUpper() + " senha02: " + password.ToUpper());
                 if ( passwordRoom.ToUpper() == password.ToUpper())
                 {
                     return true;
@@ -516,7 +489,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
                 else
                 {
                     //passwordCorrect = false;
-                    DebugHelper.Log("Password Errado 01");
                 }
             }
 
@@ -552,8 +524,6 @@ public class GameConnection : MonoBehaviourPunCallbacks
     }
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        DebugHelper.Log("Atualizando salas");
-        DebugHelper.Log("Numero de salas criadas: "+roomList.Count);
 
         rooms.Clear();
         closedRooms.Clear();
@@ -561,26 +531,20 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < roomList.Count; i++)
         {
-            DebugHelper.Log(" - " + roomList[i].Name);
             if (roomList[i].PlayerCount == 0 || !roomList[i].IsOpen) 
             {
-                DebugHelper.Log("Sala vazia ou fechada");
                 roomList[i].RemovedFromList = true;
                 closedRooms.Add(roomList[i]);
             }
             else
             {
-                DebugHelper.Log("adicionando sala aberta na lista");
                 roomList[i].RemovedFromList = false;
                 rooms.Add(roomList[i]);
             }
 
         }
-        DebugHelper.Log("Salas ABERTAS armazenadas na lista flexivel:");
-        DebugHelper.Log("Tamanho da lista: "+rooms.Count);
         for (int i = 0; i < rooms.Count; i++)
         {
-            DebugHelper.Log("Sala: " + rooms[i].Name+" no index: "+ i);
         }
 
     }

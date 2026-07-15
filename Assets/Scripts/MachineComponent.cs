@@ -32,7 +32,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     }
 
     private SoundEffects soundEffects;
-    private GameOver gameOver;
+    private EndMatch endMatchScreen;
     private Transform sparks;
     private Transform smoke;
     private Transform componentWithAnimator = null;
@@ -49,9 +49,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
     // Instâncias de materiais para cada target (evita compartilhamento)
     private List<Material> materialInstances = new List<Material>();
-
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
 
     /// <summary>
     /// Define o parâmetro bool "malfunction" no Animator, se existir
@@ -90,7 +87,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     void Start()
     {
         soundEffects = FindFirstObjectByType<SoundEffects>();
-        gameOver = FindFirstObjectByType<GameOver>();
+
+        endMatchScreen = FindFirstObjectByType<EndMatch>();
 
         // Cache do MeshCollider
         cachedMeshCollider = GetComponent<MeshCollider>();
@@ -107,11 +105,11 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                     childrenWithanimator.Add(opcoes[i]);
                     cachedChildAnimators.Add(anim); // Cache do Animator
                 }
-                else if (opcoes[i].CompareTag("Sparks"))
+                //else if (opcoes[i].CompareTag("Sparks"))
                 {
                     sparks = opcoes[i];
                 }
-                else if (opcoes[i].CompareTag("Smoke"))
+                //else if (opcoes[i].CompareTag("Smoke"))
                 {
                     smoke = opcoes[i];
                 }
@@ -125,11 +123,11 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             Transform[] childs = gameObject.GetComponentsInChildren<Transform>(true);
             foreach(var child in childs)
             {
-                if (child.CompareTag("Sparks"))
+                //if (child.CompareTag("Sparks"))
                 {
                     sparks = child;
                 }
-                else if (child.CompareTag("Smoke"))
+                //else if (child.CompareTag("Smoke"))
                 {
                     smoke = child;
                 }
@@ -265,31 +263,25 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
         if (gameObject.CompareTag("Selectable"))
         {
             var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
             foreach (var player in players)
             {
-                DebugHelper.Log("Vez de " + player.nickname + " : " + player.GetYourTurn());
                 if (player.GetYourTurn())
                 {
 
-                    DebugHelper.Log("Number od cards: " + player.GetNumberOfBonusCards());
 
                     // Verificar se jogador tem carta de reparo
                     BonusCard repairCard = BonusCardManager.Instance?.GetRepairCard(player);
 
                     if (repairCard != null)
                     {
-                        DebugHelper.Log("[MachineComponent] Usando carta de reparo");
 
                         photonView.RPC("RemoveMalfunction", RpcTarget.All);
                         repairCard.ConsumeCard();
-                        DebugHelper.Log("component: " + componentId);
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
                         gameInfo.gameObject.SetActive(true);
@@ -306,7 +298,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                     }
                     else
                     {
-                        DebugHelper.Log("You need a Repair Card to repair a component!");
 
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
@@ -328,7 +319,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         }
         else
         {
-            DebugHelper.Log("Voc� j� realizou uma a��o nesse turno");
 
             Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
             gameInfo.gameObject.SetActive(true);
@@ -386,7 +376,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 
     public void AddMalfunction()
@@ -396,7 +386,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         if (malfunctions >= 2)
         {
             // Componente com 2 malfunctions - ativa fumaça
-            DebugHelper.Log($"----> Componente {componentId} com malfunction crítico (2)");
             soundEffects.PlayFinalComponentExplosionSound();
 
             if (smoke != null)
@@ -428,7 +417,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         else
         {
             // Primeiro malfunction - ativa animação e sparks
-            DebugHelper.Log($"----> Componente {componentId} com primeiro malfunction");
             if (componentWithAnimator != null)
             {
                 if (cachedAnimator != null)
@@ -475,7 +463,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 if (turnTimer != null)
                 {
                     turnTimer.ApplyBatteryMalfunction();
-                    DebugHelper.Log($"[MachineComponent] Bateria com malfunction! Timer reduzido.");
                 }
                 break;
 
@@ -484,7 +471,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 if (ThermometerManager.Instance != null)
                 {
                     ThermometerManager.Instance.ApplyCoolerMalfunction();
-                    DebugHelper.Log($"[MachineComponent] Cooler com malfunction! Níveis de temperatura aumentados.");
                 }
                 break;
 
@@ -493,7 +479,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 if (ThermometerManager.Instance != null)
                 {
                     ThermometerManager.Instance.SetThermometerMalfunctionState(true);
-                    DebugHelper.Log($"[MachineComponent] Thermometer com malfunction! Animator atualizado.");
                 }
                 break;
         }
@@ -512,7 +497,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 if (turnTimer != null)
                 {
                     turnTimer.RestoreBatteryEffect();
-                    DebugHelper.Log($"[MachineComponent] Bateria reparada! Timer restaurado.");
                 }
                 break;
 
@@ -521,7 +505,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 if (ThermometerManager.Instance != null)
                 {
                     ThermometerManager.Instance.RemoveCoolerMalfunction();
-                    DebugHelper.Log($"[MachineComponent] Cooler reparado! Níveis de temperatura reduzidos.");
                 }
                 break;
 
@@ -530,7 +513,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                 if (ThermometerManager.Instance != null)
                 {
                     ThermometerManager.Instance.SetThermometerMalfunctionState(false);
-                    DebugHelper.Log($"[MachineComponent] Thermometer reparado! Animator atualizado.");
                 }
                 break;
         }
@@ -546,9 +528,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         gameManager.ResetAllPlatenames();
 
         backgroundMusic.PlayGameOverSound();
-        gameOver.transform.GetChild(0).gameObject.SetActive(true);
+        endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
         gameManager.Hud.SetActive(false);
-        DebugHelper.Log("name ---> " + gameOver.name);
     }
 
     [PunRPC]

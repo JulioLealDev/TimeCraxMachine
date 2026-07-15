@@ -1,33 +1,23 @@
 using UnityEngine;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class Sticker : MonoBehaviour
 {
     public SoundEffects soundEffects;
-    public Menu menu;
+    public MenuManager menuManager;
     public Configurations configurations;
-
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
 
     private void OnMouseDown()
     {
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
-        DebugHelper.Log("Clicou no sticker");
-        menu.DisableMenu();
-        configurations.SetDefaultSlidersValues();
-        configurations.gameObject.SetActive(true);
+        menuManager.DesablingMenuOptions();
         soundEffects.TagSound();
 
-        // Resetar após um pequeno delay
-        this.DelayedCall(0.5f, ResetClickProtection);
-    }
+        configurations.SetDefaultSlidersValues();
+        configurations.gameObject.SetActive(true);
 
-    private void ResetClickProtection()
-    {
-        isProcessingClick = false;
+        this.DelayedCall(0.5f, () => GameManager.ResetClick(this));
     }
 }

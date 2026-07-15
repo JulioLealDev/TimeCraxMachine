@@ -56,25 +56,21 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
     public void DrawEventCard()
     {
-        DebugHelper.Log("You draw one EventCard!");
     }
     public void DrawBonusCard()
     {
         numberBonusCards++;
 
-        DebugHelper.Log("------ mais: "+numberBonusCardsText);
 
         var findObject = GameObject.Find(numberBonusCardsText);
         if (findObject == null)
         {
-            DebugHelper.Log($"[PlayerScript] DrawBonusCard: GameObject '{numberBonusCardsText}' não encontrado");
             return;
         }
 
         var textComponent = findObject.GetComponent<TextMeshProUGUI>();
         if (textComponent == null)
         {
-            DebugHelper.Log($"[PlayerScript] DrawBonusCard: TextMeshProUGUI não encontrado em '{numberBonusCardsText}'");
             return;
         }
 
@@ -113,7 +109,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks
                 }
             }
 
-            DebugHelper.Log($"[PlayerScript] RemoveBonusCard: {numberBonusCards} cartas restantes");
         }
     }
 
@@ -121,19 +116,16 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     {
         otherPlayer.numberBonusCards++;
 
-        DebugHelper.Log("------ menos: " + numberBonusCardsText);
 
         var findObject = GameObject.Find(numberBonusCardsText);
         if (findObject == null)
         {
-            DebugHelper.Log($"[PlayerScript] GiveBonusCard: GameObject '{numberBonusCardsText}' não encontrado");
             return;
         }
 
         var textComponent = findObject.GetComponent<TextMeshProUGUI>();
         if (textComponent == null)
         {
-            DebugHelper.Log($"[PlayerScript] GiveBonusCard: TextMeshProUGUI não encontrado em '{numberBonusCardsText}'");
             return;
         }
 
@@ -144,7 +136,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
     public void RepairComponent(int cards)
     {
-        DebugHelper.Log("cartas: " + cards);
         photonView.RPC("DescreaseAndDestroyCards", RpcTarget.All, cards);
     }
 
@@ -153,12 +144,10 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     {
         numberBonusCards -= cards;
 
-        DebugHelper.Log("------ repair: " + numberBonusCardsText);
 
         var findObject = GameObject.Find(numberBonusCardsText);
         if (findObject == null)
         {
-            DebugHelper.Log($"[PlayerScript] DescreaseAndDestroyCards: GameObject '{numberBonusCardsText}' não encontrado");
             DestroyBonusCards(cards);
             return;
         }
@@ -166,7 +155,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks
         var textComponent = findObject.GetComponent<TextMeshProUGUI>();
         if (textComponent == null)
         {
-            DebugHelper.Log($"[PlayerScript] DescreaseAndDestroyCards: TextMeshProUGUI não encontrado em '{numberBonusCardsText}'");
             DestroyBonusCards(cards);
             return;
         }
@@ -204,7 +192,6 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
         for (var i = 0; i < cardNumber; i++)
         {
-            DebugHelper.Log("carta -> " + orderedlist[i].photonView.ViewID);
             orderedlist[i].GetComponent<Animator>().enabled = true;
             orderedlist[i].GetComponent<Animator>().SetBool("destroyCard", true);
         }

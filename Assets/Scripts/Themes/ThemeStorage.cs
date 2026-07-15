@@ -19,7 +19,6 @@ namespace TimeCrax.Themes
             if (!Directory.Exists(ThemesRootPath))
             {
                 Directory.CreateDirectory(ThemesRootPath);
-                DebugHelper.Log($"[ThemeStorage] Created themes directory: {ThemesRootPath}");
             }
         }
 
@@ -46,9 +45,8 @@ namespace TimeCrax.Themes
                 var json = File.ReadAllText(path);
                 return JsonUtility.FromJson<LocalThemeManifest>(json) ?? new LocalThemeManifest();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                DebugHelper.Log($"[ThemeStorage] Error loading manifest: {ex.Message}");
                 return new LocalThemeManifest();
             }
         }
@@ -60,11 +58,9 @@ namespace TimeCrax.Themes
                 Initialize();
                 var json = JsonUtility.ToJson(manifest, true);
                 File.WriteAllText(GetManifestPath(), json);
-                DebugHelper.Log("[ThemeStorage] Manifest saved");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                DebugHelper.Log($"[ThemeStorage] Error saving manifest: {ex.Message}");
             }
         }
 
@@ -95,7 +91,6 @@ namespace TimeCrax.Themes
             if (!folderExists)
             {
                 // Tema está no manifesto mas pasta não existe - remover do manifesto
-                DebugHelper.Log($"[ThemeStorage] Tema {themeId} está no manifesto mas pasta não existe. Removendo do manifesto.");
                 RemoveTheme(themeId);
                 return false;
             }
@@ -118,7 +113,6 @@ namespace TimeCrax.Themes
             var manifest = LoadManifest();
             manifest.themes.RemoveAll(t => t.id == themeId);
             SaveManifest(manifest);
-            DebugHelper.Log($"[ThemeStorage] Theme removed from manifest: {themeId}");
         }
 
         public static void SaveTheme(ThemeData theme)
@@ -136,7 +130,6 @@ namespace TimeCrax.Themes
             }
 
             SaveManifest(manifest);
-            DebugHelper.Log($"[ThemeStorage] Theme saved: {theme.name}");
         }
 
         public static void DeleteTheme(string themeId)
@@ -151,11 +144,9 @@ namespace TimeCrax.Themes
                 try
                 {
                     Directory.Delete(themePath, true);
-                    DebugHelper.Log($"[ThemeStorage] Theme deleted: {themeId}");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    DebugHelper.Log($"[ThemeStorage] Error deleting theme folder: {ex.Message}");
                 }
             }
         }
@@ -190,9 +181,8 @@ namespace TimeCrax.Themes
                     return texture;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                DebugHelper.Log($"[ThemeStorage] Error loading local image: {ex.Message}");
             }
 
             return null;
@@ -209,9 +199,8 @@ namespace TimeCrax.Themes
                 }
                 File.WriteAllBytes(localPath, bytes);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                DebugHelper.Log($"[ThemeStorage] Error saving image: {ex.Message}");
             }
         }
 

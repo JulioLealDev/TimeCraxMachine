@@ -139,7 +139,6 @@ namespace TimeCrax.Themes
                     });
             }
 
-            DebugHelper.Log($"[ThemePickerUI] Painel aberto com {themeCards.Count} cards");
         }
 
         private void LoadThemeData()
@@ -218,7 +217,6 @@ namespace TimeCrax.Themes
                 OnPanelClosed?.Invoke();
             }
 
-            DebugHelper.Log("[ThemePickerUI] Painel fechado");
         }
 
         public bool IsOpen => isOpen;
@@ -233,7 +231,6 @@ namespace TimeCrax.Themes
 
             if (themePickerCardPrefab == null || gridContainer == null)
             {
-                DebugHelper.Log("[ThemePickerUI] Prefab ou container não configurado");
                 return;
             }
 
@@ -258,7 +255,6 @@ namespace TimeCrax.Themes
                 CreateEmptyMessage();
             }
 
-            DebugHelper.Log($"[ThemePickerUI] {themeCards.Count} cards criados (filtro: '{currentSearchText}')");
         }
 
         private void CreateThemeCard(string themeId, string themeName, string creatorName, bool isLegacy, ThemeData themeData)
@@ -323,7 +319,6 @@ namespace TimeCrax.Themes
             if (cardButton == null)
             {
                 cardButton = cardGO.AddComponent<Button>();
-                DebugHelper.Log($"[ThemePickerUI] Button adicionado ao card: {themeName}");
             }
 
             // Garantir que o botão está interativo
@@ -336,7 +331,6 @@ namespace TimeCrax.Themes
             cardButton.onClick.RemoveAllListeners(); // Limpar listeners anteriores
             cardButton.onClick.AddListener(() => OnCardClicked(capturedId, capturedName, capturedIsLegacy));
 
-            DebugHelper.Log($"[ThemePickerUI] Listener configurado para: {themeName}");
 
             themeCards.Add(cardGO);
         }
@@ -378,12 +372,10 @@ namespace TimeCrax.Themes
 
         private void OnCardClicked(string themeId, string themeName, bool isLegacy)
         {
-            DebugHelper.Log($"[ThemePickerUI] >>> CLIQUE DETECTADO: {themeName}");
 
             if (soundEffects != null)
                 soundEffects.PressHudButtonSound();
 
-            DebugHelper.Log($"[ThemePickerUI] Tema selecionado: {themeName} (ID: {themeId}, Legacy: {isLegacy})");
 
             // Selecionar tema no ThemeManager
             if (!isLegacy && !string.IsNullOrEmpty(themeId))

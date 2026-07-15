@@ -57,7 +57,6 @@ namespace TimeCrax.Auth
             // Tenta auto-login se já tem token válido
             if (autoLoginIfTokenExists && TokenManager.IsLoggedIn)
             {
-                DebugHelper.Log("[LoginUI] Token válido encontrado, verificando...");
                 ValidateExistingSession();
             }
             else
@@ -243,12 +242,10 @@ namespace TimeCrax.Auth
 
             if (pendingResult.Success)
             {
-                DebugHelper.Log("[LoginUI] Login bem-sucedido!");
                 OnAuthenticationSuccess();
             }
             else
             {
-                DebugHelper.Log($"[LoginUI] Erro no login: {pendingResult.ErrorCode}");
                 ShowError(pendingResult.ErrorMessage);
             }
         }
@@ -263,7 +260,6 @@ namespace TimeCrax.Auth
         private void OnRegisterClicked()
         {
             PlayButtonSound();
-            DebugHelper.Log($"[LoginUI] Abrindo URL de registro: {registerWebsiteUrl}");
             Application.OpenURL(registerWebsiteUrl);
         }
 
@@ -297,12 +293,10 @@ namespace TimeCrax.Auth
 
             if (result.Success)
             {
-                DebugHelper.Log($"[LoginUI] Sessão válida para: {result.Data.FullName}");
                 OnAuthenticationSuccess();
             }
             else
             {
-                DebugHelper.Log("[LoginUI] Sessão inválida, mostrando login");
                 ShowLoginPanel();
             }
         }
@@ -316,7 +310,6 @@ namespace TimeCrax.Auth
             // Salva o nickname para uso no jogo (compatibilidade com SessionData existente)
             SessionData.Nickname = TokenManager.UserName;
 
-            DebugHelper.Log($"[LoginUI] Navegando para: {mainMenuSceneName}");
 
             // Carrega a cena principal
             if (!string.IsNullOrEmpty(mainMenuSceneName))
@@ -406,7 +399,6 @@ namespace TimeCrax.Auth
         private void OnExitClicked()
         {
             PlayButtonSound();
-            DebugHelper.Log("[LoginUI] Saindo do jogo...");
 
             #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;

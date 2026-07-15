@@ -81,7 +81,6 @@ public class TurnTimer : MonoBehaviour
     /// </summary>
     public void StartTimerLocal(float time)
     {
-        DebugHelper.Log($"[TurnTimer] StartTimerLocal: {time}s");
         remainingTime = time;
         isRunning = true;
         hasAutoEnded = false;
@@ -105,7 +104,6 @@ public class TurnTimer : MonoBehaviour
     /// </summary>
     public void StopTimerLocal()
     {
-        DebugHelper.Log("[TurnTimer] StopTimerLocal");
         isRunning = false;
 
         // Parar animação do relógio
@@ -132,7 +130,6 @@ public class TurnTimer : MonoBehaviour
         if (highestPointerAnimator != null && highestPointerAnimator.runtimeAnimatorController != null)
         {
             highestPointerAnimator.SetBool("startCount", value);
-            DebugHelper.Log($"[TurnTimer] SetClockAnimatorStartCount: {value}");
         }
     }
 
@@ -148,7 +145,6 @@ public class TurnTimer : MonoBehaviour
                 if (param.name == "halfTime" && param.type == AnimatorControllerParameterType.Bool)
                 {
                     highestPointerAnimator.SetBool("halfTime", value);
-                    DebugHelper.Log($"[TurnTimer] SetClockAnimatorHalfTime: {value}");
                     return;
                 }
             }
@@ -160,7 +156,6 @@ public class TurnTimer : MonoBehaviour
     /// </summary>
     private void OnTimeExpired()
     {
-        DebugHelper.Log("[TurnTimer] Tempo expirado! Auto-end do turno.");
 
         // Parar o timer em todos os clientes
         if (gameManager != null)
@@ -183,7 +178,6 @@ public class TurnTimer : MonoBehaviour
     {
         if (gameManager != null)
         {
-            DebugHelper.Log("[TurnTimer] Chamando AutoEndTurn no GameManager");
             gameManager.AutoEndTurn();
         }
     }
@@ -212,7 +206,6 @@ public class TurnTimer : MonoBehaviour
             gameManager.SyncTurnTimer(remainingTime);
         }
 
-        DebugHelper.Log($"[TurnTimer] +{seconds}s adicionados. Tempo restante: {remainingTime}s");
     }
 
     /// <summary>
@@ -225,7 +218,6 @@ public class TurnTimer : MonoBehaviour
         isBatteryMalfunctioning = true;
         timeLimit = originalTimeLimit / 2f;
         SetClockAnimatorHalfTime(true);
-        DebugHelper.Log($"[TurnTimer] Bateria com malfunction! TimeLimit reduzido para {timeLimit}s");
     }
 
     /// <summary>
@@ -238,7 +230,6 @@ public class TurnTimer : MonoBehaviour
         isBatteryMalfunctioning = false;
         timeLimit = originalTimeLimit;
         SetClockAnimatorHalfTime(false);
-        DebugHelper.Log($"[TurnTimer] Bateria reparada! TimeLimit restaurado para {timeLimit}s");
     }
 
     /// <summary>

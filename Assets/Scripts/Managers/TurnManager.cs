@@ -70,7 +70,6 @@ namespace TimeCrax.Managers
             orderedPlayers = null;
 
             RefreshPlateNamesCache();
-            DebugHelper.Log("[TurnManager] Inicializado");
         }
 
         /// <summary>
@@ -103,7 +102,6 @@ namespace TimeCrax.Managers
                 }
             }
 
-            DebugHelper.Log($"[TurnManager] OrderedPlayers configurado com {orderedPlayers.Length} jogadores");
         }
 
         /// <summary>
@@ -117,7 +115,6 @@ namespace TimeCrax.Managers
             {
                 if (orderedPlayers[i]?.plateNameIndex == plateNameIndex)
                 {
-                    DebugHelper.Log($"[TurnManager] Removendo {orderedPlayers[i].nickname}");
                     orderedPlayers[i] = null;
                 }
             }
@@ -130,7 +127,6 @@ namespace TimeCrax.Managers
         {
             if (orderedPlayers == null || orderedPlayers.Length == 0)
             {
-                DebugHelper.Log("[TurnManager] orderedPlayers é null ou vazio");
                 return true;
             }
 
@@ -352,7 +348,6 @@ namespace TimeCrax.Managers
         public void RPC_SyncTurn(int syncedTime)
         {
             time = syncedTime;
-            DebugHelper.Log($"[TurnManager] RPC_SyncTurn: time={syncedTime}");
 
             EnsureOrderedPlayersPopulated();
 
@@ -367,7 +362,6 @@ namespace TimeCrax.Managers
         {
             time = syncedTime;
             round = syncedRound;
-            DebugHelper.Log($"[TurnManager] RPC_SyncTurnWithRound: time={syncedTime}, round={syncedRound}");
 
             EnsureOrderedPlayersPopulated();
 

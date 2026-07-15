@@ -137,11 +137,9 @@ namespace TimeCrax.Themes
                 ThemePickerUI.Instance.OnThemeSelected -= OnThemePickerSelected;
                 ThemePickerUI.Instance.OnThemeSelected += OnThemePickerSelected;
 
-                DebugHelper.Log("[ThemeDropdownUI] Abrindo painel de seleção de temas");
             }
             else
             {
-                DebugHelper.Log("[ThemeDropdownUI] ThemePickerUI.Instance não encontrado! Usando dropdown legado.");
                 // Fallback para dropdown antigo
                 OpenDropdownLegacy();
             }
@@ -198,7 +196,6 @@ namespace TimeCrax.Themes
                     });
             }
 
-            DebugHelper.Log($"[ThemeDropdownUI] Dropdown aberto, {themeItems.Count} itens");
         }
 
         [System.Obsolete("Use OpenThemePicker() instead")]
@@ -214,7 +211,6 @@ namespace TimeCrax.Themes
             if (contentContainer != null)
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer as RectTransform);
-                DebugHelper.Log($"[ThemeDropdownUI] Layout rebuild - Content size: {(contentContainer as RectTransform).sizeDelta}");
             }
 
             Canvas.ForceUpdateCanvases();
@@ -243,7 +239,6 @@ namespace TimeCrax.Themes
                 ClearThemeList();
             }
 
-            DebugHelper.Log("[ThemeDropdownUI] Dropdown fechado");
         }
 
         #endregion
@@ -256,7 +251,6 @@ namespace TimeCrax.Themes
 
             if (themeItemPrefab == null || contentContainer == null)
             {
-                DebugHelper.Log("[ThemeDropdownUI] Prefab ou container não configurado");
                 return;
             }
 
@@ -285,14 +279,12 @@ namespace TimeCrax.Themes
                 CreateNoThemesMessage();
             }
 
-            DebugHelper.Log($"[ThemeDropdownUI] {themeItems.Count} temas na lista");
         }
 
         private void CreateThemeItem(string themeId, string themeName, bool isLegacy)
         {
             if (themeItemPrefab == null)
             {
-                DebugHelper.Log("[ThemeDropdownUI] ERRO: themeItemPrefab é null!");
                 return;
             }
 
@@ -308,7 +300,6 @@ namespace TimeCrax.Themes
             if (itemRect != null)
             {
                 itemRect.localScale = Vector3.one;
-                DebugHelper.Log($"[ThemeDropdownUI] Item criado: {themeName}, size: {itemRect.sizeDelta}, pos: {itemRect.anchoredPosition}");
             }
 
             // Configurar texto
@@ -321,7 +312,6 @@ namespace TimeCrax.Themes
             }
             else
             {
-                DebugHelper.Log($"[ThemeDropdownUI] AVISO: TextMeshProUGUI não encontrado no item {themeName}");
             }
 
             // Configurar botão
@@ -385,13 +375,11 @@ namespace TimeCrax.Themes
             if (!isLegacy && !string.IsNullOrEmpty(themeId))
             {
                 ThemeManager.Instance?.SelectTheme(themeId);
-                DebugHelper.Log($"[ThemeDropdownUI] Tema API selecionado: {themeName} (ID: {themeId})");
             }
             else
             {
                 // Tema legado - limpar seleção do ThemeManager
                 ThemeManager.Instance?.SelectTheme((ThemeData)null);
-                DebugHelper.Log($"[ThemeDropdownUI] Tema legado selecionado: {themeName}");
             }
 
             // Disparar evento

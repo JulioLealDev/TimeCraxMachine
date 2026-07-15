@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using TimeCrax.Core;
 using TimeCrax.Themes;
+using TimeCrax.Managers;
 
 public class Photo : MonoBehaviour
 {
-    public Menu menu;
+    
+    public MenuManager menuManager;
     public ThemeSelectionUI themeSelectionUI;
     public SoundEffects soundEffects;
-
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
 
     private void Start()
     {
@@ -31,24 +30,19 @@ public class Photo : MonoBehaviour
 
     private void OnMouseDown()
     {
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
-        DebugHelper.Log("Clicou na foto");
 
-        menu.DisableMenu();
-
+        menuManager.DesablingMenuOptions();
         themeSelectionUI.gameObject.SetActive(true);
+        
         themeSelectionUI.Show();
-
         soundEffects.TagSound();
     }
 
     private void OnThemeSelectionClosed()
     {
-        menu.EnableMenu();
-        isProcessingClick = false;
-        DebugHelper.Log("Menu reativado após fechar seleção de temas");
+        menuManager.EnablingMenuOptions();
+        GameManager.ResetClick(this);
     }
 }

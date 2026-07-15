@@ -33,7 +33,6 @@ public class PasswordScreen : MonoBehaviour
 
     public void EnterPasswordButton()
     {
-        DebugHelper.Log("EnterPasswordButton");
         bool correctPass = gameConnection.CheckPassword(roomName, passwordInput.GetComponent<TMP_InputField>().text);
 
         if (correctPass)
@@ -48,7 +47,6 @@ public class PasswordScreen : MonoBehaviour
         }
         else
         {
-            DebugHelper.Log("Password Incorreto");
             passwordInput.GetComponent<TMP_InputField>().text = " ";
             warning.gameObject.SetActive(true);
             warning.gameObject.GetComponent<Animator>().SetBool("wrongPassword", true);

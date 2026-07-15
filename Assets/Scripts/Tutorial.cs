@@ -1,32 +1,21 @@
 using UnityEngine;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class Tutorial : MonoBehaviour
 {
-    public Canvas canvas;
+    public Canvas tutorialCanvas;
     public SoundEffects soundEffects;
-    public Menu menu;
-
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
+    public MenuManager menuManager;
 
     private void OnMouseDown()
     {
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
-        DebugHelper.Log("Clicou no tutorial");
         soundEffects.TurnPageSound(1);
-        canvas.gameObject.SetActive(true);
-        menu.DisableMenu();
+        tutorialCanvas.gameObject.SetActive(true);
+        menuManager.DesablingMenuOptions();
 
-        // Resetar após um delay
-        this.DelayedCall(0.5f, ResetClickProtection);
-    }
-
-    private void ResetClickProtection()
-    {
-        isProcessingClick = false;
+        this.DelayedCall(0.5f, () => GameManager.ResetClick(this));
     }
 }

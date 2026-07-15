@@ -6,42 +6,35 @@ public class Timeline : MonoBehaviourPunCallbacks
 {
     private bool zoom;
     private FinishTurn endButton;
+    private Collider timelineColliderArea;
 
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
-
-    // Start is called before the first frame update
     void Start()
     {
         zoom = false;
         endButton = FindFirstObjectByType<FinishTurn>(FindObjectsInactive.Include);
+
+        var areaObj = transform.Find("TimelineColliderArea");
+        if (areaObj != null)
+            timelineColliderArea = areaObj.GetComponent<Collider>();
     }
 
-    public void OnMouseDown()
+    public void TriggerZoom()
     {
-        DebugHelper.Log($"[Timeline] clique: blocked={InputBlocker.IsBlocked}, animating={CameraController.IsAnimating}, processing={isProcessingClick}");
         if (InputBlocker.IsBlocked) return;
         if (CameraController.IsAnimating) return;
+        if (!GameManager.TryBeginClick(this)) return;
 
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        bool newZoom = !zoom;
 
-        if (gameObject.CompareTag("Selectable"))
-        {
-            // Calcular novo estado localmente
-            bool newZoom = !zoom;
+        if (IsMyTurn())
+            endButton.GetComponent<MeshCollider>().enabled = zoom;
 
-            // Só habilitar o botão End Turn se for o turno do jogador local
-            if (IsMyTurn())
-            {
-                endButton.GetComponent<MeshCollider>().enabled = zoom;
-            }
-            ActiveTimeline(false);
+        ActiveTimeline(false);
 
-            // Enviar estado explícito via RPC (não toggle)
+        if (PhotonNetwork.InRoom)
             photonView.RPC("SetZoomState", RpcTarget.All, newZoom);
-        }
+        else
+            SetZoomState(newZoom);
     }
 
     /// <summary>
@@ -66,30 +59,29 @@ public class Timeline : MonoBehaviourPunCallbacks
         zoom = newZoom;
 
         var camera = FindFirstObjectByType<CameraController>();
-        if (zoom)
+        if (camera == null)
         {
-            camera.ZoomTimeline();
-        }
-        else
-        {
-            camera.DistanceTimeline();
+            GameManager.ResetClick(this);
+            return;
         }
 
-        // Resetar proteção contra clique duplo após animação da câmera
+        if (zoom)
+            camera.ZoomTimeline();
+        else
+            camera.DistanceTimeline();
+
         this.DelayedCall(1.5f, ResetClickProtection);
     }
 
-    /// <summary>
-    /// Reseta a proteção contra clique duplo
-    /// </summary>
     public void ResetClickProtection()
     {
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 
     public void ActiveTimeline(bool activate)
     {
-        gameObject.GetComponent<MeshCollider>().enabled = activate;
+        if (timelineColliderArea != null)
+            timelineColliderArea.enabled = activate;
     }
 
     /// <summary>

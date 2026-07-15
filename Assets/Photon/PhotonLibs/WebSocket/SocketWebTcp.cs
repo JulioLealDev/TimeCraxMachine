@@ -73,7 +73,7 @@ namespace ExitGames.Client.Photon
                         this.sock.Close();
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     this.EnqueueDebugReturn(DebugLevel.INFO, "Exception in SocketWebTcp.Dispose(): " + ex);
                 }
@@ -271,7 +271,7 @@ namespace ExitGames.Client.Photon
                     {
                         this.sock.Close();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         this.Listener.DebugReturn(DebugLevel.ERROR, "Exception in SocketWebTcp.Disconnect(): " + ex);
                     }

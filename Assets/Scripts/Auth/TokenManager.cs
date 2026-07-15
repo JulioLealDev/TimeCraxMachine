@@ -105,7 +105,6 @@ namespace TimeCrax.Auth
         {
             if (authResponse == null)
             {
-                DebugHelper.Log("[TokenManager] AuthResponse é nulo, não salvando tokens");
                 return;
             }
 
@@ -117,7 +116,6 @@ namespace TimeCrax.Auth
             ExtractClaimsFromToken(authResponse.accessToken);
 
             PlayerPrefs.Save();
-            DebugHelper.Log($"[TokenManager] Tokens salvos. Expira em: {TokenExpiration}");
         }
 
         /// <summary>
@@ -132,7 +130,6 @@ namespace TimeCrax.Auth
             UserName = userData.firstName ?? string.Empty;
 
             PlayerPrefs.Save();
-            DebugHelper.Log($"[TokenManager] Dados do usuário salvos: {UserName}");
         }
 
         /// <summary>
@@ -148,7 +145,6 @@ namespace TimeCrax.Auth
             PlayerPrefs.DeleteKey(USER_NAME_KEY);
             PlayerPrefs.Save();
 
-            DebugHelper.Log("[TokenManager] Tokens limpos (logout)");
         }
 
         /// <summary>
@@ -185,11 +181,9 @@ namespace TimeCrax.Auth
                 UserEmail = ExtractJsonValue(json, "email");
                 UserName = ExtractJsonValue(json, "name");
 
-                DebugHelper.Log($"[TokenManager] Claims extraídos - ID: {UserId}, Email: {UserEmail}");
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                DebugHelper.Log($"[TokenManager] Erro ao extrair claims do JWT: {e.Message}");
             }
         }
 

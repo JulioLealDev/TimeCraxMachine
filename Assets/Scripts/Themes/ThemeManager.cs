@@ -70,7 +70,6 @@ namespace TimeCrax.Themes
         public void RefreshDownloadedThemes()
         {
             _downloadedThemes = ThemeStorage.GetDownloadedThemes();
-            DebugHelper.Log($"[ThemeManager] Loaded {_downloadedThemes.Count} downloaded themes");
         }
 
         public void SelectTheme(string themeId)
@@ -79,19 +78,16 @@ namespace TimeCrax.Themes
             if (theme != null)
             {
                 _selectedTheme = theme;
-                DebugHelper.Log($"[ThemeManager] Selected theme: {theme.name}");
                 OnThemeSelected?.Invoke(theme);
             }
             else
             {
-                DebugHelper.Log($"[ThemeManager] Theme not found: {themeId}");
             }
         }
 
         public void SelectTheme(ThemeData theme)
         {
             _selectedTheme = theme;
-            DebugHelper.Log($"[ThemeManager] Selected theme: {theme?.name ?? "null"}");
             OnThemeSelected?.Invoke(theme);
         }
 
@@ -128,7 +124,6 @@ namespace TimeCrax.Themes
             ThemeStorage.DeleteTheme(themeId);
             RefreshDownloadedThemes();
             OnThemeDeleted?.Invoke(themeId);
-            DebugHelper.Log($"[ThemeManager] Deleted theme: {themeId}");
         }
 
         public bool IsThemeDownloaded(string themeId)

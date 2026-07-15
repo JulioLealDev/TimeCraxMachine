@@ -1,0 +1,5 @@
+D:/Projetos/Timecrax Projects/TimeCrax Machine Game/.utmp/RelWithDebInfo/6y2t3xo7/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Projetos/Timecrax Projects/TimeCrax Machine Game/.utmp/RelWithDebInfo/6y2t3xo7/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+D:/Projetos/Timecrax Projects/TimeCrax Machine Game/.utmp/RelWithDebInfo/6y2t3xo7/armeabi-v7a/FramePacing/CMakeFiles/swappywrapper.dir
+D:/Projetos/Timecrax Projects/TimeCrax Machine Game/.utmp/RelWithDebInfo/6y2t3xo7/armeabi-v7a/FramePacing/CMakeFiles/edit_cache.dir
+D:/Projetos/Timecrax Projects/TimeCrax Machine Game/.utmp/RelWithDebInfo/6y2t3xo7/armeabi-v7a/FramePacing/CMakeFiles/rebuild_cache.dir

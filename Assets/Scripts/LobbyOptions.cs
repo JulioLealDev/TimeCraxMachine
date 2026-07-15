@@ -5,9 +5,13 @@ using System;
 using UnityEngine.UI;
 using TimeCrax.Core;
 using TimeCrax.Themes;
+using TimeCrax.Managers;
+using System.Text.RegularExpressions;
 
 public class LobbyOptions : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private MenuManager menuManager;
+
     [Header("Telas")]
     [SerializeField] private GameObject lobbyBackgroundScreen;
     [SerializeField] private GameObject createRoom;
@@ -47,6 +51,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsOpen = false;
 
         photonView.RPC("StartMatch", RpcTarget.All);
+        GameStateManager.TransitionTo(GamePhase.In_Match);
 
     }
 
@@ -65,13 +70,11 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         privateRoom = !privateRoom;
         if(!privateRoom)
         {
-            DebugHelper.Log("Não privada");
             passwordInput.GetComponent<TMP_InputField>().text = " ";
             passwordLabel.GetComponent<TextMeshProUGUI>().color = Color.gray;
         }
         else
         {
-            DebugHelper.Log("Privada");
             passwordLabel.GetComponent<TextMeshProUGUI>().color = Color.white;
         }
         passwordInput.GetComponent<TMP_InputField>().readOnly = !privateRoom;
@@ -118,7 +121,6 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
             var selectedTheme = ThemeManager.Instance.SelectedTheme;
             theme = selectedTheme.name;
             themeId = selectedTheme.id;
-            DebugHelper.Log($"[LobbyOptions] Usando tema da API: {theme} (ID: {themeId})");
         }
         else
         {
@@ -139,7 +141,6 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
             {
                 theme = "World History";
             }
-            DebugHelper.Log($"[LobbyOptions] Usando tema legado: {theme}");
         }
 
         string roomName = roomNameInput.GetComponent<TMP_InputField>().text + " - " + theme;
@@ -151,12 +152,11 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     {
         soundEffects.PressHudButtonSound();
 
-        DebugHelper.Log("CancelCreateRoom clicked");
         createRoom.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
 
-        var menu = FindFirstObjectByType<Menu>();
-        menu.EnableMenu();
+        menuManager.EnablingMenuOptions();
+
 
         if (nameDisplay != null)
             nameDisplay.gameObject.SetActive(true);
@@ -166,7 +166,6 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     {
         soundEffects.PressHudButtonSound();
 
-        DebugHelper.Log("CancelRoomScreen clicked");
 
         // Resetar flag de operação e limpar operações pendentes
         if (gameConnection != null)
@@ -180,8 +179,8 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
         PhotonNetwork.LeaveRoom(false);
 
-        var menu = FindFirstObjectByType<Menu>();
-        menu.EnableMenu();
+        menuManager.EnablingMenuOptions();
+
 
         if (nameDisplay != null)
             nameDisplay.gameObject.SetActive(true);
@@ -189,12 +188,10 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
     public void RefreshLobbyScreen()
     {
-        DebugHelper.Log("Refreshing clicked");
         soundEffects.PressHudButtonSound();
 
         DestroyRooms();
 
-        DebugHelper.Log("Disconecting and Reconecting");
         RefreshConection();
 
         this.DelayedCall(0.5f, ListRooms);
@@ -214,7 +211,6 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
     public void BackLobbyScreen()
     {
-        DebugHelper.Log("BackLobbyScreen clicked");
         soundEffects.PressHudButtonSound();
 
         // Resetar flag de operação e limpar operações pendentes
@@ -229,13 +225,12 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         lobbyScreen.SetActive(false);
         lobbyBackgroundScreen.SetActive(false);
 
-        var menu = FindFirstObjectByType<Menu>();
-        menu.EnableMenu();
+        menuManager.EnablingMenuOptions();
+
 
         if (nameDisplay != null)
             nameDisplay.gameObject.SetActive(true);
 
-        DebugHelper.Log("Disconecting and Reconecting");
         RefreshConection();
     }
 
@@ -252,10 +247,8 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     {
         foreach (Room room in roomListContent.GetComponentsInChildren<Room>())
         {
-            if (!room.CompareTag("Undestructable"))
+            //if (!room.CompareTag("Undestructable"))
             {
-                DebugHelper.Log("Destruindo sala : " + room.GetInstanceID());
-                DebugHelper.Log("Destruindo sala : " + room.GetComponentInChildren<TMP_Text>().text);
                 Destroy(room.gameObject);
             }
 

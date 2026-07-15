@@ -1,49 +1,26 @@
 using UnityEngine;
 using TimeCrax.Core;
 using TimeCrax.Auth;
+using TimeCrax.Managers;
 
 public class EnterRoom : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
-    [SerializeField] private CameraController cam;
+    [SerializeField] private GameConnection gameConnection;
     [SerializeField] private SoundEffects soundEffects;
-
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
+    [SerializeField] private MenuManager menuManager;
 
     public void OnMouseDown()
     {
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
         soundEffects.PressButtonSound();
 
-        // Usa o nome do usuário logado (da tag)
         if (string.IsNullOrEmpty(SessionData.Nickname))
-        {
             SessionData.Nickname = TokenManager.UserName;
-        }
 
-        var connection = FindFirstObjectByType<GameConnection>();
-        connection.Lobby();
+        if (gameConnection.Lobby())
+            menuManager.DesablingMenuOptions();
 
-        var menu = FindFirstObjectByType<Menu>();
-        menu.DisableMenu();
-
-        // Resetar após um delay
-        this.DelayedCall(1f, ResetClickProtection);
-    }
-
-    private void ResetClickProtection()
-    {
-        isProcessingClick = false;
-    }
-
-    void AwaitGreenButtonAnimation()
-    {
-        cam.gameObject.GetComponent<Animator>().SetBool("enterMenu", false);
-        cam.gameObject.GetComponent<Animator>().SetBool("enterMatch", true);
-        animator.SetBool("startGame", false);
+        this.DelayedCall(1f, () => GameManager.ResetClick(this));
     }
 }

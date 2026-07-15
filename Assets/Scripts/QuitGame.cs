@@ -3,32 +3,36 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using TimeCrax.Core;
+using TMPro;
+using TimeCrax.Managers;
 
 public class QuitGame : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
-    [SerializeField] private CameraController cam;
-    [SerializeField] private InputField nameDisplay;
+    [SerializeField] private CameraController cameraController;
+    [SerializeField] private TMP_Text nameDisplay;
     [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private MenuManager menuManager;
+    private Animator animator;
 
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
 
     private void OnMouseDown()
     {
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
         soundEffects.PressButtonSound();
         animator.SetBool("quitGame", true);
         nameDisplay.text = " ";
+        menuManager.DesablingMenuOptions();
+        GameStateManager.TransitionTo(GamePhase.ExitingGame);
     }
 
     void AwaitRedButtonAnimation()
     {
-        cam.gameObject.GetComponent<Animator>().SetBool("enterMenu", false);
-        cam.gameObject.GetComponent<Animator>().SetBool("quitGame", true);
+        cameraController.DistanceFromMenu();
         animator.SetBool("quitGame", false);
 
         this.DelayedCall(2.9f, AfterClickQuitButton);

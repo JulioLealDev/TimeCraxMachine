@@ -25,7 +25,6 @@ namespace TimeCrax.Auth
 
         private void Start()
         {
-            DebugHelper.Log("[Intro] Iniciando intro...");
 
             // Cria fade image automaticamente se não configurado
             if (fadeImage == null)
@@ -63,12 +62,10 @@ namespace TimeCrax.Auth
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            DebugHelper.Log("[Intro] FadeImage criado automaticamente");
         }
 
         private IEnumerator IntroSequence()
         {
-            DebugHelper.Log("[Intro] Sequência iniciada");
 
             // Inicializa: tela preta, conteúdo invisível
             if (fadeImage != null)
@@ -83,19 +80,15 @@ namespace TimeCrax.Auth
             }
 
             // Fade In
-            DebugHelper.Log("[Intro] Fade In...");
             yield return StartCoroutine(FadeIn());
 
             // Aguarda o tempo de exibição
-            DebugHelper.Log($"[Intro] Aguardando {displayDuration}s...");
             yield return new WaitForSeconds(displayDuration);
 
             // Fade Out
-            DebugHelper.Log("[Intro] Fade Out...");
             yield return StartCoroutine(FadeOut());
 
             // Carrega próxima cena
-            DebugHelper.Log($"[Intro] Carregando cena: {nextSceneName}");
             SceneManager.LoadScene(nextSceneName);
         }
 

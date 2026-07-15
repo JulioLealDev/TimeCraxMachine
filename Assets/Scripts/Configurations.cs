@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TimeCrax.Managers;
 
 public class Configurations : MonoBehaviour
 {
@@ -7,7 +8,9 @@ public class Configurations : MonoBehaviour
     [SerializeField] private BackgroundMusic backgroundMusic;
     [SerializeField] private GameObject soundEffectsSlider;
     [SerializeField] private GameObject backgroundMusicSlider;
-    [SerializeField] private Menu menu;
+    [SerializeField] private SuitTop suitTop;
+    [SerializeField] private MenuManager menuManager;
+
 
     private float soundEffectsSliderDefault;
     private float backgroundMusicSliderDefault;
@@ -23,7 +26,7 @@ public class Configurations : MonoBehaviour
 
         soundEffectsSlider.GetComponent<Slider>().value = soundEffectsSliderDefault;
         backgroundMusicSlider.GetComponent<Slider>().value = backgroundMusicSliderDefault;
-        menu.EnableMenu();
+        menuManager.EnablingMenuOptions();
         gameObject.SetActive(false);
     }
 
@@ -33,7 +36,7 @@ public class Configurations : MonoBehaviour
 
         soundEffects.GetComponent<AudioSource>().volume = soundEffectsSlider.GetComponent<Slider>().value;
         backgroundMusic.GetComponent<AudioSource>().volume = backgroundMusicSlider.GetComponent<Slider>().value;
-        menu.EnableMenu();
+        menuManager.EnablingMenuOptions();
         gameObject.SetActive(false);
     }
 }

@@ -82,7 +82,6 @@ namespace TimeCrax.Themes
             string url = $"{AuthService.Instance.ApiBaseUrl}/themes/storage?page={page}&pageSize={pageSize}";
 
             if (logRequests)
-                DebugHelper.Log($"[ThemeDownloader] GET {url}");
 
             using (UnityWebRequest www = UnityWebRequest.Get(url))
             {
@@ -110,9 +109,8 @@ namespace TimeCrax.Themes
                         var response = JsonUtility.FromJson<ThemeStorageResponse>(www.downloadHandler.text);
                         onComplete?.Invoke(ThemeStorageResult.Ok(response));
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        DebugHelper.Log($"[ThemeDownloader] Parse error: {ex.Message}");
                         onComplete?.Invoke(ThemeStorageResult.Fail("Erro ao processar resposta"));
                     }
                     yield break;
@@ -145,7 +143,6 @@ namespace TimeCrax.Themes
             string url = $"{AuthService.Instance.ApiBaseUrl}/themes/{themeId}/download";
 
             if (logRequests)
-                DebugHelper.Log($"[ThemeDownloader] GET {url}");
 
             using (UnityWebRequest www = UnityWebRequest.Get(url))
             {
@@ -183,9 +180,8 @@ namespace TimeCrax.Themes
                 {
                     response = JsonUtility.FromJson<ThemeDownloadResponse>(www.downloadHandler.text);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    DebugHelper.Log($"[ThemeDownloader] Parse error: {ex.Message}");
                     onComplete?.Invoke(ThemeDownloadResult.Fail("Erro ao processar dados do tema"));
                     yield break;
                 }
@@ -242,7 +238,6 @@ namespace TimeCrax.Themes
                     OnDownloadProgress?.Invoke(0.1f + (0.5f * downloadedImages / totalImages));
                 }
 
-                // Download das imagens dos quizzes desabilitado
                 for (int i = 0; i < themeData.cards.Count; i++)
                 {
                     OnDownloadProgress?.Invoke(0.6f + (0.35f * (i + 1) / themeData.cards.Count));
@@ -255,7 +250,6 @@ namespace TimeCrax.Themes
                 OnDownloadStatus?.Invoke("Download concluído!");
                 OnDownloadProgress?.Invoke(1f);
 
-                DebugHelper.Log($"[ThemeDownloader] Theme downloaded: {themeData.name}");
                 onComplete?.Invoke(ThemeDownloadResult.Ok(themeData));
             }
         }
@@ -285,15 +279,11 @@ namespace TimeCrax.Themes
                     era = card.era,
                     title = card.title,
                     imageUrl = card.imageUrl,
-                    // quizData desabilitado
                 });
             }
 
             return themeData;
         }
-
-        // Quiz desabilitado
-        // private CardQuizData ConvertQuizData(ThemeCardResponse card) { ... }
 
         private IEnumerator DownloadImage(string url, string localPath, Action<bool, string> onComplete)
         {
@@ -316,25 +306,17 @@ namespace TimeCrax.Themes
                         ThemeStorage.SaveImageBytes(localPath, www.downloadHandler.data);
                         onComplete?.Invoke(true, localPath);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        DebugHelper.Log($"[ThemeDownloader] Error saving image: {ex.Message}");
                         onComplete?.Invoke(false, null);
                     }
                 }
                 else
                 {
-                    DebugHelper.Log($"[ThemeDownloader] Error downloading image: {www.error}");
                     onComplete?.Invoke(false, null);
                 }
             }
         }
-
-        /// <summary>
-        /// Baixa imagens de quiz de uma carta (ImageQuiz options e CorrelationQuiz items)
-        /// </summary>
-        // Quiz desabilitado
-        // private IEnumerator DownloadQuizImages(string themeId, ThemeCard card, int cardIndex) { ... }
 
         #endregion
 
@@ -360,7 +342,6 @@ namespace TimeCrax.Themes
             string url = $"{AuthService.Instance.ApiBaseUrl}/themes/storage?page=1&pageSize=100";
 
             if (logRequests)
-                DebugHelper.Log($"[ThemeDownloader] GET {url} (searching for theme {themeId})");
 
             using (UnityWebRequest www = UnityWebRequest.Get(url))
             {
@@ -377,9 +358,8 @@ namespace TimeCrax.Themes
                         var theme = response.items?.Find(t => t.id == themeId);
                         onComplete?.Invoke(theme);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        DebugHelper.Log($"[ThemeDownloader] GetThemeInfo parse error: {ex.Message}");
                         onComplete?.Invoke(null);
                     }
                 }

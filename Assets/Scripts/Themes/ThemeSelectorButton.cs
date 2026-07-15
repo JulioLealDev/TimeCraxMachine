@@ -1,5 +1,7 @@
 using UnityEngine;
 using TimeCrax.Core;
+using TimeCrax.Managers;
+
 
 namespace TimeCrax.Themes
 {
@@ -9,12 +11,11 @@ namespace TimeCrax.Themes
     /// </summary>
     public class ThemeSelectorButton : MonoBehaviour
     {
-        [SerializeField] private Menu menu;
+        [SerializeField] private SuitTop suitTop;
         [SerializeField] private SoundEffects soundEffects;
         [SerializeField] private Canvas inputName;
+        [SerializeField] private MenuManager menuManager;
 
-        // Proteção contra clique duplo
-        private bool isProcessingClick = false;
 
         private void Start()
         {
@@ -35,15 +36,11 @@ namespace TimeCrax.Themes
 
         private void OnMouseDown()
         {
-            // Proteção contra clique duplo
-            if (isProcessingClick) return;
-            isProcessingClick = true;
+            if (!GameManager.TryBeginClick(this)) return;
 
-            DebugHelper.Log("[ThemeSelectorButton] Clicked");
 
             // Desabilitar menu enquanto tela de temas está aberta
-            if (menu != null)
-                menu.DisableMenu();
+            menuManager.DesablingMenuOptions();
 
             // Esconder input de nome se visível
             if (inputName != null)
@@ -60,7 +57,6 @@ namespace TimeCrax.Themes
             }
             else
             {
-                DebugHelper.Log("[ThemeSelectorButton] ThemeSelectionUI.Instance is null");
             }
         }
 
@@ -69,14 +65,12 @@ namespace TimeCrax.Themes
         /// </summary>
         public void OnThemeSelectionClosed()
         {
-            if (menu != null)
-                menu.EnableMenu();
+            menuManager.EnablingMenuOptions();
 
             if (inputName != null)
                 inputName.gameObject.SetActive(true);
 
-            // Resetar proteção contra clique duplo
-            isProcessingClick = false;
+            GameManager.ResetClick(this);
         }
     }
 }

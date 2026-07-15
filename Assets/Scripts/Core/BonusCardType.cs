@@ -18,18 +18,6 @@ namespace TimeCrax.Core
         Time,
 
         /// <summary>
-        /// Pula o quiz atual e sorteia outro.
-        /// Só pode ser ativada durante um quiz ativo.
-        /// </summary>
-        SkipQuiz,
-
-        /// <summary>
-        /// Elimina uma opção incorreta do quiz.
-        /// Só pode ser ativada durante um quiz ativo.
-        /// </summary>
-        KillOption,
-
-        /// <summary>
         /// Permite uma segunda tentativa ao errar o slot da timeline.
         /// Deve ser ativada antes de selecionar o slot.
         /// </summary>

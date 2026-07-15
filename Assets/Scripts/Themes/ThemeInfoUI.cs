@@ -51,7 +51,6 @@ namespace TimeCrax.Themes
 
                     if (_instance == null)
                     {
-                        DebugHelper.Log("[ThemeInfoUI] Instance not found in scene!");
                     }
                     else
                     {
@@ -91,7 +90,6 @@ namespace TimeCrax.Themes
             }
 
             isInitialized = true;
-            DebugHelper.Log("[ThemeInfoUI] Initialized");
         }
 
         private void OnDestroy()
@@ -130,7 +128,6 @@ namespace TimeCrax.Themes
 
         private void OnDownloadStatus(string status)
         {
-            DebugHelper.Log($"[ThemeInfoUI] Download status: {status}");
         }
 
         private void Update()
@@ -192,7 +189,6 @@ namespace TimeCrax.Themes
                     });
             }
 
-            DebugHelper.Log($"[ThemeInfoUI] Showing info for: {theme.name}");
         }
 
         public void Close()
@@ -202,7 +198,6 @@ namespace TimeCrax.Themes
             // Não fechar se estiver baixando
             if (isDownloading)
             {
-                DebugHelper.Log("[ThemeInfoUI] Cannot close while downloading");
                 return;
             }
 
@@ -272,7 +267,6 @@ namespace TimeCrax.Themes
                 OnClose?.Invoke();
             }
 
-            DebugHelper.Log("[ThemeInfoUI] Closed");
         }
 
         private void PopulateThemeInfo(ThemeListItem theme, bool downloaded)
@@ -338,7 +332,6 @@ namespace TimeCrax.Themes
                         {
                             readyToPlayText = readyText;
                             readyToPlayText.text = downloaded ? "Ready" : "";
-                            DebugHelper.Log($"[ThemeInfoUI] ReadyToPlayText found, downloaded={downloaded}");
                         }
                         break;
 
@@ -482,7 +475,6 @@ namespace TimeCrax.Themes
                 downloadProgress.value = 0;
             }
 
-            DebugHelper.Log($"[ThemeInfoUI] Starting download: {currentTheme.id}");
 
             // Iniciar download
             ThemeManager.Instance.DownloadTheme(currentTheme.id, (success, error) =>
@@ -504,7 +496,6 @@ namespace TimeCrax.Themes
                     if (readyToPlayText != null)
                         readyToPlayText.text = "Ready";
 
-                    DebugHelper.Log($"[ThemeInfoUI] Download completed: {currentTheme.id}");
 
                     // Notificar ThemeSelectionUI para atualizar
                     OnDownloadRequested?.Invoke(currentTheme.id);
@@ -515,7 +506,6 @@ namespace TimeCrax.Themes
                     if (downloadButton != null)
                         downloadButton.gameObject.SetActive(true);
 
-                    DebugHelper.Log($"[ThemeInfoUI] Download failed: {error}");
                 }
             });
         }
@@ -527,7 +517,6 @@ namespace TimeCrax.Themes
                 if (soundEffects != null)
                     soundEffects.PressHudButtonSound();
 
-                DebugHelper.Log($"[ThemeInfoUI] Play requested: {currentTheme.id}");
                 OnPlayRequested?.Invoke(currentTheme.id);
                 Close();
             }
@@ -537,7 +526,6 @@ namespace TimeCrax.Themes
 
         private void CreateBackgroundCloseButton()
         {
-            DebugHelper.Log("[ThemeInfoUI] CreateBackgroundCloseButton called");
 
             // Remover botão anterior se existir
             if (backgroundCloseButton != null)
@@ -548,7 +536,6 @@ namespace TimeCrax.Themes
 
             if (themeInfoScreen == null)
             {
-                DebugHelper.Log("[ThemeInfoUI] themeInfoScreen is null!");
                 return;
             }
 
@@ -574,7 +561,6 @@ namespace TimeCrax.Themes
             button.transition = Selectable.Transition.None;
             button.onClick.AddListener(Close);
 
-            DebugHelper.Log("[ThemeInfoUI] BackgroundCloseButton created successfully");
         }
     }
 }

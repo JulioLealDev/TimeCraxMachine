@@ -172,7 +172,6 @@ namespace TimeCrax.Auth
         public void Logout()
         {
             TokenManager.ClearTokens();
-            DebugHelper.Log("[AuthService] Logout realizado");
         }
 
         #endregion
@@ -237,7 +236,6 @@ namespace TimeCrax.Auth
 
             if (logRequests)
             {
-                DebugHelper.Log($"[AuthService] POST {url}");
             }
 
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
@@ -257,7 +255,6 @@ namespace TimeCrax.Auth
 
             if (logRequests)
             {
-                DebugHelper.Log($"[AuthService] GET {url}");
             }
 
             UnityWebRequest www = UnityWebRequest.Get(url);
@@ -270,7 +267,6 @@ namespace TimeCrax.Auth
         {
             if (logRequests)
             {
-                DebugHelper.Log($"[AuthService] Response: {www.responseCode} - {www.downloadHandler.text}");
             }
 
             // Erro de rede
@@ -293,9 +289,8 @@ namespace TimeCrax.Auth
                     AuthResponse authResponse = JsonUtility.FromJson<AuthResponse>(www.downloadHandler.text);
                     return AuthResult.Ok(authResponse);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    DebugHelper.Log($"[AuthService] Erro ao parsear resposta: {e.Message}");
                     return AuthResult.Fail("PARSE_ERROR", "Erro ao processar resposta do servidor");
                 }
             }
@@ -330,7 +325,6 @@ namespace TimeCrax.Auth
         {
             if (logRequests)
             {
-                DebugHelper.Log($"[AuthService] Response: {www.responseCode}");
             }
 
             if (www.result == UnityWebRequest.Result.ConnectionError)
@@ -351,9 +345,8 @@ namespace TimeCrax.Auth
                     UserData userData = JsonUtility.FromJson<UserData>(www.downloadHandler.text);
                     return UserResult.Ok(userData);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    DebugHelper.Log($"[AuthService] Erro ao parsear usuário: {e.Message}");
                     return UserResult.Fail("Erro ao processar dados do usuário");
                 }
             }

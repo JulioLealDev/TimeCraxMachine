@@ -1,42 +1,26 @@
 using UnityEngine;
-using TMPro;
 using TimeCrax.Core;
 using TimeCrax.Auth;
+using TimeCrax.Managers;
 
 public class CreateRoom : MonoBehaviour
 {
     [SerializeField] private GameConnection gameConnection;
     [SerializeField] private SoundEffects soundEffects;
-
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
+    [SerializeField] private MenuManager menuManager;
 
     public void OnMouseDown()
     {
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
         soundEffects.PressButtonSound();
 
-        // Usa o nome do usuário logado (da tag)
         if (string.IsNullOrEmpty(SessionData.Nickname))
-        {
             SessionData.Nickname = TokenManager.UserName;
-        }
 
-        var connection = FindFirstObjectByType<GameConnection>();
-        connection.CreateRoom();
+        if (gameConnection.CreateRoom())
+            menuManager.DesablingMenuOptions();
 
-        var menu = FindFirstObjectByType<Menu>();
-        menu.DisableMenu();
-
-        // Resetar após um delay
-        this.DelayedCall(1f, ResetClickProtection);
-    }
-
-    private void ResetClickProtection()
-    {
-        isProcessingClick = false;
+        this.DelayedCall(1f, () => GameManager.ResetClick(this));
     }
 }

@@ -207,7 +207,6 @@ namespace TimeCrax.Themes
         {
             if (!isDownloading)
             {
-                DebugHelper.Log($"[ThemeCardUI] Theme clicked: {themeId}");
                 OnThemeSelected?.Invoke(themeId);
             }
         }
@@ -216,13 +215,11 @@ namespace TimeCrax.Themes
         {
             if (themeData == null)
             {
-                DebugHelper.Log("[ThemeCardUI] ERRO: themeData é null no OnDownloadClicked");
                 return;
             }
 
             if (!isDownloaded && !isDownloading && themeData.readyToPlay)
             {
-                DebugHelper.Log($"[ThemeCardUI] Download requested: {themeId}");
                 OnDownloadRequested?.Invoke(themeId);
             }
         }

@@ -87,7 +87,6 @@ namespace TimeCrax.Themes
         /// </summary>
         public void Show(string themeId, string themeName, string roomName)
         {
-            DebugHelper.Log($"[ThemeDownloadPrompt] Show chamado - themeId: {themeId}, themeName: {themeName}");
 
             currentThemeId = themeId;
             currentThemeName = themeName;
@@ -95,11 +94,9 @@ namespace TimeCrax.Themes
 
             if (promptPanel == null)
             {
-                DebugHelper.Log("[ThemeDownloadPrompt] ERRO: promptPanel é null!");
                 return;
             }
 
-            DebugHelper.Log($"[ThemeDownloadPrompt] Ativando promptPanel e gameObject");
             promptPanel.SetActive(true);
             gameObject.SetActive(true);
 
@@ -107,11 +104,9 @@ namespace TimeCrax.Themes
             var canvas = GetComponent<Canvas>();
             if (canvas != null)
             {
-                DebugHelper.Log($"[ThemeDownloadPrompt] Canvas sortingOrder: {canvas.sortingOrder}, enabled: {canvas.enabled}");
             }
             else
             {
-                DebugHelper.Log("[ThemeDownloadPrompt] ERRO: Canvas não encontrado no objeto!");
             }
 
             // Configurar textos
@@ -140,7 +135,6 @@ namespace TimeCrax.Themes
             // Fade in
             if (canvasGroup != null)
             {
-                DebugHelper.Log($"[ThemeDownloadPrompt] CanvasGroup encontrado, iniciando fade in");
                 canvasGroup.alpha = 0;
                 canvasGroup.interactable = false;
                 canvasGroup.blocksRaycasts = true;
@@ -149,15 +143,12 @@ namespace TimeCrax.Themes
                     .setOnComplete(() =>
                     {
                         canvasGroup.interactable = true;
-                        DebugHelper.Log($"[ThemeDownloadPrompt] Fade in completo, alpha: {canvasGroup.alpha}");
                     });
             }
             else
             {
-                DebugHelper.Log("[ThemeDownloadPrompt] AVISO: CanvasGroup é null, sem fade");
             }
 
-            DebugHelper.Log($"[ThemeDownloadPrompt] Mostrando prompt para tema: {themeName} (ID: {themeId})");
         }
 
         public void Hide()
@@ -186,7 +177,6 @@ namespace TimeCrax.Themes
             if (lobbyOptions != null)
                 lobbyOptions.ActivateButtons(true);
 
-            DebugHelper.Log("[ThemeDownloadPrompt] Hide");
         }
 
         #endregion
@@ -222,7 +212,6 @@ namespace TimeCrax.Themes
             // Iniciar download
             ThemeManager.Instance?.DownloadTheme(currentThemeId, OnDownloadComplete);
 
-            DebugHelper.Log($"[ThemeDownloadPrompt] Iniciando download do tema: {currentThemeName}");
         }
 
         private void OnCancelClicked()
@@ -262,7 +251,6 @@ namespace TimeCrax.Themes
 
             if (success)
             {
-                DebugHelper.Log($"[ThemeDownloadPrompt] Download concluído com sucesso!");
 
                 if (progressText != null)
                     progressText.text = "Download concluído!";
@@ -272,7 +260,6 @@ namespace TimeCrax.Themes
             }
             else
             {
-                DebugHelper.Log($"[ThemeDownloadPrompt] Erro no download: {error}");
 
                 if (progressText != null)
                     progressText.text = $"Erro: {error}";

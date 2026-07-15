@@ -67,7 +67,6 @@ namespace TimeCrax.Managers
             cachedPlateNames = FindObjectsByType<GiveCards>(FindObjectsSortMode.None);
             cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
             needsCacheRefresh = false;
-            DebugHelper.Log("[PlayerManager] Cache atualizado");
         }
 
         /// <summary>
@@ -170,7 +169,6 @@ namespace TimeCrax.Managers
         {
             index++;
 
-            DebugHelper.Log("[PlayerManager] Removendo platename");
 
             var plate = GameObject.Find(GameObjectNames.GetPlateName(index));
             if (plate != null)
@@ -204,7 +202,6 @@ namespace TimeCrax.Managers
         /// </summary>
         public void ResetAllPlatenames()
         {
-            DebugHelper.Log("[PlayerManager] Resetando platenames");
 
             for (int i = 0; i < 4; i++)
             {
@@ -295,7 +292,6 @@ namespace TimeCrax.Managers
 
             if (playerSending == null || playerReceiving == null)
             {
-                DebugHelper.Log("[PlayerManager] playerSending ou playerReceiving é null");
                 return;
             }
 
@@ -316,7 +312,6 @@ namespace TimeCrax.Managers
 
                 if (playerCards.Count == 0)
                 {
-                    DebugHelper.Log("[PlayerManager] Nenhuma carta encontrada para o jogador");
                     return;
                 }
 
@@ -361,7 +356,6 @@ namespace TimeCrax.Managers
         [PunRPC]
         public void RPC_ShowLeftPlayerInfo(string nickname)
         {
-            DebugHelper.Log("[PlayerManager] ShowLeftPlayer: " + nickname);
 
             if (gameInfo != null) gameInfo.SetActive(true);
             if (playerLeftBackground != null)

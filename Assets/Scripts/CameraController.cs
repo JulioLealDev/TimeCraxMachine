@@ -1,94 +1,121 @@
 using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
-
+using TimeCrax.Managers;
 public class CameraController : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private Animator animator;
-    [SerializeField] private GameObject suitTop;
-    [SerializeField] private GameConnection gameConnection;
-    [SerializeField] private bool fullScreen = true;
+    [SerializeField] private Animator cameraAnimator;
+    [SerializeField] private Animator suitTopAnimator;
+    [SerializeField] private MenuManager menuManager;
+    [SerializeField] private TimelineColliderArea timelineColliderArea;
 
-    // Indica se a câmera está em animação (bloqueia interações)
     public static bool IsAnimating { get; private set; }
 
-    // Cached components
     private Timeline timeline;
     private EventSlot slot;
-    private Animator suitTopAnimator;
-    private Menu menuCache;
     private GameManager gameManagerCache;
 
-    private void Awake()
+    /// <summary>
+    /// Cacheia referências de cena. Chamado pelo GameManager no Awake.
+    /// </summary>
+    public void Initialize()
     {
-        SessionData.GameStarted = false;
-        gameConnection.EnterServerAndLobby();
-        timeline = FindFirstObjectByType<Timeline>();
-        slot = FindFirstObjectByType<EventSlot>();
-        menuCache = FindFirstObjectByType<Menu>();
+        timeline         = FindFirstObjectByType<Timeline>();
+        slot             = FindFirstObjectByType<EventSlot>();
         gameManagerCache = FindFirstObjectByType<GameManager>();
-
-        if (suitTop != null)
-        {
-            suitTopAnimator = suitTop.GetComponent<Animator>();
-        }
     }
 
-    void Start()
+    /// <summary>
+    /// Dispara a animação de entrada no menu. Chamado pelo GameManager no Start.
+    /// </summary>
+    public void EnterMenu()
     {
-        int targetHeight = Screen.width * 9 / 16;
-        Screen.SetResolution(Screen.width, targetHeight, fullScreen);
-        animator.SetBool("enterMenu", true);
+        cameraAnimator.SetBool("enterMenu", true);
     }
 
-    void AwaitZoomAnimation()
+    /// <summary>
+    /// Dispara a animação de distancia do menu. Chamado pelo QuitGame.
+    /// </summary>
+    public void DistanceFromMenu()
     {
-        Transform menuOptions = suitTop.transform.Find("MenuOptions");
-        if (menuOptions == null) return;
-        foreach (Transform child in menuOptions.GetComponentsInChildren<Transform>())
-        {
-            if (child.CompareTag("Selectable"))
-            {
-                var col = child.GetComponent<MeshCollider>();
-                if (col != null) col.enabled = true;
-            }
-        }
+        cameraAnimator.SetBool("enterMenu", false);
+        cameraAnimator.SetBool("quitGame", true);
     }
 
-    void AwaitDistanceCamera()
+    /// <summary>
+    /// Animation Event — disparado ao fim do zoom de entrada no menu.
+    /// Delega para o MenuManager a habilitação dos colliders das opções do menu.
+    /// </summary>
+    void EnablingMenuOptions()
+    {
+        menuManager?.EnablingMenuOptions();
+    }
+
+    /// <summary>
+    /// Animation Event — disparado ao fim do recuo da câmera da suit.
+    /// Ativa o animator do SuitTop e inicia a animação de abertura da suit.
+    /// </summary>
+    void StartingMatch()
     {
         suitTopAnimator.enabled = true;
         suitTopAnimator.SetBool("openSuit", true);
     }
 
+    /// <summary>
+    /// Animation Event — disparado ao voltar da partida para o menu.
+    /// </summary>
+    public void ExitingMatch()
+    {
+        cameraAnimator.SetBool("enterMatch", false);
+    }
+
+    /// <summary>
+    /// Inicia o zoom da câmera na timeline. Chamado via Animation Event do EventCard.
+    /// Seta IsAnimating = true para bloquear interações durante a transição.
+    /// </summary>
     public void ZoomTimeline()
     {
         IsAnimating = true;
-        animator.SetBool("distanceZoom", false);
-        animator.SetBool("zoomTimeline", true);
+        Debug.Log("[CameraController] ZoomTimeline");
+        cameraAnimator.SetBool("distanceZoom", false);
+        cameraAnimator.SetBool("zoomTimeline", true);
     }
 
+    /// <summary>
+    /// Inicia o recuo da câmera da timeline. Chamado pelo GameManager após fim do PersonsFrame ou timeout.
+    /// Seta IsAnimating = true e agenda a reativação do botão de fim de turno após 1.5s.
+    /// </summary>
     public void DistanceTimeline()
     {
         IsAnimating = true;
-        animator.SetBool("zoomTimeline", false);
-        animator.SetBool("distanceZoom", true);
+        Debug.Log("[CameraController] DistanceTimeline");
+        cameraAnimator.SetBool("zoomTimeline", false);
+        cameraAnimator.SetBool("distanceZoom", true);
         this.DelayedCall(1.5f, ActivateEndButton);
-        // Segurança: garantir que IsAnimating seja resetado mesmo se o animation event falhar
-        this.DelayedCall(3f, () => { if (IsAnimating) { DebugHelper.Log("[CameraController] SAFETY: forçando IsAnimating=false"); IsAnimating = false; } });
     }
 
+    /// <summary>
+    /// Delega para o GameManager a reativação do botão de fim de turno.
+    /// Chamado por DelayedCall dentro de DistanceTimeline.
+    /// </summary>
     public void ActivateEndButton()
     {
         gameManagerCache.ActivateEnd();
     }
 
-    void AwaitZoomTimeline()
+    /// <summary>
+    /// Animation Event — disparado ao fim do zoom in na timeline.
+    /// Libera IsAnimating e ativa os slots se carta foi comprada, ou reativa a timeline se não foi.
+    /// </summary>
+    void ZoomTimelineFinished()
     {
         IsAnimating = false;
-        if (IsMyTurn())
+        Debug.Log("[CameraController] ZoomTimelineFinished");
+        if (gameManagerCache != null && gameManagerCache.IsMyTurn())
         {
-            if (CheckIfCardWasDrew())
+            /*Debug.Log("[CameraController] ZoomTimelineFinished - CheckIfCardWasDrew: " +gameManagerCache.CheckIfCardWasDrew() );
+            if (gameManagerCache.CheckIfCardWasDrew())*/
+            if (GameStateManager.Is(GamePhase.DrawingCard))
             {
                 if (slot != null) slot.SetUpSlots(true, "Selectable");
                 if (timeline != null) timeline.ActiveTimeline(false);
@@ -100,85 +127,50 @@ public class CameraController : MonoBehaviourPunCallbacks
         }
     }
 
-    void AwaitDistanceTimeline()
+    /// <summary>
+    /// Animation Event — disparado ao fim do zoom out da timeline.
+    /// Libera IsAnimating, reativa colliders da timeline e desativa slots se carta ainda está em jogo.
+    /// </summary>
+    void DistanceTimelineFinished()
     {
-        DebugHelper.Log("[CameraController] AwaitDistanceTimeline disparado");
         IsAnimating = false;
-        // Reativar coliders não-slot ao retornar ao zoom normal
+        Debug.Log("[CameraController] DistanceTimelineFinished");
+        if (GameStateManager.Is(GamePhase.Victory) || GameStateManager.Is(GamePhase.GameOver)) return;
         if (gameManagerCache != null) gameManagerCache.SetNewTimelineNonSlotColliders(true);
 
-        if (IsMyTurn())
+        if (gameManagerCache != null && gameManagerCache.IsMyTurn())
         {
             if (timeline != null) timeline.ActiveTimeline(true);
-            if (CheckIfCardWasDrew() && slot != null)
+            //if (gameManagerCache.CheckIfCardWasDrew() && slot != null)
+            else
             {
                 slot.SetUpSlots(false, "Undestructable");
+                timelineColliderArea.SetUpTimelineCollider(true);
             }
         }
+        Debug.Log("[CameraController] GameState: " +GamePhase.IM_Turn );
+        GameStateManager.TransitionTo(GamePhase.IM_Turn);
     }
 
     /// <summary>
-    /// Força o reset da câmera para o estado inicial.
-    /// Usado quando o tempo do turno expira.
+    /// Reseta a câmera para o estado inicial sem animação.
+    /// Usado quando o turno expira por timeout.
     /// </summary>
     public void ForceResetToInitialState()
     {
-        DebugHelper.Log("[CameraController] ForceResetToInitialState");
-
-        // Resetar flags de animação
         IsAnimating = false;
+        cameraAnimator.SetBool("zoomTimeline", false);
+        cameraAnimator.SetBool("distanceZoom", false);
 
-        // Garantir que a câmera está no estado de distância
-        animator.SetBool("zoomTimeline", false);
-        animator.SetBool("distanceZoom", false);
-
-        // Desativar slots
-        if (slot != null)
-        {
-            slot.SetUpSlots(false, "Undestructable");
-        }
-
-        // Desativar timeline
-        if (timeline != null)
-        {
-            timeline.ActiveTimeline(false);
-        }
+        if (slot != null) slot.SetUpSlots(false, "Undestructable");
+        if (timeline != null) timeline.ActiveTimeline(false);
     }
 
     /// <summary>
-    /// Verifica se a câmera está em modo zoom timeline
+    /// Retorna true se a câmera está atualmente com zoom na timeline.
     /// </summary>
     public bool IsInZoomMode()
     {
-        return animator.GetBool("zoomTimeline");
-    }
-
-    /// <summary>
-    /// Verifica se é o turno do jogador local
-    /// </summary>
-    private bool IsMyTurn()
-    {
-        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-        foreach (var player in players)
-        {
-            if (player != null && player.photonView != null && player.photonView.IsMine && player.GetYourTurn())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool CheckIfCardWasDrew()
-    {
-        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-        foreach (var card in eventCards)
-        {
-            if (card.CompareTag("Drew"))
-            {
-                return true;
-            }
-        }
-        return false;
+        return cameraAnimator.GetBool("zoomTimeline");
     }
 }

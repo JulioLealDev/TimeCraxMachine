@@ -45,23 +45,19 @@ public class Room : MonoBehaviour
         // Prevenir cliques múltiplos
         if (gameConnection != null && gameConnection.IsProcessingRoomOperation())
         {
-            DebugHelper.Log("[Room] Operação em andamento, ignorando clique duplicado");
             return;
         }
 
         // Verificar se é um tema da API e se o jogador possui
-        DebugHelper.Log($"[Room] JoinRoom - themeId: '{themeId}', themeName: '{themeName}'");
 
         if (!string.IsNullOrEmpty(themeId))
         {
             bool hasTheme = ThemeManager.Instance != null && ThemeManager.Instance.IsThemeDownloaded(themeId);
-            DebugHelper.Log($"[Room] ThemeManager existe: {ThemeManager.Instance != null}, hasTheme: {hasTheme}");
 
             if (!hasTheme)
             {
                 // Mostrar tela de download necessário
                 var downloadNeeded = FindFirstObjectByType<ThemeDownloadNeededUI>(FindObjectsInactive.Include);
-                DebugHelper.Log($"[Room] Tema não baixado. ThemeDownloadNeededUI encontrado: {downloadNeeded != null}");
                 if (downloadNeeded != null)
                 {
                     bool roomIsLocked = isLocked.text == "Yes";
@@ -71,7 +67,6 @@ public class Room : MonoBehaviour
                 }
                 else
                 {
-                    DebugHelper.Log("[Room] ERRO: ThemeDownloadNeededUI não encontrado na cena!");
                 }
                 return;
             }

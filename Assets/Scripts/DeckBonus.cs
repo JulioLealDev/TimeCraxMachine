@@ -9,18 +9,11 @@ public class DeckBonus : MonoBehaviourPunCallbacks
     [SerializeField] private Canvas gameInfo;
     [SerializeField] private SoundEffects soundEffects;
 
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
-
     public void OnMouseDown()
     {
         if (InputBlocker.IsBlocked) return;
-        // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
-
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-        isProcessingClick = true;
+        if (!GameManager.TryBeginClick(this)) return;
 
         if (gameObject.CompareTag("Disabled"))
         {
@@ -33,11 +26,9 @@ public class DeckBonus : MonoBehaviourPunCallbacks
                 {
                     if (player.GetNumberOfBonusCards() == 5)
                     {
-                        DebugHelper.Log("Você já possui 5 cartas");
                     }
                     else
                     {
-                        DebugHelper.Log("Você já realizou uma ação neste turno");
 
                         Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
                         gameInfo.gameObject.SetActive(true);
@@ -75,11 +66,9 @@ public class DeckBonus : MonoBehaviourPunCallbacks
         // Apenas MasterClient processa e sincroniza para todos
         if (PhotonNetwork.IsMasterClient)
         {
-            DebugHelper.Log("[DeckBonus] MasterClient processando compra de bonusCard");
 
             // Sortear tipo da carta (0-5 para os 6 tipos)
             int randomType = Random.Range(0, 6);
-            DebugHelper.Log($"[DeckBonus] Tipo sorteado: {(BonusCardType)randomType}");
 
             // Sincronizar para todos os clientes com o tipo sorteado
             photonView.RPC("ExecuteDrawBonusCard", RpcTarget.All, randomType);
@@ -92,7 +81,6 @@ public class DeckBonus : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ExecuteDrawBonusCard(int cardType)
     {
-        DebugHelper.Log($"[DeckBonus] ExecuteDrawBonusCard - Tipo: {(BonusCardType)cardType}");
 
         // Tocar som
         soundEffects.PlayDrawCardSound();
@@ -135,8 +123,7 @@ public class DeckBonus : MonoBehaviourPunCallbacks
             }
         }
 
-        // Resetar proteção contra clique duplo após ação
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 
     [PunRPC]
@@ -168,15 +155,12 @@ public class DeckBonus : MonoBehaviourPunCallbacks
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 
-    /// <summary>
-    /// Reseta a proteção contra clique duplo
-    /// </summary>
     public void ResetClickProtection()
     {
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 
 

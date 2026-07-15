@@ -48,6 +48,10 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     private void DrawingEventCardInternal()
     {
+        // Desancorar do slot caso o Animator tenha ficado preso em to_slotN
+        var follower = GetComponent<EventCardFollower>();
+        if (follower != null) follower.Detach();
+
         gameObject.GetComponent<MeshRenderer>().enabled = true;
 
         // Ativar MeshRenderer do CardText
@@ -58,7 +62,16 @@ public class EventCard : MonoBehaviourPunCallbacks
         }
 
         gameObject.tag = "Drew";
-        gameObject.GetComponent<Animator>().SetBool("drawingEventCard", true);
+
+        // Forçar o Animator de volta ao estado idle antes de disparar a animação de compra.
+        // Sem isso, se o Animator ficou preso em draw_eventCard_to_slotN (por race condition
+        // em HandlePersonsWrong/HandleMapWrong), o drawingEventCard=true não dispara nenhuma
+        // transição válida e a carta aparece diretamente no slot sem zoom, congelando o jogo.
+        var animator = gameObject.GetComponent<Animator>();
+        animator.SetBool("wrongSlot", false);
+        animator.SetInteger("slotClicked", 0);
+        animator.Play("draw_eventCard_idle", 0, 0);
+        animator.SetBool("drawingEventCard", true);
 
         // Desativar coliders não-slot assim que a carta é comprada
         var gm = FindFirstObjectByType<GameManager>();
@@ -80,7 +93,6 @@ public class EventCard : MonoBehaviourPunCallbacks
         // Re-habilitar coliders não-slot ao iniciar zoom-out (antes de AwaitDistanceTimeline)
         var gm = FindFirstObjectByType<GameManager>();
         if (gm != null) gm.SetNewTimelineNonSlotColliders(true);
-        DebugHelper.Log("[EventCard] DistanceTimeline: SetNewTimelineNonSlotColliders(true) chamado");
 
         cameraController.DistanceTimeline();
     }
@@ -128,7 +140,6 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     public void ActivateEndButton()
     {
-        DebugHelper.Log("ActivateEndButton");
         var gameManager = FindFirstObjectByType<GameManager>();
         gameManager.ActivateEnd();
     }

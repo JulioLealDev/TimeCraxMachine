@@ -14,15 +14,12 @@ public class RoomList : MonoBehaviourPunCallbacks
         for (int i = 0; i < roomList.Count; i++)
         {
             GameObject roomAlreadyExist = GameObject.Find(roomList[i].Name);
-            DebugHelper.Log("Nome do objeto encontrado: "+roomAlreadyExist?.name);
-            DebugHelper.Log("Nome do objeto a ser criado: " + roomList[i].Name +" que está no index: "+i);
 
             if (!roomAlreadyExist)
             {
                 var contentObj = GameObject.Find("Content");
                 if (contentObj == null)
                 {
-                    DebugHelper.Log("[RoomList] Content não encontrado");
                     continue;
                 }
 
@@ -34,8 +31,6 @@ public class RoomList : MonoBehaviourPunCallbacks
                     ? roomList[i].CustomProperties["themeId"].ToString()
                     : "";
 
-                DebugHelper.Log("locked value: "+locked);
-                DebugHelper.Log("themeId: "+themeId);
 
                 // Configurar dados do tema no Room
                 Room roomComponent = roomObj.GetComponent<Room>();
@@ -59,7 +54,6 @@ public class RoomList : MonoBehaviourPunCallbacks
                 {
                     if(child.name == "NameRoomText")
                     {
-                        DebugHelper.Log($"[RoomList] Definindo NameRoomText: {displayName} (original: {fullRoomName})");
                         child.GetComponent<TMP_Text>().text = displayName;
                     }
                     else if(child.name == "PlayersText")
@@ -68,7 +62,6 @@ public class RoomList : MonoBehaviourPunCallbacks
                     }
                     else if (child.name == "ThemeText")
                     {
-                        DebugHelper.Log($"[RoomList] Definindo ThemeText: {themeName}");
                         child.GetComponent<TMP_Text>().text = themeName;
                     }
                     else if (child.name == "DifficultyText")
@@ -81,11 +74,9 @@ public class RoomList : MonoBehaviourPunCallbacks
                     }
                 }
 
-                DebugHelper.Log("criando objeto com nome de: " + roomList[i].Name);
             }
             else
             {
-                DebugHelper.Log("Já existe uma sala com esse nome");
             }
 
         }

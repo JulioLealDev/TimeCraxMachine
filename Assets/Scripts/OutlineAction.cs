@@ -28,7 +28,6 @@ public class OutlineAction : MonoBehaviour
     private float originalMetallic;
     private Material highlightedMaterial;
 
-    // Referencia ao OutlineComponent do pai (para TimelineChild)
     private OutlineComponent parentOutlineActive;
 
     void Start()
@@ -44,7 +43,6 @@ public class OutlineAction : MonoBehaviour
         // Restaurar material/outline anterior quando mouse sair
         if (highlight != null)
         {
-            // Desativar outline do pai (TimelineChild)
             if (parentOutlineActive != null)
             {
                 parentOutlineActive.enabled = false;
@@ -85,22 +83,7 @@ public class OutlineAction : MonoBehaviour
             highlight = raycastHit.transform;
             if (highlight.CompareTag("Selectable"))
             {
-                // Verificar se e um TimelineChild ativo — primeiro no próprio objeto,
-                // depois nos filhos (ex: LeftDoor é raycasted mas Slot filho tem o script)
-                var timelineChild = highlight.gameObject.GetComponent<TimelineChild>();
-                if (timelineChild == null)
-                    timelineChild = highlight.gameObject.GetComponentInChildren<TimelineChild>(true);
-                if (timelineChild != null && timelineChild.enabled)
-                {
-                    var parentOutline = timelineChild.GetParentOutline();
-                    DebugHelper.Log($"[OutlineAction] hover TC='{timelineChild.name}' em '{highlight.name}', outline={parentOutline?.name ?? "NULL"}");
-                    if (parentOutline != null)
-                    {
-                        parentOutline.enabled = true;
-                        parentOutlineActive = parentOutline;
-                    }
-                }
-                else if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
+                if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
                 {
                     highlight.gameObject.GetComponent<OutlineComponent>().enabled = true;
 

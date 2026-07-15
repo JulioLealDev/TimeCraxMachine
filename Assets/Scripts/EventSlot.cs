@@ -8,13 +8,11 @@ public class EventSlot : MonoBehaviourPunCallbacks
     [SerializeField] private int slotNumber;
     [SerializeField] private int randomNumber;
     [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private EndMatch endMatchScreen;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private BackgroundMusic backgroundMusic;
+    //private Victory victory;
 
-    private GameManager gameManager;
-    private BackgroundMusic backgroundMusic;
-    private Victory victory;
-
-    // Proteção contra clique duplo
-    private static bool isProcessingClick = false;
 
     public int SlotNumber => slotNumber;
 
@@ -22,7 +20,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
     void Start()
     {
         gameManager = FindFirstObjectByType<GameManager>();
-        victory = FindFirstObjectByType<Victory>();
+        endMatchScreen = FindFirstObjectByType<EndMatch>();
         backgroundMusic = FindFirstObjectByType<BackgroundMusic>();
     }
 
@@ -32,12 +30,12 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
     public void OnMouseDown()
     {
+        Debug.Log("[EventSlot] OnMouseDown");
         if (InputBlocker.IsBlocked) return;
         // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
 
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
+        if (GameManager.IsClickProcessing(typeof(EventSlot))) return;
 
         var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
@@ -45,7 +43,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         {
             if (card != null && card.CompareTag("Drew"))
             {
-                isProcessingClick = true;
+                GameManager.TryBeginClick(typeof(EventSlot));
                 // Enviar requisição ao MasterClient para processar o clique no slot
                 photonView.RPC("RequestSlotClick", RpcTarget.MasterClient, card.slotCount, slotNumber);
                 break; // Só processa uma carta
@@ -58,9 +56,8 @@ public class EventSlot : MonoBehaviourPunCallbacks
     /// </summary>
     public static void ResetClickProtection()
     {
-        isProcessingClick = false;
+        GameManager.ResetClick(typeof(EventSlot));
 
-        // Reabilitar cursor se NÃO estiver em transição de turno
         if (!GameManager.IsInTurnTransition)
         {
             InputBlocker.Unblock();
@@ -73,12 +70,11 @@ public class EventSlot : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RequestSlotClick(int cardSlotCount, int clickedSlotNumber)
     {
+        Debug.Log($"[EventSlot] RequestSlotClick recebido no MasterClient — card={cardSlotCount}, slot={clickedSlotNumber}, isMaster={PhotonNetwork.IsMasterClient}");
         if (PhotonNetwork.IsMasterClient)
         {
             bool isCorrectSlot = clickedSlotNumber == cardSlotCount;
-            DebugHelper.Log($"[EventSlot] MasterClient processando clique: cardSlot={cardSlotCount}, clickedSlot={clickedSlotNumber}, correct={isCorrectSlot}");
-
-            // Sincronizar para todos
+            Debug.Log($"[EventSlot] isCorrectSlot={isCorrectSlot} → enviando ExecuteSlotClick para todos");
             photonView.RPC("ExecuteSlotClick", RpcTarget.All, cardSlotCount, clickedSlotNumber, isCorrectSlot);
         }
     }
@@ -89,7 +85,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ExecuteSlotClick(int cardSlotCount, int clickedSlotNumber, bool isCorrectSlot)
     {
-        DebugHelper.Log($"[EventSlot] ExecuteSlotClick: cardSlot={cardSlotCount}, clickedSlot={clickedSlotNumber}, correct={isCorrectSlot}");
+        Debug.Log($"[EventSlot] ExecuteSlotClick — card={cardSlotCount}, slot={clickedSlotNumber}, correto={isCorrectSlot}");
 
         // Som de clique no slot
         soundEffects.PlayClickSlotSound();
@@ -110,7 +106,6 @@ public class EventSlot : MonoBehaviourPunCallbacks
             // Verificar se jogador tem SecondChance ativa
             if (BonusCardManager.Instance != null && BonusCardManager.Instance.HasSecondChanceActive)
             {
-                DebugHelper.Log("[EventSlot] Segunda chance ativa! Permitindo nova tentativa");
 
                 // Consumir a segunda chance
                 BonusCardManager.Instance.ConsumeSecondChance();
@@ -141,7 +136,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
                 {
                     card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
                     card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
-                    //card.tag = "Undestructable";
+                    card.tag = "Undestructable";
                     card.waitToDistance();
                 }
             }
@@ -170,7 +165,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
     /// </summary>
     private void ProcessRightSlot(int cardSlotCount, int clickedSlotNumber)
     {
-        DebugHelper.Log($"[EventSlot] ProcessRightSlot chamado - cardSlotCount={cardSlotCount}, clickedSlotNumber={clickedSlotNumber}");
+        Debug.Log($"[EventSlot] ProcessRightSlot — card={cardSlotCount}, slot={clickedSlotNumber}");
 
         var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
         EventCard targetCard = null;
@@ -186,21 +181,27 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
         if (targetCard == null)
         {
-            DebugHelper.Log($"[EventSlot] targetCard é NULL para cardSlotCount={cardSlotCount}");
+            Debug.LogWarning($"[EventSlot] ProcessRightSlot — EventCard com slotCount={cardSlotCount} não encontrada!");
             return;
         }
 
-        DebugHelper.Log($"[EventSlot] targetCard encontrado: {targetCard.name}");
+        Debug.Log($"[EventSlot] EventCard encontrada: {targetCard.name}, themeCard={targetCard.GetThemeCard()?.title}");
 
         targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
         FinalizeCorrectSlotLocal(cardSlotCount, targetCard, clickedSlotNumber);
 
         if (PhotonNetwork.IsMasterClient && gameManager != null)
         {
+            Debug.Log($"[EventSlot] MasterClient agendando ActivateRandomMapObject em {CARD_ANIMATION_DELAY}s");
             this.DelayedCall(CARD_ANIMATION_DELAY, () =>
             {
+                Debug.Log($"[EventSlot] Chamando ActivateRandomMapObject para slotCount={cardSlotCount}");
                 gameManager.ActivateRandomMapObject(cardSlotCount);
             });
+        }
+        else
+        {
+            Debug.Log($"[EventSlot] ProcessRightSlot — não é MasterClient ou gameManager é null (isMaster={PhotonNetwork.IsMasterClient}, gm={gameManager != null})");
         }
     }
 
@@ -209,7 +210,8 @@ public class EventSlot : MonoBehaviourPunCallbacks
     /// </summary>
     private void FinalizeCorrectSlotLocal(int slotCount, EventCard card, int clickedSlotNumber)
     {
-        // Encontrar o slot que foi clicado para desativá-lo
+        Debug.Log($"[EventSlot] FinalizeCorrectSlotLocal — slotCount={slotCount}, slot={clickedSlotNumber}");
+
         var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
         foreach (var slot in slots)
         {
@@ -221,19 +223,17 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
 
         var deckEvent = FindFirstObjectByType<DeckEvent>();
-        // Apenas MasterClient remove do deck (ele vai sincronizar via RPC)
         if (PhotonNetwork.IsMasterClient)
         {
+            Debug.Log($"[EventSlot] MasterClient removendo slotCount={slotCount} do deck");
             deckEvent.RemoveIndex(slotCount);
         }
 
         card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
         card.tag = "Disabled";
 
-        // Resetar proteção contra clique duplo
         ResetClickProtection();
-
-        CheckIfWin();
+        Debug.Log("[EventSlot] ResetClickProtection chamado — InputBlocker desbloqueado");
     }
 
     public void PlayRightSound()
@@ -280,18 +280,20 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (slotsFilled == 6 && gameManager != null)
         {
+            GameStateManager.TransitionTo(GamePhase.Victory);
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
             gameManager.ResetAllPlatenames();
-            this.DelayedCall(5.5f, Victory);
+            this.DelayedCall(5.5f, ShowVictoryScreen);
         }
     }
 
-    public void Victory()
+    public void ShowVictoryScreen()
     {
-        if (victory != null)
+        if (endMatchScreen != null)
         {
-            victory.transform.GetChild(0).gameObject.SetActive(true);
+            endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
+            endMatchScreen.UpdateTitle();
         }
         if (gameManager != null)
         {

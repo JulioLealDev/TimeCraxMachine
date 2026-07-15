@@ -137,7 +137,6 @@ namespace TimeCrax.Themes
         public void Show(string themeId, string themeName, string roomName, bool isLocked,
                         string creatorName = null, int cardCount = 0, string coverUrl = null)
         {
-            DebugHelper.Log($"[ThemeDownloadNeeded] Show - themeId: {themeId}, themeName: {themeName}, roomName: {roomName}, isLocked: {isLocked}");
 
             currentThemeId = themeId;
             currentThemeName = themeName;
@@ -147,7 +146,6 @@ namespace TimeCrax.Themes
 
             if (themeNeededScreen == null)
             {
-                DebugHelper.Log("[ThemeDownloadNeeded] ERRO: themeNeededScreen é null!");
                 return;
             }
 
@@ -217,17 +215,14 @@ namespace TimeCrax.Themes
             var downloader = ThemeDownloader.Instance;
             if (downloader == null) return;
 
-            DebugHelper.Log($"[ThemeDownloadNeeded] Buscando informações do tema {themeId} da API...");
 
             downloader.GetThemeInfo(themeId, (themeInfo) =>
             {
                 if (themeInfo == null)
                 {
-                    DebugHelper.Log("[ThemeDownloadNeeded] Não foi possível obter informações do tema da API");
                     return;
                 }
 
-                DebugHelper.Log($"[ThemeDownloadNeeded] Informações do tema obtidas: {themeInfo.name}");
 
                 // Atualizar UI com informações da API
                 if (themeNameText != null && !string.IsNullOrEmpty(themeInfo.name))
@@ -252,7 +247,6 @@ namespace TimeCrax.Themes
             // Não fechar se estiver baixando
             if (isDownloading)
             {
-                DebugHelper.Log("[ThemeDownloadNeeded] Não pode fechar durante download");
                 return;
             }
 
@@ -282,7 +276,6 @@ namespace TimeCrax.Themes
                 ReactivateLobbyButtons();
             }
 
-            DebugHelper.Log("[ThemeDownloadNeeded] Closed");
         }
 
         public bool IsOpen => themeNeededScreen != null && themeNeededScreen.activeSelf;
@@ -316,7 +309,6 @@ namespace TimeCrax.Themes
                 progressSlider.value = 0;
 
             // Iniciar download
-            DebugHelper.Log($"[ThemeDownloadNeeded] Iniciando download do tema: {currentThemeName}");
             ThemeManager.Instance?.DownloadTheme(currentThemeId, OnDownloadComplete);
         }
 
@@ -340,7 +332,6 @@ namespace TimeCrax.Themes
         private void OnDownloadStatus(string status)
         {
             if (!isDownloading) return;
-            DebugHelper.Log($"[ThemeDownloadNeeded] Status: {status}");
         }
 
         private void OnDownloadComplete(bool success, string error)
@@ -349,7 +340,6 @@ namespace TimeCrax.Themes
 
             if (success)
             {
-                DebugHelper.Log($"[ThemeDownloadNeeded] Download concluído com sucesso!");
 
                 if (progressSlider != null)
                     progressSlider.value = 1f;
@@ -359,7 +349,6 @@ namespace TimeCrax.Themes
             }
             else
             {
-                DebugHelper.Log($"[ThemeDownloadNeeded] Erro no download: {error}");
 
                 // Reativar botões em caso de erro
                 if (downloadButton != null)
@@ -411,7 +400,6 @@ namespace TimeCrax.Themes
             if (isRoomLocked)
             {
                 // Sala requer senha - mostrar tela de senha
-                DebugHelper.Log($"[ThemeDownloadNeeded] Sala locked, mostrando tela de senha: {targetRoomName}");
 
                 var passwordScreen = FindFirstObjectByType<PasswordScreen>(FindObjectsInactive.Include);
                 var lobbyOptions = FindFirstObjectByType<LobbyOptions>(FindObjectsInactive.Include);
@@ -427,7 +415,6 @@ namespace TimeCrax.Themes
                 }
                 else
                 {
-                    DebugHelper.Log("[ThemeDownloadNeeded] ERRO: PasswordScreen não encontrado!");
                 }
             }
             else
@@ -436,7 +423,6 @@ namespace TimeCrax.Themes
                 var gameConnection = FindFirstObjectByType<GameConnection>();
                 if (gameConnection != null)
                 {
-                    DebugHelper.Log($"[ThemeDownloadNeeded] Entrando na sala: {targetRoomName}");
                     gameConnection.JoinRoomInList(targetRoomName);
                 }
             }
@@ -467,7 +453,6 @@ namespace TimeCrax.Themes
                 }
                 else
                 {
-                    DebugHelper.Log($"[ThemeDownloadNeeded] Erro ao carregar imagem: {www.error}");
                 }
             }
         }

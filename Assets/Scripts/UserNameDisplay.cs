@@ -31,7 +31,6 @@ public class UserNameDisplay : MonoBehaviour
     {
         if (textMesh == null)
         {
-            DebugHelper.Log("[UserNameDisplay] TextMeshPro não configurado!");
             return;
         }
 
@@ -41,17 +40,14 @@ public class UserNameDisplay : MonoBehaviour
         if (TokenManager.IsLoggedIn && !string.IsNullOrEmpty(TokenManager.UserName))
         {
             displayName = TokenManager.UserName;
-            DebugHelper.Log($"[UserNameDisplay] Exibindo nome do usuário logado: {displayName}");
         }
         else if (!string.IsNullOrEmpty(SessionData.Nickname))
         {
             displayName = SessionData.Nickname;
-            DebugHelper.Log($"[UserNameDisplay] Exibindo nickname: {displayName}");
         }
         else
         {
             displayName = guestName;
-            DebugHelper.Log($"[UserNameDisplay] Exibindo nome padrão: {displayName}");
         }
 
         textMesh.text = displayName;

@@ -44,7 +44,6 @@ namespace TimeCrax.Themes
         public string title;
         public string imageUrl;
         public string localImagePath;
-        public CardQuizData quizData; // não populado pelo manifest (quiz desabilitado)
         public CardMapData map;
         public CardPersonsData persons;
     }
@@ -114,12 +113,6 @@ namespace TimeCrax.Themes
         public string era;
         public string title;
         public string imageUrl;
-
-        // Quizzes da API
-        public ImageQuizResponse imageQuiz;
-        public TextQuizResponse textQuiz;
-        public TrueFalseQuizResponse trueFalseQuiz;
-        public CorrelationQuizResponse correlationQuiz;
     }
 
     [Serializable]

@@ -1,0 +1,1 @@
+D:\Projetos\Timecrax Projects\TimeCrax Machine Game\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\6y2t3xo7\obj\arm64-v8a

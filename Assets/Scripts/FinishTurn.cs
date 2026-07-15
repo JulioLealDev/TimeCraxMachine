@@ -7,31 +7,20 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     [SerializeField] private Animator animator;
     [SerializeField] private SoundEffects soundEffects;
 
-    // Proteção contra clique duplo
-    private bool isProcessingClick = false;
-
     public void OnMouseDown()
     {
-        DebugHelper.Log($"[FinishTurn] clique: blocked={InputBlocker.IsBlocked}, animating={CameraController.IsAnimating}, processing={isProcessingClick}");
         if (InputBlocker.IsBlocked) return;
-        // Bloquear clique durante animações de câmera
         if (CameraController.IsAnimating) return;
+        if (!GameManager.TryBeginClick(this)) return;
 
-        // Proteção contra clique duplo
-        if (isProcessingClick) return;
-
-        // Verificar se é o turno do jogador local antes de processar
         if (!IsMyTurn())
         {
-            DebugHelper.Log("[FinishTurn] Não é meu turno, ignorando clique");
+            GameManager.ResetClick(this);
             return;
         }
 
-        isProcessingClick = true;
-
         InputBlocker.Block();
 
-        DebugHelper.Log("Clicou no Finish");
         gameObject.GetComponent<MeshCollider>().enabled = false;
         photonView.RPC("ClickFinish", RpcTarget.All);
 
@@ -45,13 +34,11 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     private bool IsMyTurn()
     {
         var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-        DebugHelper.Log($"[FinishTurn.IsMyTurn] Verificando turno. Total players: {players.Length}");
 
         foreach (var player in players)
         {
             bool isMine = player.photonView.IsMine;
             bool yourTurn = player.GetYourTurn();
-            DebugHelper.Log($"[FinishTurn.IsMyTurn] Player: {player.nickname}, IsMine: {isMine}, YourTurn: {yourTurn}");
 
             if (isMine && yourTurn)
             {
@@ -64,7 +51,6 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ClickFinish()
     {
-        DebugHelper.Log("Click Finish");
         soundEffects.PressHudButtonSound();
 
         // Marcar que está em transição de turno
@@ -75,12 +61,10 @@ public class FinishTurn : MonoBehaviourPunCallbacks
 
     public void Finish()
     {
-        DebugHelper.Log("Finish");
         animator.SetBool("finishTurn", false);
         var gameManager = FindFirstObjectByType<GameManager>();
         gameManager.EndTurn();
 
-        // Resetar proteção contra clique duplo para o próximo turno
-        isProcessingClick = false;
+        GameManager.ResetClick(this);
     }
 }

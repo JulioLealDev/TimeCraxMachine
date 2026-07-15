@@ -1,0 +1,2 @@
+D:\Projetos\Timecrax Projects\TimeCrax Machine Game\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+D:\Projetos\Timecrax Projects\TimeCrax Machine Game\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\FramePacing\CMakeLists.txt

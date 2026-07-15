@@ -58,9 +58,8 @@ namespace TimeCrax.Managers
 
                 for (int i = 0; i < components.Length; i++)
                 {
-                    if (components[i].CompareTag("Component"))
+                    //if (components[i].CompareTag("Component"))
                     {
-                        DebugHelper.Log($"[ComponentManager] Ativando animator do componente {components[i].name}");
                         components[i].GetComponent<Animator>().enabled = true;
                         componentsWithAnimator[index] = components[i];
                         index++;
@@ -68,7 +67,6 @@ namespace TimeCrax.Managers
                 }
             }
 
-            DebugHelper.Log("[ComponentManager] Inicializado");
         }
 
         /// <summary>
@@ -123,7 +121,6 @@ namespace TimeCrax.Managers
             {
                 if (suitComponent != null && suitComponent.malfunctions > 0)
                 {
-                    DebugHelper.Log($"[ComponentManager] {suitComponent.name} desativado");
                     suitComponent.GetComponent<MeshCollider>().enabled = false;
                 }
             }
@@ -150,7 +147,6 @@ namespace TimeCrax.Managers
         /// </summary>
         public void ResetAllComponents()
         {
-            DebugHelper.Log("[ComponentManager] ResetAllComponents");
 
             if (timeCraxComponents != null)
             {
@@ -169,7 +165,6 @@ namespace TimeCrax.Managers
                 {
                     if (component == null) continue;
 
-                    DebugHelper.Log($"[ComponentManager] Resetando {component.name}");
                     var animator = component.GetComponent<Animator>();
                     if (animator != null)
                     {

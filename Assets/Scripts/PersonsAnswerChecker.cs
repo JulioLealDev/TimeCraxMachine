@@ -34,9 +34,6 @@ public class PersonsAnswerChecker : MonoBehaviour
     [SerializeField] private PersonCardImage cardImage02;
     [SerializeField] private PersonCardImage cardImage03;
 
-    private static readonly Color ColorCorrect   = Color.green;
-    private static readonly Color ColorIncorrect = Color.red;
-
     private bool[] assigned = new bool[3];
 
     void Awake()
@@ -70,14 +67,12 @@ public class PersonsAnswerChecker : MonoBehaviour
     {
         // Aguarda um frame para OutlineAction terminar qualquer limpeza de hover pendente
         yield return null;
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
         var shuffled = GameManager.ShuffledPersonEntries;
-        TMP_Text[]         names       = { personName01,         personName02,         personName03         };
-        GameObject[]       correct     = { correctIcon01,        correctIcon02,        correctIcon03        };
-        GameObject[]       incorrect   = { incorrectIcon01,      incorrectIcon02,      incorrectIcon03      };
-        OutlineComponent[] descOutline = { descriptionOutline01, descriptionOutline02, descriptionOutline03 };
-        OutlineComponent[] cardOutline = { cardImageOutline01,   cardImageOutline02,   cardImageOutline03   };
+        TMP_Text[]   names     = { personName01,   personName02,   personName03   };
+        GameObject[] correct   = { correctIcon01,  correctIcon02,  correctIcon03  };
+        GameObject[] incorrect = { incorrectIcon01, incorrectIcon02, incorrectIcon03 };
 
         bool anyWrong = false;
 
@@ -90,13 +85,8 @@ public class PersonsAnswerChecker : MonoBehaviour
 
             if (!isCorrect) anyWrong = true;
 
-            Color color = isCorrect ? ColorCorrect : ColorIncorrect;
-
             correct[i]?.SetActive(isCorrect);
             incorrect[i]?.SetActive(!isCorrect);
-
-            SetOutline(descOutline[i], color);
-            SetOutline(cardOutline[i], color);
 
             if (i < 2)
                 yield return new WaitForSeconds(1f);
@@ -104,12 +94,12 @@ public class PersonsAnswerChecker : MonoBehaviour
 
         var gameManager = FindFirstObjectByType<GameManager>();
 
-        // Fecha a NewTimeline
-        gameManager?.ClosePersonsNewTimeline();
-
         // Se qualquer resposta errada, dispara o wrongSlot imediatamente
         if (anyWrong)
             gameManager?.HandlePersonsWrong();
+
+        // Fecha a NewTimeline
+        gameManager?.CloseNewTimeline();
 
         // t+2.5s: reset completo do PersonsFrame
         yield return new WaitForSeconds(2.5f);
@@ -120,13 +110,6 @@ public class PersonsAnswerChecker : MonoBehaviour
         cardImage03?.ResetToDefault();
 
         gameManager?.ResetPersonsFrame(); // desativa personsFrame e agenda zoom out internamente
-    }
-
-    private void SetOutline(OutlineComponent outline, Color color)
-    {
-        if (outline == null) return;
-        outline.OutlineColor = color;
-        outline.enabled = true;
     }
 
     private void HideAllIcons()

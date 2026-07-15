@@ -15,11 +15,12 @@ public class QuitInGaming : MonoBehaviour
         if (isQuitting) return;
         isQuitting = true;
 
-        DebugHelper.Log("1 -- Clicou no Quit");
 
         if (soundEffects != null) soundEffects.PressButtonSound();
 
         if (animator != null) animator.SetBool("quitGame", true);
+
+        GameStateManager.TransitionTo(GamePhase.ExitingGame);
 
         this.DelayedCall(1f, QuitGame);
     }

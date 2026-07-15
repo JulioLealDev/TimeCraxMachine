@@ -9,9 +9,8 @@ namespace TimeCrax.Managers
     /// Gerenciador do termômetro da máquina do tempo.
     /// Controla a progressão de temperatura que leva ao malfunction.
     /// Progressão baseada na dificuldade:
-    /// - Easy: 20 → 40 → 60 → 80 → 100
-    /// - Normal: 20 → 50 → 80 → 100
-    /// - Hard: 20 → 60 → 100
+    /// - Easy: 20 → 50 → 80 → 100
+    /// - Medium/Hard: 20 → 60 → 100
     /// </summary>
     public class ThermometerManager : MonoBehaviourPunCallbacks
     {
@@ -34,6 +33,7 @@ namespace TimeCrax.Managers
         [SerializeField] private ParticleSystem smokeParticle02;
 
         [Header("Configuração")]
+        [SerializeField] private int[] temperatureLevels = { 0, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
         [SerializeField] private float malfunctionDelay = 3f; // Delay antes de iniciar malfunction
 
         // Progressões por dificuldade (base)
@@ -88,8 +88,8 @@ namespace TimeCrax.Managers
             // Inicializar progressões
             ResetProgressions();
 
-            // Temperatura inicial será definida em Initialize() quando a partida começar
-            currentTemperature = 0;
+            // Garantir que começa em 0
+            SetTemperature(0);
         }
 
         /// <summary>
@@ -108,7 +108,6 @@ namespace TimeCrax.Managers
         /// </summary>
         public void Initialize()
         {
-            DebugHelper.Log("[ThermometerManager] Inicializando termômetro para nova partida");
 
             // Obter dificuldade da sala
             if (PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("dif"))
@@ -120,7 +119,6 @@ namespace TimeCrax.Managers
                 currentDifficulty = "Normal";
             }
 
-            DebugHelper.Log($"[ThermometerManager] Dificuldade: {currentDifficulty}");
 
             // Resetar índice de progressão
             currentProgressionIndex = 0;
@@ -136,17 +134,8 @@ namespace TimeCrax.Managers
         {
             currentDifficulty = difficulty;
             currentProgressionIndex = 0;
-
-            // Resetar progressões para garantir valores base em nova partida
-            ResetProgressions();
-
-            // Usar primeiro nível da progressão atual
-            int[] progression = GetCurrentProgression();
-            int firstLevel = progression.Length > 0 ? progression[0] : 20;
-            SetTemperature(firstLevel);
-
+            SetTemperature(20);
             ActivateSmokeParticles();
-            DebugHelper.Log($"[ThermometerManager] Inicializado com dificuldade: {difficulty}, temperatura inicial: {firstLevel}");
         }
 
         /// <summary>
@@ -195,22 +184,20 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
-        /// Chamado quando o jogador erra (posicionamento, quiz ou turno finalizado).
+        /// Chamado quando o jogador erra (posicionamento ou turno finalizado).
         /// Aumenta a temperatura em 1 nível. Se chegar em 100, causa malfunction.
         /// </summary>
         public void OnPlayerError()
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            DebugHelper.Log($"[ThermometerManager] Erro do jogador - Temperatura atual: {currentTemperature}");
 
             // Encontrar próximo nível de temperatura
             int nextTemperature = GetNextTemperature();
 
             if (nextTemperature >= 100)
             {
-                // Chegou em 100 - causa malfunction e reseta para 20
-                DebugHelper.Log("[ThermometerManager] Temperatura máxima! Causando malfunction...");
+                // Chegou em 100 - causa malfunction e reseta temperatura
                 photonView.RPC("RPC_SetTemperature", RpcTarget.All, 100);
 
                 // Aguardar antes de causar malfunction
@@ -222,7 +209,6 @@ namespace TimeCrax.Managers
             else
             {
                 // Apenas aumenta temperatura
-                DebugHelper.Log($"[ThermometerManager] Aumentando temperatura para {nextTemperature}");
                 photonView.RPC("RPC_SetTemperatureWithIndex", RpcTarget.All, nextTemperature, currentProgressionIndex + 1);
             }
         }
@@ -252,7 +238,6 @@ namespace TimeCrax.Managers
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            DebugHelper.Log("[ThermometerManager] Disparando malfunction!");
 
             // Chamar malfunction no GameManager
             // O reset de temperatura será feito pelo GameManager após aplicar o malfunction
@@ -274,7 +259,6 @@ namespace TimeCrax.Managers
             int firstLevel = progression.Length > 0 ? progression[0] : 20;
 
             photonView.RPC("RPC_SetTemperatureWithIndex", RpcTarget.All, firstLevel, 0);
-            DebugHelper.Log($"[ThermometerManager] Temperatura resetada para {firstLevel}");
         }
 
         /// <summary>
@@ -285,7 +269,6 @@ namespace TimeCrax.Managers
             currentTemperature = temperature;
             UpdateAnimator();
             UpdateSmokeParticlesSpeed();
-            DebugHelper.Log($"[ThermometerManager] Temperatura definida para {temperature}");
         }
 
         // Coroutine atual de transição de velocidade
@@ -333,7 +316,6 @@ namespace TimeCrax.Managers
             float startSpeed = currentSmokeSpeed;
             float elapsed = 0f;
 
-            DebugHelper.Log($"[ThermometerManager] Transição de velocidade: {startSpeed} → {targetSpeed}");
 
             while (elapsed < duration)
             {
@@ -356,7 +338,6 @@ namespace TimeCrax.Managers
             SetSmokeParticleSpeed(smokeParticle01, currentSmokeSpeed);
             SetSmokeParticleSpeed(smokeParticle02, currentSmokeSpeed);
 
-            DebugHelper.Log($"[ThermometerManager] Velocidade das partículas: {currentSmokeSpeed}");
             smokeSpeedTransitionCoroutine = null;
         }
 
@@ -385,7 +366,6 @@ namespace TimeCrax.Managers
             {
                 smokeParticle02.gameObject.SetActive(true);
             }
-            DebugHelper.Log("[ThermometerManager] Partículas de fumaça ativadas");
         }
 
         /// <summary>
@@ -412,11 +392,9 @@ namespace TimeCrax.Managers
             {
                 thermometerAnimator.enabled = true;
                 thermometerAnimator.SetInteger("thermometer", currentTemperature);
-                DebugHelper.Log($"[ThermometerManager] Animator atualizado - thermometer={currentTemperature}");
             }
             else
             {
-                DebugHelper.Log("[ThermometerManager] AVISO: thermometerAnimator é null!");
             }
         }
 
@@ -429,7 +407,6 @@ namespace TimeCrax.Managers
             if (thermometerAnimator != null)
             {
                 thermometerAnimator.SetBool("malfunction", isMalfunctioning);
-                DebugHelper.Log($"[ThermometerManager] Animator malfunction = {isMalfunctioning}");
             }
         }
 
@@ -438,7 +415,6 @@ namespace TimeCrax.Managers
         /// </summary>
         public void ResetThermometer()
         {
-            DebugHelper.Log("[ThermometerManager] Resetando termômetro");
 
             currentProgressionIndex = 0;
 
@@ -484,7 +460,6 @@ namespace TimeCrax.Managers
                 SetTemperature(newTemperature);
             }
 
-            DebugHelper.Log($"[ThermometerManager] Cooler com malfunction! Total: {coolersMalfunctioning}, Temperatura: {newTemperature}");
         }
 
         /// <summary>
@@ -511,7 +486,6 @@ namespace TimeCrax.Managers
                 SetTemperature(newTemperature);
             }
 
-            DebugHelper.Log($"[ThermometerManager] Cooler reparado! Total: {coolersMalfunctioning}, Temperatura: {newTemperature}");
         }
 
         /// <summary>
@@ -526,10 +500,6 @@ namespace TimeCrax.Managers
             mediumProgression = ApplyOffsetToProgression(mediumProgressionBase, offset);
             hardProgression = ApplyOffsetToProgression(hardProgressionBase, offset);
 
-            DebugHelper.Log($"[ThermometerManager] Progressões recalculadas com offset de {offset}°C");
-            DebugHelper.Log($"[ThermometerManager] Easy: [{string.Join(", ", easyProgression)}]");
-            DebugHelper.Log($"[ThermometerManager] Medium: [{string.Join(", ", mediumProgression)}]");
-            DebugHelper.Log($"[ThermometerManager] Hard: [{string.Join(", ", hardProgression)}]");
         }
 
         /// <summary>
@@ -567,8 +537,12 @@ namespace TimeCrax.Managers
         [PunRPC]
         public void RPC_SetTemperature(int temperature)
         {
+            // Desabilitar cursor imediatamente quando temperatura atinge 100
             if (temperature >= 100)
-                InputBlocker.Block();
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
             SetTemperature(temperature);
         }
 
@@ -585,13 +559,6 @@ namespace TimeCrax.Managers
 
         private void OnDestroy()
         {
-            // Parar coroutine ativa para evitar NullReferenceException
-            if (smokeSpeedTransitionCoroutine != null)
-            {
-                StopCoroutine(smokeSpeedTransitionCoroutine);
-                smokeSpeedTransitionCoroutine = null;
-            }
-
             if (_instance == this)
             {
                 _instance = null;

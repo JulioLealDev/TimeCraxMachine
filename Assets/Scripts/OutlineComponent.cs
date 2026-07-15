@@ -212,6 +212,8 @@ public class OutlineComponent : MonoBehaviour
                 continue;
             }
 
+            if (!meshFilter.sharedMesh.isReadable) continue;
+
             // Retrieve or generate smooth normals
             var index = bakeKeys.IndexOf(meshFilter.sharedMesh);
             var smoothNormals = (index >= 0) ? bakeValues[index].data : SmoothNormals(meshFilter.sharedMesh);
@@ -238,6 +240,8 @@ public class OutlineComponent : MonoBehaviour
                 continue;
             }
 
+            if (!skinnedMeshRenderer.sharedMesh.isReadable) continue;
+
             // Clear UV3
             skinnedMeshRenderer.sharedMesh.uv4 = new Vector2[skinnedMeshRenderer.sharedMesh.vertexCount];
 
@@ -248,6 +252,7 @@ public class OutlineComponent : MonoBehaviour
 
     List<Vector3> SmoothNormals(Mesh mesh)
     {
+        if (!mesh.isReadable) return new List<Vector3>();
 
         // Group vertices by location
         var groups = mesh.vertices.Select((vertex, index) => new KeyValuePair<Vector3, int>(vertex, index)).GroupBy(pair => pair.Key);
@@ -287,6 +292,7 @@ public class OutlineComponent : MonoBehaviour
 
     void CombineSubmeshes(Mesh mesh, Material[] materials)
     {
+        if (!mesh.isReadable) return;
 
         // Skip meshes with a single submesh
         if (mesh.subMeshCount == 1)

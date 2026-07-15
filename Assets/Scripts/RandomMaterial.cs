@@ -164,23 +164,19 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     {
         if (timelineYearsList == null || timelineYearsList.Length == 0)
         {
-            DebugHelper.Log("[RandomMaterial] timelineYearsList não configurado!");
             return;
         }
 
-        DebugHelper.Log($"[RandomMaterial] SetTimelineYears: selectedYears = [{string.Join(", ", selectedYears)}]");
 
         for (int i = 0; i < selectedYears.Length && i < timelineYearsList.Length; i++)
         {
             if (timelineYearsList[i] == null)
             {
-                DebugHelper.Log($"[RandomMaterial] timelineYearsList[{i}] é null!");
                 continue;
             }
 
             timelineYearsList[i].text = selectedYears[i].ToString();
 
-            DebugHelper.Log($"[RandomMaterial] Timeline slot {i} = {selectedYears[i]}");
         }
     }
 
@@ -192,7 +188,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     public void InitializeForTheme(ThemeData theme)
     {
         currentTheme = theme;
-        DebugHelper.Log($"[RandomMaterial] Inicializando tema: {theme.name} ({theme.cards.Count} cartas disponíveis)");
     }
 
     /// <summary>
@@ -202,7 +197,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     {
         if (currentTheme == null)
         {
-            DebugHelper.Log("[RandomMaterial] ERRO: Tema não inicializado!");
             return;
         }
 
@@ -216,7 +210,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
             selectedIndices[i] = currentTheme.cards.IndexOf(selectedCards[i]);
         }
 
-        DebugHelper.Log($"[RandomMaterial] Cartas selecionadas: {string.Join(", ", selectedIndices)}");
 
         // Sincronizar com todos os jogadores
         photonView.RPC("SetAllValuesFromTheme", RpcTarget.All, currentTheme.id, selectedIndices);
@@ -244,7 +237,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         var theme = ThemeStorage.GetTheme(themeId);
         if (theme == null)
         {
-            DebugHelper.Log($"[RandomMaterial] ERRO: Tema {themeId} não encontrado no storage local!");
             return;
         }
 
@@ -284,7 +276,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         // Atualizar timeline
         SetTimelineYears();
 
-        DebugHelper.Log($"[RandomMaterial] Tema configurado: {theme.name}");
     }
 
     /// <summary>
@@ -318,7 +309,6 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
                     material.SetTexture("_ImageTex", texture);
 
                     renderer.material = material;
-                    DebugHelper.Log($"[RandomMaterial] Carta {index}: Usando shader de composição");
                 }
                 else
                 {
@@ -327,22 +317,18 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
                     material.mainTexture = texture;
                     material.SetFloat("_Glossiness", 0.2f);
                     renderer.material = material;
-                    DebugHelper.Log($"[RandomMaterial] Carta {index}: Usando fallback (sem template)");
                 }
             }
         }
         else
         {
-            DebugHelper.Log($"[RandomMaterial] AVISO: Textura não encontrada para carta {themeCard.title}");
         }
 
         // Definir ano
         eventCard.slotYear = themeCard.year;
 
-        // Associar ThemeCard ao EventCard para acesso aos dados do quiz
         eventCard.SetThemeCard(themeCard);
 
-        DebugHelper.Log($"[RandomMaterial] Carta {index}: {themeCard.title} ({themeCard.year})");
     }
 
     /// <summary>
