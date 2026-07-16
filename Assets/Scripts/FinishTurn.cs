@@ -53,10 +53,12 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     {
         soundEffects.PressHudButtonSound();
 
-        // Marcar que está em transição de turno
         GameManager.IsInTurnTransition = true;
-
         InputBlocker.Block();
+
+        // Desativar imediatamente o collider da timeline ao finalizar o turno
+        var tl = FindFirstObjectByType<Timeline>();
+        if (tl != null) tl.ActiveTimeline(false);
     }
 
     public void Finish()

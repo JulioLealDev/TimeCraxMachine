@@ -35,7 +35,7 @@ public class PersonsCarousel : MonoBehaviour
     public void Open(Renderer target, TMP_Text nameText, int slotIndex)
     {
         var themeCard = GameManager.CurrentPersonsThemeCard;
-        if (themeCard?.persons?.entries == null) return;
+        if (themeCard?.persons?.entries == null || themeCard.persons.entries.Count == 0) return;
 
         targetRenderer = target;
         targetNameText = nameText;
@@ -79,7 +79,9 @@ public class PersonsCarousel : MonoBehaviour
 
     private void ShowCurrent()
     {
-        currentImage.sprite = loadedSprites[currentIndex];
+        var sprite = loadedSprites[currentIndex];
+        currentImage.sprite = sprite;
+        currentImage.enabled = sprite != null;
     }
 
     private void OnConfirm()

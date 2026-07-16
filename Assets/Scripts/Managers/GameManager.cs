@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static int CurrentPersonsSlotCount { get; private set; }
     public static List<TimeCrax.Themes.PersonEntry> ShuffledPersonEntries { get; private set; }
     public static bool IsInTurnTransition { get; set; } = false;
+    public static bool IsMalfunctionPending { get; set; } = false;
 
     // Propriedades públicas
     public int randomId;
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int round;
     private int roundCompare;
     private int time;
+    private bool _pendingPlayerErrorAfterZoomOut = false;
 
     // Players e componentes
     private MachineComponent[] timeCraxComponents;
@@ -242,13 +244,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         CacheComponents();
 
         gameIsOn = true;
+        IsMalfunctionPending = false;
+        _pendingPlayerErrorAfterZoomOut = false;
         componentsWithAnimator.Clear();
         timeCraxComponents = FindObjectsByType<MachineComponent>(FindObjectsSortMode.None);
 
         Transform[] components = enviroment.GetComponentsInChildren<Transform>();
         for (int i = 0; i < components.Length; i++)
         {
-            //if (components[i].CompareTag("Component"))
+            if (components[i].CompareTag("Component"))
             {
                 var animator = components[i].GetComponent<Animator>();
                 if (animator != null)
@@ -878,6 +882,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             Debug.Log($"[GameManager] Ativando Map. map={map != null}");
             if (map != null) map.SetActive(true);
             else Debug.LogWarning("[GameManager] Referência 'map' é null no Inspector!");
+            GameStateManager.TransitionTo(GamePhase.IM_MapChallenge);
             return;
         }
 
@@ -885,6 +890,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         Debug.Log($"[GameManager] Ativando PersonsFrame. personsFrame={personsFrame != null}, themeCard={CurrentPersonsThemeCard?.title}");
         if (personsFrame != null) personsFrame.SetActive(true);
         else Debug.LogWarning("[GameManager] Referência 'personsFrame' é null no Inspector!");
+        GameStateManager.TransitionTo(GamePhase.IM_PersonsChallenge);
         ApplyPersonsText(CurrentPersonsThemeCard);
 
         this.DelayedCall(2.5f, ActivatePersonsSelectable);
@@ -931,14 +937,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 card.GetComponent<Animator>().SetBool("wrongSlot", true);
                 int slotCount = CurrentPersonsSlotCount;
-                // Delay maior que a soma do exit time do to_slotN (até 2.55s loop) MapResetStatusCard() é chamado pelo
-                // Animation Event da animação disapear; apenas devolvemos a carta ao deck.
                 this.DelayedCall(4f, () =>
                 {
                     deckEvent.AddCardBack(slotCount);
                 });
                 break;
             }
+        }
+
+        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
+        {
+            if (ThermometerManager.Instance.WillNextErrorCauseMalfunction())
+                IsMalfunctionPending = true;
+            _pendingPlayerErrorAfterZoomOut = true;
         }
     }
 
@@ -966,6 +977,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void PersonsZoomOut()
     {
+        if (PhotonNetwork.IsMasterClient && !_pendingPlayerErrorAfterZoomOut)
+            OpenLeftCompartmentAfterZoomOut();
         gameCamera?.DistanceTimeline();
     }
 
@@ -1020,14 +1033,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 card.GetComponent<Animator>().SetBool("wrongSlot", true);
                 int captured = slotCount;
-                // Mesmo motivo do HandlePersonsWrong: delay suficiente para a animação
-                // disapear completar e chamar ResetStatusCard() via Animation Event.
                 this.DelayedCall(4f, () =>
                 {
                     deckEvent.AddCardBack(captured);
                 });
                 break;
             }
+        }
+
+        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
+        {
+            if (ThermometerManager.Instance.WillNextErrorCauseMalfunction())
+                IsMalfunctionPending = true;
+            _pendingPlayerErrorAfterZoomOut = true;
         }
     }
 
@@ -1048,6 +1066,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void MapZoomOut()
     {
+        if (PhotonNetwork.IsMasterClient && !_pendingPlayerErrorAfterZoomOut)
+            OpenLeftCompartmentAfterZoomOut();
         gameCamera?.DistanceTimeline();
     }
 
@@ -1058,8 +1078,14 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void OpenLeftCompartmentAfterZoomOut()
     {
-        if (PhotonNetwork.IsMasterClient)
-            photonView.RPC("RPC_OpenLeftCompartment", RpcTarget.All);
+        if (GameStateManager.Is(!GamePhase.Victory))
+        {
+            GameStateManager.TransitionTo(GamePhase.IM_UnlockBonusDeck);
+            
+            if (PhotonNetwork.IsMasterClient)
+                photonView.RPC("RPC_OpenLeftCompartment", RpcTarget.All);
+        }
+
     }
 
     [PunRPC]
@@ -1195,6 +1221,17 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
             ThermometerManager.Instance.ResetTemperatureToFirstLevel();
+
+        gameCamera?.ActivateTimelineAfterMalfunction();
+        GameStateManager.TransitionTo(GamePhase.Menu);
+    }
+
+    public void ProcessPendingPlayerError()
+    {
+        if (!_pendingPlayerErrorAfterZoomOut) return;
+        _pendingPlayerErrorAfterZoomOut = false;
+        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
+            ThermometerManager.Instance.OnPlayerError();
     }
 
     public void CheckGameOverCondition()
@@ -1225,6 +1262,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         var bgMusic = FindFirstObjectByType<BackgroundMusic>();
         if (bgMusic != null) bgMusic.PlayGameOverSound();
 
+        endMatchScreen.UpdateTitle();
         endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
 
         if (hud != null) hud.SetActive(false);
@@ -1467,6 +1505,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 col.enabled = enabled;
                 child.tag = tag;
+                if (enabled && child.GetComponent<TimelineColliderArea>() != null)
+                    Debug.Log($"[GameManager] SetNewTimelineColliders ativou TimelineColliderArea — IsMalfunctionPending={IsMalfunctionPending}");
             }
         }
     }
@@ -1481,10 +1521,16 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (child == newTimeline) continue;
             if (child.GetComponentInParent<EventSlot>(true) != null) continue;
+            // Não reativar TimelineColliderArea enquanto malfunction estiver pendente
+            if (enabled && IsMalfunctionPending && child.GetComponent<TimelineColliderArea>() != null) continue;
 
             var col = child.GetComponent<Collider>();
-            if (col != null) col.enabled = enabled;
-
+            if (col != null)
+            {
+                col.enabled = enabled;
+                if (enabled && child.GetComponent<TimelineColliderArea>() != null)
+                    Debug.Log($"[GameManager] SetNewTimelineNonSlotColliders ativou TimelineColliderArea — IsMalfunctionPending={IsMalfunctionPending}");
+            }
         }
     }
 

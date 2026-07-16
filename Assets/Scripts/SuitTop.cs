@@ -46,15 +46,11 @@ public class SuitTop : MonoBehaviour
         return menuOptions.GetComponentsInChildren<Transform>();
     }*/
 
-    /*public void DistanceTimelineWhenQuit()
+    public void DistanceTimelineWhenQuit()
     {
-        if (cameraController.GetComponent<Animator>().GetBool("zoomTimeline"))
-        {
-            cameraController.GetComponent<Animator>().SetBool("zoomTimeline", false);
-            cameraController.GetComponent<Animator>().SetBool("distanceZoom", true);
-        }
-
-    }*/
+        if (cameraController != null && cameraController.IsInZoomMode())
+            cameraController.DistanceTimeline();
+    }
 
     /*public void ActivateInputName()
     {

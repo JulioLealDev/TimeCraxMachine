@@ -26,7 +26,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
 
         if (gameObject.CompareTag("Selectable"))
         {
-            GameStateManager.TransitionTo(GamePhase.DrawingCard);
+            GameStateManager.TransitionTo(GamePhase.IM_DrewEventCard);
 
             gameObject.tag = "Undestructable";
             timelineColliderArea.SetUpTimelineCollider(false);

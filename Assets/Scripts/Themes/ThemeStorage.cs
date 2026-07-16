@@ -165,24 +165,50 @@ namespace TimeCrax.Themes
             }
         }
 
+        /// <summary>
+        /// Carrega uma imagem pelo path. Suporta três formatos:
+        ///   "res:Textures/myImg"   → Resources.Load explícito (prefixo obrigatório)
+        ///   "Textures/myImg"       → tenta Resources.Load diretamente (sem extensão)
+        ///   "/data/.../file.png"   → File.ReadAllBytes (imagem baixada, path absoluto)
+        /// </summary>
         public static Texture2D LoadLocalImage(string localPath)
         {
-            if (string.IsNullOrEmpty(localPath) || !File.Exists(localPath))
+            if (string.IsNullOrEmpty(localPath))
+                return null;
+
+            // Strip "res:" prefix to get the bare path used for both Resources.Load and dataPath fallback
+            string barePath = localPath.StartsWith("res:") ? localPath.Substring(4) : localPath;
+
+            // Try Resources.Load first (works in builds when asset is inside a Resources folder)
+            var resourcesTex = Resources.Load<Texture2D>(barePath);
+            if (resourcesTex != null) return resourcesTex;
+
+            // Try absolute file path (downloaded themes or explicit full paths)
+            if (File.Exists(localPath))
             {
+                try
+                {
+                    var bytes = File.ReadAllBytes(localPath);
+                    var texture = new Texture2D(2, 2);
+                    if (texture.LoadImage(bytes)) return texture;
+                }
+                catch (Exception) { }
                 return null;
             }
 
-            try
+            // Fallback: try loading via Application.dataPath (Editor / bundled assets not in Resources)
+            string[] extensions = { "", ".png", ".jpg", ".jpeg" };
+            foreach (var ext in extensions)
             {
-                var bytes = File.ReadAllBytes(localPath);
-                var texture = new Texture2D(2, 2);
-                if (texture.LoadImage(bytes))
+                var fullPath = Path.Combine(Application.dataPath, barePath + ext);
+                if (!File.Exists(fullPath)) continue;
+                try
                 {
-                    return texture;
+                    var bytes = File.ReadAllBytes(fullPath);
+                    var texture = new Texture2D(2, 2);
+                    if (texture.LoadImage(bytes)) return texture;
                 }
-            }
-            catch (Exception)
-            {
+                catch (Exception) { }
             }
 
             return null;

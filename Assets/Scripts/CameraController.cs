@@ -115,14 +115,16 @@ public class CameraController : MonoBehaviourPunCallbacks
         {
             /*Debug.Log("[CameraController] ZoomTimelineFinished - CheckIfCardWasDrew: " +gameManagerCache.CheckIfCardWasDrew() );
             if (gameManagerCache.CheckIfCardWasDrew())*/
-            if (GameStateManager.Is(GamePhase.DrawingCard))
+            if (GameStateManager.Is(GamePhase.IM_DrewEventCard))
             {
                 if (slot != null) slot.SetUpSlots(true, "Selectable");
                 if (timeline != null) timeline.ActiveTimeline(false);
             }
             else
             {
-                if (timeline != null) timeline.ActiveTimeline(true);
+                Debug.Log($"[CameraController] ZoomTimelineFinished else-branch — IsMalfunctionPending={GameManager.IsMalfunctionPending}");
+                if (!GameManager.IsMalfunctionPending)
+                    if (timeline != null) timeline.ActiveTimeline(true);
             }
         }
     }
@@ -140,14 +142,19 @@ public class CameraController : MonoBehaviourPunCallbacks
 
         if (gameManagerCache != null && gameManagerCache.IsMyTurn())
         {
-            if (timeline != null) timeline.ActiveTimeline(true);
-            //if (gameManagerCache.CheckIfCardWasDrew() && slot != null)
-            else
+            Debug.Log($"[CameraController] DistanceTimelineFinished — IsMalfunctionPending={GameManager.IsMalfunctionPending}");
+            if (!GameManager.IsMalfunctionPending)
             {
-                slot.SetUpSlots(false, "Undestructable");
-                timelineColliderArea.SetUpTimelineCollider(true);
+                if (timeline != null) timeline.ActiveTimeline(true);
+                //if (gameManagerCache.CheckIfCardWasDrew() && slot != null)
+                else
+                {
+                    slot.SetUpSlots(false, "Undestructable");
+                    timelineColliderArea.SetUpTimelineCollider(true);
+                }
             }
         }
+        gameManagerCache?.ProcessPendingPlayerError();
         Debug.Log("[CameraController] GameState: " +GamePhase.IM_Turn );
         GameStateManager.TransitionTo(GamePhase.IM_Turn);
     }
@@ -172,5 +179,26 @@ public class CameraController : MonoBehaviourPunCallbacks
     public bool IsInZoomMode()
     {
         return cameraAnimator.GetBool("zoomTimeline");
+    }
+
+    /// <summary>
+    /// Chamado por GameManager.AddMalfunctionInComponent() ao fim da roleta.
+    /// Limpa o flag de malfunction e reativa o collider da timeline se for o turno do jogador local.
+    /// </summary>
+    public void ActivateTimelineAfterMalfunction()
+    {
+        Debug.Log("[CameraController] ActivateTimelineAfterMalfunction — limpando IsMalfunctionPending");
+        GameManager.IsMalfunctionPending = false;
+        // Não reativar se o turno já está finalizando (End Turn clicado)
+        if (GameManager.IsInTurnTransition) return;
+        if (gameManagerCache != null && gameManagerCache.IsMyTurn())
+        {
+            if (timeline != null) timeline.ActiveTimeline(true);
+            else
+            {
+                slot?.SetUpSlots(false, "Undestructable");
+                timelineColliderArea?.SetUpTimelineCollider(true);
+            }
+        }
     }
 }

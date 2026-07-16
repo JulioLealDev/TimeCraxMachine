@@ -52,6 +52,7 @@ public class DeckBonus : MonoBehaviourPunCallbacks
         else
         {
             // Enviar requisição ao MasterClient para processar a compra
+            GameStateManager.TransitionTo(GamePhase.IM_DrewBonusCard);
             photonView.RPC("RequestDrawBonusCard", RpcTarget.MasterClient);
         }
 

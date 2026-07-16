@@ -142,6 +142,7 @@ public class MapAnswerChecker : MonoBehaviour
 
         Debug.Log($"[MapAnswerChecker] Pin clicado: index={pinIndex}, correto={pinIndex == correctPinIndex}");
 
+        GameStateManager.TransitionTo(GamePhase.IM_ChallengeFeedback);
         InputBlocker.Block();
         Cursor.visible = true;
 

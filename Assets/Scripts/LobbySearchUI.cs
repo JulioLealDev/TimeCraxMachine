@@ -40,7 +40,7 @@ public class LobbySearchUI : MonoBehaviour
 
         foreach (Room room in rooms)
         {
-            //if (room.CompareTag("Undestructable")) continue;
+            if (room.CompareTag("Undestructable")) continue;
 
             bool shouldShow = true;
 

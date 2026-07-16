@@ -119,52 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1110484
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1110485}
-  - component: {fileID: 1110486}
-  m_Layer: 0
-  m_Name: EventCardContent_14
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1110485
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110484}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1110486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 0a48a9cfa76a08d4994212d99b489895, type: 2}
-  year: 1150
 --- !u!1 &1300235
 GameObject:
   m_ObjectHideFlags: 0
@@ -1420,6 +1374,117 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!1 &44571613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 44571614}
+  - component: {fileID: 44571615}
+  m_Layer: 0
+  m_Name: EventCardContent_05
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &44571614
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44571613}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &44571615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44571613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 06ea672692f64b548876e87e98a5c057, type: 2}
+  year: 1497
+  title: "Am\xE9rico Vesp\xFAcio reconhece um novo continente"
+  era: AD
+  map:
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
+      name: Vasco da Gama
+      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
+        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
+        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
+        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
+        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
+        contornando o continente africano, chegando a Calecute em 1498, feito que
+        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
+        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
+        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
+        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
+        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
+        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
+        portuguesa."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
+      name: "Pedro \xC1lvarez Cabral"
+      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
+        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
+        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
+        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
+        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
+        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
+        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
+        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
+        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
+        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
+        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
+        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
+        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
+      name: "Am\xE9rico Vesp\xFAcio"
+      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
+        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
+        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
+        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
+        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
+        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
+        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
+        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
+        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
+        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
+        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
+        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
+        Faleceu em 22 de fevereiro de 1512, em Sevilha."
 --- !u!1001 &50132367
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1585,52 +1650,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 61116835}
   m_CullTransparentMesh: 1
---- !u!1 &63634025
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 63634026}
-  - component: {fileID: 63634027}
-  m_Layer: 0
-  m_Name: EventCardContent_08
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &63634026
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 63634025}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &63634027
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 63634025}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 92507c10efc15854f86c195ea8ab659e, type: 2}
-  year: 1931
 --- !u!1 &68022210
 GameObject:
   m_ObjectHideFlags: 0
@@ -2415,7 +2434,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 864236689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &150654760
+--- !u!1 &149484389
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2423,44 +2442,109 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 150654761}
-  - component: {fileID: 150654762}
+  - component: {fileID: 149484390}
+  - component: {fileID: 149484391}
   m_Layer: 0
-  m_Name: EventCardContent_03
+  m_Name: EventCardContent_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &150654761
+--- !u!4 &149484390
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 150654760}
+  m_GameObject: {fileID: 149484389}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1975418935}
+  m_Father: {fileID: 1472967106}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &150654762
+--- !u!114 &149484391
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 150654760}
+  m_GameObject: {fileID: 149484389}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: e29e2a4f4ae64eb4c8f8501d46dc3023, type: 2}
-  year: 1941
+  material: {fileID: 2100000, guid: bdbb77b16ed0f9e4d89b24845642fa8d, type: 2}
+  year: 1492
+  title: "Chegada \xE0s Bahamas (Guanahani)"
+  era: AD
+  map:
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
+      name: Vasco da Gama
+      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
+        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
+        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
+        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
+        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
+        contornando o continente africano, chegando a Calecute em 1498, feito que
+        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
+        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
+        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
+        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
+        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
+        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
+        portuguesa."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
+      name: "Pedro \xC1lvarez Cabral"
+      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
+        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
+        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
+        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
+        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
+        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
+        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
+        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
+        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
+        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
+        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
+        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
+        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
+      name: "Am\xE9rico Vesp\xFAcio"
+      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
+        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
+        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
+        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
+        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
+        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
+        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
+        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
+        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
+        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
+        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
+        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
+        Faleceu em 22 de fevereiro de 1512, em Sevilha."
 --- !u!1001 &160144170
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11292,52 +11376,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &282334916
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 282334917}
-  - component: {fileID: 282334918}
-  m_Layer: 0
-  m_Name: EventCardContent_19
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &282334917
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 282334916}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &282334918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 282334916}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 4fba093b8eaa7cb429023610aed93d04, type: 2}
-  year: 1492
 --- !u!95 &284398127
 Animator:
   serializedVersion: 7
@@ -12013,9 +12051,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73a10defa29b60145bf3b9e789ededc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldHistoryMaterials: {fileID: 914927415}
-  wordWar2Materials: {fileID: 1975418934}
-  worldScienceMaterials: {fileID: 0}
+  discoveryOfAmericasMaterials: {fileID: 1472967105}
   timeline: {fileID: 233547333}
   randomNumber: 0
   timelineYearsList:
@@ -12040,8 +12076,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 914927416}
-  - {fileID: 1975418935}
+  - {fileID: 1472967106}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &336008439
@@ -14572,52 +14607,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!1 &448903752
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 448903753}
-  - component: {fileID: 448903754}
-  m_Layer: 0
-  m_Name: EventCardContent_15
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &448903753
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 448903752}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &448903754
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 448903752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 4e4756f043bae7443b32fb49207234e4, type: 2}
-  year: 1192
 --- !u!1 &453780703
 GameObject:
   m_ObjectHideFlags: 0
@@ -14776,52 +14765,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 453780703}
   m_CullTransparentMesh: 1
---- !u!1 &466339169
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 466339170}
-  - component: {fileID: 466339171}
-  m_Layer: 0
-  m_Name: EventCardContent_11
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &466339170
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 466339169}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &466339171
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 466339169}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 66ef472ce6666804898dfdb2eef1b1b3, type: 2}
-  year: 1937
 --- !u!1 &479273090
 GameObject:
   m_ObjectHideFlags: 0
@@ -16937,52 +16880,6 @@ Transform:
   - {fileID: 797965837}
   m_Father: {fileID: 233547334}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &573105163
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 573105164}
-  - component: {fileID: 573105165}
-  m_Layer: 0
-  m_Name: EventCardContent_10
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &573105164
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 573105163}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &573105165
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 573105163}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 9e477f3d705415f4abd7e47030019567, type: 2}
-  year: 1936
 --- !u!1 &575284473 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 01bf331058b100449b893934dafcf53a, type: 3}
@@ -17898,52 +17795,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UserNameDisplay
   textMesh: {fileID: 0}
   guestName: Jogador
---- !u!1 &595749830
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 595749831}
-  - component: {fileID: 595749832}
-  m_Layer: 0
-  m_Name: EventCardContent_06
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &595749831
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 595749830}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &595749832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 595749830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: ce855ebe76070a84b8ba61a72b762342, type: 2}
-  year: 1944
 --- !u!1001 &597305176
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20332,52 +20183,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 102.69202, y: -23.276001, z: 6.856003}
---- !u!1 &705948664
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 705948665}
-  - component: {fileID: 705948666}
-  m_Layer: 0
-  m_Name: EventCardContent_16
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &705948665
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705948664}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &705948666
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705948664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 6a9a3b2e9c033c942b3bd69fb83b73c1, type: 2}
-  year: 1206
 --- !u!1001 &708806287
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21628,6 +21433,117 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tagIndex: 1
+--- !u!1 &739385639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 739385640}
+  - component: {fileID: 739385641}
+  m_Layer: 0
+  m_Name: EventCardContent_06
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &739385640
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739385639}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &739385641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739385639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: af404b33d760ca745a02f123876116d9, type: 2}
+  year: 1500
+  title: "Pedro \xC1lvares Cabral chega ao Brasil"
+  era: AD
+  map:
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
+      name: Vasco da Gama
+      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
+        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
+        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
+        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
+        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
+        contornando o continente africano, chegando a Calecute em 1498, feito que
+        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
+        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
+        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
+        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
+        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
+        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
+        portuguesa."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
+      name: "Pedro \xC1lvarez Cabral"
+      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
+        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
+        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
+        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
+        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
+        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
+        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
+        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
+        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
+        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
+        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
+        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
+        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
+      name: "Am\xE9rico Vesp\xFAcio"
+      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
+        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
+        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
+        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
+        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
+        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
+        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
+        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
+        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
+        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
+        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
+        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
+        Faleceu em 22 de fevereiro de 1512, em Sevilha."
 --- !u!1001 &745573708
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21638,7 +21554,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1b0faca9c4a9c82408e82ceee7aa9f23, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.2034
+      value: -0.2017
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1b0faca9c4a9c82408e82ceee7aa9f23, type: 3}
       propertyPath: m_LocalPosition.y
@@ -28055,8 +27971,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -591.7999, y: -332.10004}
-  m_SizeDelta: {x: -1562, y: -947}
+  m_AnchoredPosition: {x: -2.902588, y: 434}
+  m_SizeDelta: {x: -833.0812, y: -947}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &776650678
 MonoBehaviour:
@@ -28440,52 +28356,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &784147643
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 784147644}
-  - component: {fileID: 784147645}
-  m_Layer: 0
-  m_Name: EventCardContent_09
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &784147644
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 784147643}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &784147645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 784147643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: e8ffc97813bdfd34eb880276df86a3c0, type: 2}
-  year: 1935
 --- !u!1 &791573975
 GameObject:
   m_ObjectHideFlags: 0
@@ -29306,52 +29176,6 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 4671282403775572864, guid: 5eaed0751f59ee745833841810f8f588, type: 3}
   m_PrefabInstance: {fileID: 801260465}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &806403249
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 806403250}
-  - component: {fileID: 806403251}
-  m_Layer: 0
-  m_Name: EventCardContent_04
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &806403250
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 806403249}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &806403251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 806403249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 1a4db1c1ac587404dbc46ddddfe671d9, type: 2}
-  year: 1942
 --- !u!1 &806939260
 GameObject:
   m_ObjectHideFlags: 0
@@ -30765,52 +30589,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860970669}
   m_CullTransparentMesh: 1
---- !u!1 &861462688
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 861462689}
-  - component: {fileID: 861462690}
-  m_Layer: 0
-  m_Name: EventCardContent_17
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &861462689
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 861462688}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &861462690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 861462688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 885bc1bb87543cb4ab29eaa7eb8777da, type: 2}
-  year: 1439
 --- !u!95 &861811644
 Animator:
   serializedVersion: 7
@@ -31157,7 +30935,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &882397146
+--- !u!1 &884094861
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -31165,44 +30943,158 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 882397147}
-  - component: {fileID: 882397148}
+  - component: {fileID: 884094865}
+  - component: {fileID: 884094864}
+  - component: {fileID: 884094863}
+  - component: {fileID: 884094862}
   m_Layer: 0
-  m_Name: EventCardContent_01
+  m_Name: ThemeWarning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &882397147
-Transform:
+  m_IsActive: 0
+--- !u!95 &884094862
+Animator:
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 882397146}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &882397148
+  m_GameObject: {fileID: 884094861}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 03378dd5f628a8345932ec4e5cadd4ce, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &884094863
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 882397146}
+  m_GameObject: {fileID: 884094861}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: c0dcba46df7664540a0ee6fabcef5270, type: 2}
-  year: 1939
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: No theme selected
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4278190335
+  m_fontColor: {r: 1, g: 0, b: 0, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 70
+  m_fontSizeBase: 70
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 1
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: -0.26000983, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &884094864
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 884094861}
+  m_CullTransparentMesh: 1
+--- !u!224 &884094865
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 884094861}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1818767651}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.45313, y: -375}
+  m_SizeDelta: {x: 1492.8, y: 113.207}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &884506996
 GameObject:
   m_ObjectHideFlags: 0
@@ -31470,6 +31362,117 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 902160449}
   m_CullTransparentMesh: 1
+--- !u!1 &902756322
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 902756323}
+  - component: {fileID: 902756324}
+  m_Layer: 0
+  m_Name: EventCardContent_03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &902756323
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902756322}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &902756324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902756322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 108efd8f4cb67204aaddfaa449c86078, type: 2}
+  year: 1493
+  title: "Retorno de Colombo \xE0 Espanha"
+  era: AD
+  map:
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
+      name: Vasco da Gama
+      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
+        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
+        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
+        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
+        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
+        contornando o continente africano, chegando a Calecute em 1498, feito que
+        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
+        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
+        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
+        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
+        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
+        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
+        portuguesa."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
+      name: "Pedro \xC1lvarez Cabral"
+      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
+        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
+        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
+        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
+        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
+        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
+        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
+        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
+        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
+        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
+        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
+        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
+        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
+      name: "Am\xE9rico Vesp\xFAcio"
+      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
+        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
+        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
+        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
+        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
+        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
+        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
+        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
+        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
+        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
+        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
+        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
+        Faleceu em 22 de fevereiro de 1512, em Sevilha."
 --- !u!1 &905945222
 GameObject:
   m_ObjectHideFlags: 0
@@ -32165,57 +32168,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 913539696}
   m_CullTransparentMesh: 1
---- !u!1 &914927415
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 914927416}
-  m_Layer: 0
-  m_Name: WorldHistoryMaterials
-  m_TagString: WorldHistoryMaterials
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &914927416
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914927415}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5804131241226385780}
-  - {fileID: 5272129688304414269}
-  - {fileID: 7596466569741690127}
-  - {fileID: 5713313636294322236}
-  - {fileID: 4421712873378960401}
-  - {fileID: 99500344101291546}
-  - {fileID: 2139773065018232394}
-  - {fileID: 4019504928177845029}
-  - {fileID: 6689845077549261992}
-  - {fileID: 3210003713527809624}
-  - {fileID: 1455739977}
-  - {fileID: 1094727123}
-  - {fileID: 1958300823}
-  - {fileID: 1110485}
-  - {fileID: 448903753}
-  - {fileID: 705948665}
-  - {fileID: 861462689}
-  - {fileID: 924167128}
-  - {fileID: 282334917}
-  - {fileID: 1353269101}
-  m_Father: {fileID: 336008438}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &916416942
 GameObject:
   m_ObjectHideFlags: 0
@@ -32413,52 +32365,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 923131818}
   m_CullTransparentMesh: 1
---- !u!1 &924167127
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 924167128}
-  - component: {fileID: 924167129}
-  m_Layer: 0
-  m_Name: EventCardContent_18
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &924167128
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 924167127}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &924167129
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 924167127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: f94c133118d114948ad4903ed6e02547, type: 2}
-  year: 1453
 --- !u!1 &927956549
 GameObject:
   m_ObjectHideFlags: 0
@@ -37898,52 +37804,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 940466302}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &940988842
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 940988843}
-  - component: {fileID: 940988844}
-  m_Layer: 0
-  m_Name: EventCardContent_02
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &940988843
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 940988842}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &940988844
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 940988842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 1019d3dc49788f844aaa1e06a3212d6a, type: 2}
-  year: 1940
 --- !u!1 &943386457
 GameObject:
   m_ObjectHideFlags: 0
@@ -39021,52 +38881,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1018982766}
   m_CullTransparentMesh: 1
---- !u!1 &1020403972
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1020403973}
-  - component: {fileID: 1020403974}
-  m_Layer: 0
-  m_Name: EventCardContent_12
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1020403973
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1020403972}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1020403974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1020403972}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 661cc7e6bf3fcc84c93a850b2705d716, type: 2}
-  year: 1938
 --- !u!1 &1028743035
 GameObject:
   m_ObjectHideFlags: 0
@@ -40028,52 +39842,6 @@ ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 2484243927512507790, guid: 1f57a9b07a7305f448ddf2508d59c716, type: 3}
   m_PrefabInstance: {fileID: 750601464}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1094727122
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1094727123}
-  - component: {fileID: 1094727124}
-  m_Layer: 0
-  m_Name: EventCardContent_12
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1094727123
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094727122}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1094727124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094727122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 9b35c89fd17a4ed449c2ddfe24d808c1, type: 2}
-  year: 1088
 --- !u!1001 &1097671929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41524,52 +41292,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &1181730748
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1181730749}
-  - component: {fileID: 1181730750}
-  m_Layer: 0
-  m_Name: EventCardContent_07
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1181730749
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181730748}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1181730750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181730748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 0fd24c84b86cb0c488dc441450af0abb, type: 2}
-  year: 1945
 --- !u!1 &1186026635
 GameObject:
   m_ObjectHideFlags: 0
@@ -58813,7 +58535,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.942688, y: 1.295105}
+  m_AnchoredPosition: {x: -1.942749, y: 1.295105}
   m_SizeDelta: {x: 429.2425, y: 557.7008}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1303765221
@@ -64537,52 +64259,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
---- !u!1 &1353269100
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1353269101}
-  - component: {fileID: 1353269102}
-  m_Layer: 0
-  m_Name: EventCardContent_20
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1353269101
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1353269100}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1353269102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1353269100}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 168e7500f5cfb734497f58bbbfcb919d, type: 2}
-  year: 1517
 --- !u!1 &1356717813
 GameObject:
   m_ObjectHideFlags: 0
@@ -66026,52 +65702,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6cce2a0bd7bdff64f995f8c39105fab3, type: 3}
---- !u!1 &1455739976
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1455739977}
-  - component: {fileID: 1455739978}
-  m_Layer: 0
-  m_Name: EventCardContent_11
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1455739977
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1455739976}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1455739978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1455739976}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 1b56a94e970939d48974cb7c43511db7, type: 2}
-  year: 800
 --- !u!1001 &1464039973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -66403,6 +66033,43 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1469941582}
   m_CullTransparentMesh: 1
+--- !u!1 &1472967105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1472967106}
+  m_Layer: 0
+  m_Name: DiscoveryOfTheAmericas
+  m_TagString: WorldHistoryMaterials
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1472967106
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1472967105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1898120255}
+  - {fileID: 149484390}
+  - {fileID: 902756323}
+  - {fileID: 2018467855}
+  - {fileID: 44571614}
+  - {fileID: 739385640}
+  m_Father: {fileID: 336008438}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1476712451
 GameObject:
   m_ObjectHideFlags: 0
@@ -86820,52 +86487,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -8435860152131104630, guid: 39fcc24db11f0c54185c0bb5e4ca4455, type: 3}
---- !u!1 &1692208113
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1692208114}
-  - component: {fileID: 1692208115}
-  m_Layer: 0
-  m_Name: EventCardContent_05
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1692208114
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1692208113}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1975418935}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1692208115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1692208113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 3a776db4b389a184eac76403f16c5c74, type: 2}
-  year: 1943
 --- !u!1001 &1692386774
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -89792,6 +89413,8 @@ RectTransform:
   - {fileID: 499349640}
   - {fileID: 119201568}
   - {fileID: 187768840}
+  - {fileID: 1627247052}
+  - {fileID: 1976066736}
   - {fileID: 938021930}
   - {fileID: 1787893916}
   - {fileID: 1940945135}
@@ -89802,15 +89425,14 @@ RectTransform:
   - {fileID: 94615599}
   - {fileID: 908567688}
   - {fileID: 1618998389}
+  - {fileID: 1214088492}
   - {fileID: 1656183292}
   - {fileID: 509229885}
   - {fileID: 1853999287}
+  - {fileID: 1221578425}
+  - {fileID: 884094865}
   - {fileID: 310040533}
   - {fileID: 193261533}
-  - {fileID: 1976066736}
-  - {fileID: 1214088492}
-  - {fileID: 1627247052}
-  - {fileID: 1221578425}
   m_Father: {fileID: 7238339920802041953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -89942,8 +89564,7 @@ MonoBehaviour:
   themeItemPrefab: {fileID: 7766156017100140954, guid: b20b4035a29778d4cbfc3a34ef3998af, type: 3}
   includeLegacyThemes: 1
   legacyThemeNames:
-  - World History
-  - World War 2
+  - Discovery of the Americas
   fadeInDuration: 0.15
   fadeOutDuration: 0.1
   panelOffset: {x: 0, y: -10}
@@ -90156,7 +89777,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: World History
+  m_text: Discovery of the Americas
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a916b0f5dbf744f4ca8d909bd30ded1c, type: 2}
   m_sharedMaterial: {fileID: -7633621359589098903, guid: a916b0f5dbf744f4ca8d909bd30ded1c, type: 2}
@@ -91781,6 +91402,117 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1898120254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1898120255}
+  - component: {fileID: 1898120256}
+  m_Layer: 0
+  m_Name: EventCardContent_01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1898120255
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898120254}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1898120256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898120254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 780562d36c71f1542a565fcc3a6ccb44, type: 2}
+  year: 1491
+  title: "Crist\xF3v\xE3o Colombo chega \xE0 Am\xE9rica"
+  era: AD
+  map:
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
+      name: Vasco da Gama
+      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
+        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
+        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
+        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
+        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
+        contornando o continente africano, chegando a Calecute em 1498, feito que
+        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
+        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
+        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
+        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
+        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
+        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
+        portuguesa."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
+      name: "Pedro \xC1lvarez Cabral"
+      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
+        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
+        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
+        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
+        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
+        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
+        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
+        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
+        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
+        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
+        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
+        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
+        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
+      name: "Am\xE9rico Vesp\xFAcio"
+      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
+        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
+        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
+        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
+        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
+        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
+        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
+        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
+        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
+        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
+        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
+        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
+        Faleceu em 22 de fevereiro de 1512, em Sevilha."
 --- !u!1 &1900898673
 GameObject:
   m_ObjectHideFlags: 0
@@ -93416,52 +93148,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5777035735e2b9546b8629a059473216, type: 3}
   m_PrefabInstance: {fileID: 1949026749}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1958300822
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1958300823}
-  - component: {fileID: 1958300824}
-  m_Layer: 0
-  m_Name: EventCardContent_13
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1958300823
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1958300822}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1958300824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1958300822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: c9dd9a86d6a17804296b56fbca9b4649, type: 2}
-  year: 1095
 --- !u!1001 &1967979739
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -93649,49 +93335,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 864236689}
   m_LocalEulerAnglesHint: {x: 270, y: -180, z: 0}
---- !u!1 &1975418934
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1975418935}
-  m_Layer: 0
-  m_Name: WorldWar2Materials
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1975418935
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1975418934}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 882397147}
-  - {fileID: 940988843}
-  - {fileID: 150654761}
-  - {fileID: 806403250}
-  - {fileID: 1692208114}
-  - {fileID: 595749831}
-  - {fileID: 1181730749}
-  - {fileID: 63634026}
-  - {fileID: 784147644}
-  - {fileID: 573105164}
-  - {fileID: 466339170}
-  - {fileID: 1020403973}
-  m_Father: {fileID: 336008438}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1976066735
 GameObject:
   m_ObjectHideFlags: 0
@@ -94341,6 +93984,117 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3f656b9b7d571854785736298897fccd, type: 3}
   m_PrefabInstance: {fileID: 736082077}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2018467854
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2018467855}
+  - component: {fileID: 2018467856}
+  m_Layer: 0
+  m_Name: EventCardContent_04
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2018467855
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018467854}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2018467856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018467854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: f68bb6e8b2174a94e9a603e6e0b85d56, type: 2}
+  year: 1494
+  title: Tratado de Tordesilhas
+  era: AD
+  map:
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
+      name: Vasco da Gama
+      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
+        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
+        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
+        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
+        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
+        contornando o continente africano, chegando a Calecute em 1498, feito que
+        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
+        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
+        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
+        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
+        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
+        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
+        portuguesa."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
+      name: "Pedro \xC1lvarez Cabral"
+      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
+        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
+        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
+        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
+        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
+        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
+        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
+        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
+        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
+        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
+        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
+        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
+        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
+      name: "Am\xE9rico Vesp\xFAcio"
+      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
+        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
+        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
+        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
+        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
+        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
+        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
+        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
+        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
+        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
+        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
+        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
+        Faleceu em 22 de fevereiro de 1512, em Sevilha."
 --- !u!4 &2021136898 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6cce2a0bd7bdff64f995f8c39105fab3, type: 3}
@@ -106589,52 +106343,6 @@ Transform:
   - {fileID: 5281259932020058466}
   m_Father: {fileID: 1262901646}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &99500344101291544
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 99500344101291546}
-  - component: {fileID: 99500344101291547}
-  m_Layer: 0
-  m_Name: EventCardContent_06
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &99500344101291546
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 99500344101291544}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &99500344101291547
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 99500344101291544}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: c3abeb78f9fa406409d74ffd52f0e63c, type: 2}
-  year: 1500
 --- !u!222 &112915705997481658
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -107552,6 +107260,7 @@ MonoBehaviour:
   roomNameWarning: {fileID: 1976066735}
   passwordWarning: {fileID: 1214088491}
   alreadyExistNameWarning: {fileID: 1627247051}
+  themeWarning: {fileID: 884094861}
   gameConnection: {fileID: 1159048666}
   gameManager: {fileID: 1891373290}
   backgroundMusic: {fileID: 1865630401}
@@ -108615,52 +108324,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7360295779751923106}
   m_Mesh: {fileID: -6317805809608689028, guid: dc3caa880fffb0d45bb5f52f73f717fd, type: 3}
---- !u!1 &2139773065018232392
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2139773065018232394}
-  - component: {fileID: 2139773065018232395}
-  m_Layer: 0
-  m_Name: EventCardContent_07
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2139773065018232394
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2139773065018232392}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2139773065018232395
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2139773065018232392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 1e98937c6d00d6944a7090557b35b5ee, type: 2}
-  year: 1648
 --- !u!4 &2296111580987021529
 Transform:
   m_ObjectHideFlags: 0
@@ -109051,52 +108714,6 @@ RectTransform:
   m_AnchoredPosition: {x: 50.616585, y: 85.81642}
   m_SizeDelta: {x: 68.8668, y: 23.8288}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!4 &3210003713527809624
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3210003713527809626}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3210003713527809625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3210003713527809626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 36a695d85e922904f85940a3ddb19c4b, type: 2}
-  year: 1503
---- !u!1 &3210003713527809626
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3210003713527809624}
-  - component: {fileID: 3210003713527809625}
-  m_Layer: 0
-  m_Name: EventCardContent_10
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &3215052166525497379
 Transform:
   m_ObjectHideFlags: 0
@@ -110399,52 +110016,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4019504928177845028
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4019504928177845031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: af536e827baaac34fb5be9e3f30bc830, type: 2}
-  year: 1685
---- !u!4 &4019504928177845029
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4019504928177845031}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4019504928177845031
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4019504928177845029}
-  - component: {fileID: 4019504928177845028}
-  m_Layer: 0
-  m_Name: EventCardContent_08
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!20 &4081628558627958838
 Camera:
   m_ObjectHideFlags: 0
@@ -110661,52 +110232,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 543450652344555795}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4421712873378960400
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4421712873378960403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 30914d60385ccf14b876001afeca0ed9, type: 2}
-  year: 1494
---- !u!4 &4421712873378960401
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4421712873378960403}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4421712873378960403
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4421712873378960401}
-  - component: {fileID: 4421712873378960400}
-  m_Layer: 0
-  m_Name: EventCardContent_05
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!33 &4541248244838173324
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -111163,52 +110688,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5272129688304414268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5272129688304414271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 01dbdc711657dae44b9a30762fbbc207, type: 2}
-  year: 1346
---- !u!4 &5272129688304414269
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5272129688304414271}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5272129688304414271
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5272129688304414269}
-  - component: {fileID: 5272129688304414268}
-  m_Layer: 0
-  m_Name: EventCardContent_02
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &5281259932020058466
 Transform:
   m_ObjectHideFlags: 0
@@ -111469,52 +110948,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &5713313636294322236
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5713313636294322238}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5713313636294322237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5713313636294322238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 478cca58e359e634ebcc1de9571b21ac, type: 2}
-  year: 1453
---- !u!1 &5713313636294322238
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5713313636294322236}
-  - component: {fileID: 5713313636294322237}
-  m_Layer: 0
-  m_Name: EventCardContent_04
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &5739019459119455110
 GameObject:
   m_ObjectHideFlags: 0
@@ -111604,52 +111037,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8300734440977600325}
   m_Mesh: {fileID: 643571026777081198, guid: 3fbded3c2b6e3cb4ca3effa54879c364, type: 3}
---- !u!4 &5804131241226385780
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5804131241226385782}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5804131241226385781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5804131241226385782}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: b26cb27a43f388047b279711dac5c4c9, type: 2}
-  year: 1128
---- !u!1 &5804131241226385782
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5804131241226385780}
-  - component: {fileID: 5804131241226385781}
-  m_Layer: 0
-  m_Name: EventCardContent_01
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!33 &5821004459875132947
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -112319,52 +111706,6 @@ RectTransform:
   m_AnchoredPosition: {x: -0.12728882, y: -113.206856}
   m_SizeDelta: {x: -17.0734, y: 2.4687}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!4 &6689845077549261992
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6689845077549261994}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6689845077549261993
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6689845077549261994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 743ea733488ad2642adf1d8e770a5576, type: 2}
-  year: 1215
---- !u!1 &6689845077549261994
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6689845077549261992}
-  - component: {fileID: 6689845077549261993}
-  m_Layer: 0
-  m_Name: EventCardContent_09
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!224 &6720683161448144204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -112853,52 +112194,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!1 &7596466569741690125
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7596466569741690127}
-  - component: {fileID: 7596466569741690126}
-  m_Layer: 0
-  m_Name: EventCardContent_03
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &7596466569741690126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7596466569741690125}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 14b9603a6b6e0504aa6f76ed7aeb0cf9, type: 2}
-  year: 1385
---- !u!4 &7596466569741690127
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7596466569741690125}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 914927416}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7629884818316475698
 GameObject:
   m_ObjectHideFlags: 0
@@ -113792,28 +113087,28 @@ SceneRoots:
   - {fileID: 1262901646}
   - {fileID: 1159048665}
   - {fileID: 1891373291}
-  - {fileID: 202266923}
   - {fileID: 1671156533}
-  - {fileID: 746703649}
-  - {fileID: 952423956}
-  - {fileID: 441947030}
-  - {fileID: 758730015}
   - {fileID: 1291663515}
+  - {fileID: 758730015}
   - {fileID: 7238339920802041953}
   - {fileID: 163619646}
   - {fileID: 509867933}
   - {fileID: 590464764}
   - {fileID: 833035824}
   - {fileID: 1866755945}
-  - {fileID: 3804601872223381272}
-  - {fileID: 2296111580987021529}
-  - {fileID: 3215052166525497379}
-  - {fileID: 8618832142513982920}
-  - {fileID: 3773351135649584199}
-  - {fileID: 6062375359542801937}
+  - {fileID: 202266923}
   - {fileID: 1865630400}
   - {fileID: 751731493}
   - {fileID: 336008438}
   - {fileID: 1359821954}
   - {fileID: 1186026637}
   - {fileID: 2145839231}
+  - {fileID: 3804601872223381272}
+  - {fileID: 2296111580987021529}
+  - {fileID: 3215052166525497379}
+  - {fileID: 8618832142513982920}
+  - {fileID: 3773351135649584199}
+  - {fileID: 6062375359542801937}
+  - {fileID: 952423956}
+  - {fileID: 441947030}
+  - {fileID: 746703649}

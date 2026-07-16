@@ -238,11 +238,11 @@ namespace TimeCrax.Managers
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-
             // Chamar malfunction no GameManager
             // O reset de temperatura será feito pelo GameManager após aplicar o malfunction
             if (gameManager != null)
             {
+                GameStateManager.TransitionTo(GamePhase.IM_MalfunctionRoulette);
                 gameManager.RandomComponentNumber();
             }
         }

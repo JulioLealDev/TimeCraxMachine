@@ -10,9 +10,7 @@ using TimeCrax.Themes;
 public class RandomMaterial : MonoBehaviourPunCallbacks
 {
     [Header("Legacy Theme Materials")]
-    public GameObject worldHistoryMaterials;
-    public GameObject wordWar2Materials;
-    public GameObject worldScienceMaterials;
+    public GameObject discoveryOfAmericasMaterials;
 
     [Header("Timeline")]
     public GameObject timeline;
@@ -22,8 +20,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     private int[] randomNumberList = new int[6] { -1, -1, -1, -1, -1, -1 };
     private int[] selectedYears = new int[6];
     private EventCard[] eventCards;
-    private EventCardContent[] wwMaterialList;
-    private EventCardContent[] whMaterialList;
+    private EventCardContent[] legacyMaterialList;
 
     [Header("Timeline Years")]
     [SerializeField] private TextMeshPro[] timelineYearsList = new TextMeshPro[6];
@@ -63,18 +60,20 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
         switch (theme.ToUpper())
         {
-
-            case "WORLD HISTORY":
-
-                length = worldHistoryMaterials.GetComponentsInChildren<EventCardContent>().Length;
-
+            case "DISCOVERY OF THE AMERICAS":
+                if (discoveryOfAmericasMaterials == null)
+                {
+                    Debug.LogError("[RandomMaterial] 'discoveryOfAmericasMaterials' não está atribuído no Inspector.");
+                    return;
+                }
+                length = discoveryOfAmericasMaterials.GetComponentsInChildren<EventCardContent>().Length;
                 break;
+        }
 
-            case "WORLD WAR 2":
-
-                length = wordWar2Materials.GetComponentsInChildren<EventCardContent>().Length;
-
-                break;
+        if (length == 0)
+        {
+            Debug.LogError($"[RandomMaterial] Tema legado não reconhecido ou sem cartas: '{theme}'. Partida não pode iniciar.");
+            return;
         }
 
         count = 0;
@@ -92,36 +91,16 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     {
         eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
-        switch (theme.ToUpper())
+        if (theme.ToUpper() == "DISCOVERY OF THE AMERICAS")
         {
+            legacyMaterialList = discoveryOfAmericasMaterials.GetComponentsInChildren<EventCardContent>();
 
-            case "WORLD HISTORY":
+            for (int i = 0; i < eventCards.Length; i++)
+                SetMaterialsToEventCards(i, legacyMaterialList, randomNumberList);
 
-                whMaterialList = worldHistoryMaterials.GetComponentsInChildren<EventCardContent>();
-
-                for (int i = 0; i < eventCards.Length; i++)
-                {
-                    SetMaterialsToEventCards(i, whMaterialList, randomNumberList);
-                }
-
-                Array.Sort(selectedYears);
-                SetSlotCounts();
-                SetTimelineYears();
-                break;
-
-            case "WORLD WAR 2":
-
-                wwMaterialList = wordWar2Materials.GetComponentsInChildren<EventCardContent>();
-
-                for (int i = 0; i < eventCardsLength; i++)
-                {
-                    SetMaterialsToEventCards(i, wwMaterialList, randomNumberList);
-                }
-
-                Array.Sort(selectedYears);
-                SetSlotCounts();
-                SetTimelineYears();
-                break;
+            Array.Sort(selectedYears);
+            SetSlotCounts();
+            SetTimelineYears();
         }
     }
 
@@ -133,12 +112,23 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         if (i >= randomNumberList.Length || randomNumberList[i] >= materialList.Length) return;
         if (i >= selectedYears.Length) return;
 
-        var material = materialList[randomNumberList[i]];
-        if (material == null) return;
+        var content = materialList[randomNumberList[i]];
+        if (content == null) return;
 
-        eventCards[i].GetComponent<Renderer>().material = material.Material;
-        eventCards[i].slotYear = material.Year;
-        selectedYears[i] = material.Year;
+        eventCards[i].GetComponent<Renderer>().material = content.Material;
+        eventCards[i].slotYear = content.Year;
+        selectedYears[i] = content.Year;
+
+        // Alimentar o sistema de mini-games com os dados da carta legada
+        var themeCard = new TimeCrax.Themes.ThemeCard
+        {
+            year    = content.Year,
+            title   = content.Title,
+            era     = content.Era,
+            map     = content.Map,
+            persons = content.Persons,
+        };
+        eventCards[i].SetThemeCard(themeCard);
     }
 
     public void SetSlotCounts()
@@ -178,6 +168,11 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
             timelineYearsList[i].text = selectedYears[i].ToString();
 
         }
+    }
+
+    public bool IsLegacyThemeReady(string themeName)
+    {
+        return themeName.ToUpper() == "DISCOVERY OF THE AMERICAS" && discoveryOfAmericasMaterials != null;
     }
 
     #region New Theme System

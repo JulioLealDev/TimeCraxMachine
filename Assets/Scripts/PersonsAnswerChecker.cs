@@ -57,6 +57,7 @@ public class PersonsAnswerChecker : MonoBehaviour
 
         if (assigned[0] && assigned[1] && assigned[2])
         {
+            GameStateManager.TransitionTo(GamePhase.IM_ChallengeFeedback);
             InputBlocker.Block();
             Cursor.visible = true;
             StartCoroutine(RevealFeedbackSequence());

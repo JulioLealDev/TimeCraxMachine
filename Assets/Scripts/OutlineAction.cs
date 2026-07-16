@@ -28,7 +28,6 @@ public class OutlineAction : MonoBehaviour
     private float originalMetallic;
     private Material highlightedMaterial;
 
-    private OutlineComponent parentOutlineActive;
 
     void Start()
     {
@@ -43,12 +42,6 @@ public class OutlineAction : MonoBehaviour
         // Restaurar material/outline anterior quando mouse sair
         if (highlight != null)
         {
-            if (parentOutlineActive != null)
-            {
-                parentOutlineActive.enabled = false;
-                parentOutlineActive = null;
-            }
-
             if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
             {
                 highlight.gameObject.GetComponent<OutlineComponent>().enabled = false;
@@ -175,12 +168,6 @@ public class OutlineAction : MonoBehaviour
 
     private void OnDisable()
     {
-        if (parentOutlineActive != null)
-        {
-            parentOutlineActive.enabled = false;
-            parentOutlineActive = null;
-        }
-
         if (highlightedMaterial != null)
         {
             highlightedMaterial.SetFloat("_Glossiness", originalSmoothness);

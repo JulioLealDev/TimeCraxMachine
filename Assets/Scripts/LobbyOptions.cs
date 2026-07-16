@@ -34,6 +34,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject roomNameWarning;
     [SerializeField] private GameObject passwordWarning;
     [SerializeField] private GameObject alreadyExistNameWarning;
+    [SerializeField] private GameObject themeWarning;
 
     [Header("Referências")]
     [SerializeField] private GameConnection gameConnection;
@@ -130,16 +131,16 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
             {
                 theme = dropdownUI.GetSelectedThemeName();
                 if (string.IsNullOrEmpty(theme))
-                    theme = "World History";
+                    theme = "Discovery of the Americas";
             }
             else if (themeDropdown != null)
             {
                 var tmp = themeDropdown.GetComponent<TextMeshProUGUI>();
-                theme = tmp != null ? tmp.text : "World History";
+                theme = tmp != null ? tmp.text : "Discovery of the Americas";
             }
             else
             {
-                theme = "World History";
+                theme = "Discovery of the Americas";
             }
         }
 
@@ -247,7 +248,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
     {
         foreach (Room room in roomListContent.GetComponentsInChildren<Room>())
         {
-            //if (!room.CompareTag("Undestructable"))
+            if (!room.CompareTag("Undestructable"))
             {
                 Destroy(room.gameObject);
             }
@@ -286,22 +287,54 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         }
         else
         {
-            AllVerifyed();
+            bool hasValidTheme = ThemeManager.Instance != null && ThemeManager.Instance.HasSelectedTheme;
+            if (!hasValidTheme)
+            {
+                var dropdownUI = FindFirstObjectByType<ThemeDropdownUI>();
+                string themeName = dropdownUI != null ? dropdownUI.GetSelectedThemeName() : "";
+                string themeUpper = themeName.ToUpper();
+                bool isKnownLegacyName = themeUpper == "DISCOVERY OF THE AMERICAS";
+
+                if (isKnownLegacyName)
+                {
+                    var rm = FindFirstObjectByType<RandomMaterial>();
+                    hasValidTheme = rm != null && rm.IsLegacyThemeReady(themeName);
+                }
+            }
+
+            if (!hasValidTheme)
+            {
+                if (themeWarning != null) themeWarning.SetActive(true);
+                createRoomButton.GetComponent<Button>().enabled = false;
+                this.DelayedCall(1.5f, AfterClickStart);
+            }
+            else
+            {
+                AllVerifyed();
+            }
         }
     }
 
     private void AfterClickStart()
     {
+        var roomAnim = roomNameWarning.GetComponent<Animator>();
+        if (roomAnim != null && roomAnim.isActiveAndEnabled && roomAnim.runtimeAnimatorController != null)
+            roomAnim.SetBool("roomNameIsEmpty", false);
+
+        var existsAnim = alreadyExistNameWarning.GetComponent<Animator>();
+        if (existsAnim != null && existsAnim.isActiveAndEnabled && existsAnim.runtimeAnimatorController != null)
+            existsAnim.SetBool("alreadyExistName", false);
+
+        var passAnim = passwordWarning.GetComponent<Animator>();
+        if (passAnim != null && passAnim.isActiveAndEnabled && passAnim.runtimeAnimatorController != null)
+            passAnim.SetBool("passwordIsEmpty", false);
+
         roomNameWarning.SetActive(false);
         alreadyExistNameWarning.SetActive(false);
         passwordWarning.SetActive(false);
-        roomNameWarning.GetComponent<Animator>().SetBool("roomNameIsEmpty", false);
-        alreadyExistNameWarning.GetComponent<Animator>().SetBool("alreadyExistName", false);
-        passwordWarning.GetComponent<Animator>().SetBool("passwordIsEmpty", false);
-   
+        if (themeWarning != null) themeWarning.SetActive(false);
 
         createRoomButton.GetComponent<Button>().enabled = true;
-
     }
 
 }

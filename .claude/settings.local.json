@@ -69,7 +69,11 @@
       "Bash(Sort-Object)",
       "Bash(git fetch *)",
       "Bash(git pull *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(Remove-Item \"D:\\\\Projetos\\\\Timecrax Projects\\\\TimeCrax Machine Game\\\\Assets\\\\Scripts\\\\TimelineChild.cs\" -Force)",
+      "Bash(Remove-Item \"D:\\\\Projetos\\\\Timecrax Projects\\\\TimeCrax Machine Game\\\\Assets\\\\Scripts\\\\TimelineChild.cs.meta\" -Force -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item \"D:\\\\Projetos\\\\Timecrax Projects\\\\TimeCrax Machine Game\\\\Assets\\\\Scripts\\\\TimelineClickForwarder.cs\" -Force)",
+      "Bash(Remove-Item \"D:\\\\Projetos\\\\Timecrax Projects\\\\TimeCrax Machine Game\\\\Assets\\\\Scripts\\\\TimelineClickForwarder.cs.meta\" -Force -ErrorAction SilentlyContinue)"
     ]
   }
 }

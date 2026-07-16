@@ -105,11 +105,11 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                     childrenWithanimator.Add(opcoes[i]);
                     cachedChildAnimators.Add(anim); // Cache do Animator
                 }
-                //else if (opcoes[i].CompareTag("Sparks"))
+                else if (opcoes[i].CompareTag("Sparks"))
                 {
                     sparks = opcoes[i];
                 }
-                //else if (opcoes[i].CompareTag("Smoke"))
+                else if (opcoes[i].CompareTag("Smoke"))
                 {
                     smoke = opcoes[i];
                 }
@@ -123,11 +123,11 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             Transform[] childs = gameObject.GetComponentsInChildren<Transform>(true);
             foreach(var child in childs)
             {
-                //if (child.CompareTag("Sparks"))
+                if (child.CompareTag("Sparks"))
                 {
                     sparks = child;
                 }
-                //else if (child.CompareTag("Smoke"))
+                else if (child.CompareTag("Smoke"))
                 {
                     smoke = child;
                 }

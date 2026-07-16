@@ -58,7 +58,7 @@ namespace TimeCrax.Managers
 
                 for (int i = 0; i < components.Length; i++)
                 {
-                    //if (components[i].CompareTag("Component"))
+                    if (components[i].CompareTag("Component"))
                     {
                         components[i].GetComponent<Animator>().enabled = true;
                         componentsWithAnimator[index] = components[i];

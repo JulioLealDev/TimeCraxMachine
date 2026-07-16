@@ -199,6 +199,11 @@ public class BonusCard : MonoBehaviourPunCallbacks
 
     }
 
+    public void ChangeGameStateAfterDrawing()
+    {
+        GameStateManager.TransitionTo(GamePhase.IM_Turn);
+    }
+
     public void CheckingPlayer()
     {
         // Garantir que players está populado
@@ -223,6 +228,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
         }
 
         // Reativar o botão FinishTurn após a carta ser adicionada à mão
+        GameStateManager.TransitionTo(GamePhase.IM_Turn);
         ActivateEndButton();
     }
 

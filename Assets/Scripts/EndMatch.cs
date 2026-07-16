@@ -17,13 +17,16 @@ public class EndMatch : MonoBehaviour
 
     public void UpdateTitle()
     {
+        Debug.Log("[EndMatch] UpdateTitle: "+ GameStateManager.CurrentPhase);
         if (GameStateManager.Is(GamePhase.Victory))
         {
+            Debug.Log("[EndMatch] GameState Victory");
             endMatchScreenTitle.text = "YOU WIN";
             //if (endMatchScreenImage != null) endMatchScreenImage.sprite = victorySprite;
         }
         else if (GameStateManager.Is(GamePhase.GameOver))
         {
+            Debug.Log("[EndMatch] GameState GameOver");
             endMatchScreenTitle.text = "YOU LOSE";
             //if (endMatchScreenImage != null) endMatchScreenImage.sprite = gameOverSprite;
         }
@@ -41,6 +44,7 @@ public class EndMatch : MonoBehaviour
 
         soundEffects.PressHudButtonSound();
 
+        GameStateManager.TransitionTo(GamePhase.Menu);
         gameManager.BackToMenu();
     }
 }

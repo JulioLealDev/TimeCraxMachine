@@ -11,22 +11,12 @@ public enum GamePhase
     IM_FirstTurn,
     IM_DrewEventCard,
     IM_Turn,
-    Initializing,
-    HudActivating,
-    ShowingRoundInfo,
-    AwaitingPlayerAction,
-    DrawingCard,
-    CameraZoomingIn,
-    SelectingSlot,
-    CardPlaced,
-    CardRejected,
-    PersonsOpen,
-    PersonsAssigning,
-    PersonsFeedback,
-    CameraZoomingOut,
-    RepairingComponent,
-    EndingTurn,
-    TurnTransition
+    IM_MapChallenge,
+    IM_PersonsChallenge,
+    IM_ChallengeFeedback,
+    IM_MalfunctionRoulette,
+    IM_UnlockBonusDeck,
+    IM_DrewBonusCard,
 
 }
 

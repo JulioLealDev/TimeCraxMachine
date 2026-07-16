@@ -23,7 +23,7 @@ namespace TimeCrax.Themes
 
         [Header("Legacy Themes")]
         [SerializeField] private bool includeLegacyThemes = true;
-        [SerializeField] private string[] legacyThemeNames = { "World History", "World War 2" };
+        [SerializeField] private string[] legacyThemeNames = { "Discovery of the Americas" };
         [SerializeField] private Sprite defaultLegacySprite;
 
         [Header("Search")]

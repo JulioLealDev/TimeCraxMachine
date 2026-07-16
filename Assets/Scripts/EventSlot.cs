@@ -58,7 +58,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
     {
         GameManager.ResetClick(typeof(EventSlot));
 
-        if (!GameManager.IsInTurnTransition)
+        if (!GameManager.IsInTurnTransition && !GameManager.IsMalfunctionPending)
         {
             InputBlocker.Unblock();
         }
@@ -140,6 +140,10 @@ public class EventSlot : MonoBehaviourPunCallbacks
                     card.waitToDistance();
                 }
             }
+
+            // Capturar flag de malfunction antes que OnPlayerError() altere a temperatura
+            if (ThermometerManager.Instance != null && ThermometerManager.Instance.WillNextErrorCauseMalfunction())
+                GameManager.IsMalfunctionPending = true;
 
             // Agendar aumento de temperatura apenas no MasterClient
             if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)

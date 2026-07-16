@@ -21,7 +21,7 @@ namespace TimeCrax.Themes
 
         [Header("Legacy Themes")]
         [SerializeField] private bool includeLegacyThemes = true;
-        [SerializeField] private string[] legacyThemeNames = { "World History", "World War 2" };
+        [SerializeField] private string[] legacyThemeNames = { "Discovery of the Americas" };
 
         [Header("Settings")]
         [SerializeField] private float fadeInDuration = 0.15f;
@@ -100,11 +100,17 @@ namespace TimeCrax.Themes
 
         private void Start()
         {
-            // Se já houver tema selecionado, mostrar no texto
             if (ThemeManager.Instance != null && ThemeManager.Instance.HasSelectedTheme)
             {
-                var theme = ThemeManager.Instance.SelectedTheme;
-                UpdateSelectedText(theme.name);
+                UpdateSelectedText(ThemeManager.Instance.SelectedTheme.name);
+            }
+            else
+            {
+                // Garantir que o texto padrão seja sempre um tema legado válido
+                string defaultName = legacyThemeNames != null && legacyThemeNames.Length > 0
+                    ? legacyThemeNames[0]
+                    : "Discovery of the Americas";
+                UpdateSelectedText(defaultName);
             }
         }
 

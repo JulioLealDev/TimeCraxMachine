@@ -81,7 +81,11 @@ public class Timeline : MonoBehaviourPunCallbacks
     public void ActiveTimeline(bool activate)
     {
         if (timelineColliderArea != null)
+        {
+            if (activate)
+                Debug.Log($"[Timeline] ActiveTimeline(true) — IsMalfunctionPending={GameManager.IsMalfunctionPending}");
             timelineColliderArea.enabled = activate;
+        }
     }
 
     /// <summary>
