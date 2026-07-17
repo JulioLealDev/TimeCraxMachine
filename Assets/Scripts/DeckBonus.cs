@@ -101,24 +101,16 @@ public class DeckBonus : MonoBehaviourPunCallbacks
         {
             if (player.GetYourTurn() && player.photonView.IsMine)
             {
-                // Instanciar carta (posição inicial não importa, será ajustada após parenting)
-                var cardObject = PhotonNetwork.Instantiate("bonusCard", Vector3.zero, Quaternion.identity);
+                // Instanciar carta com o tipo embutido nos dados — recebido via OnPhotonInstantiate em todos os clientes
+                var cardObject = PhotonNetwork.Instantiate("bonusCard", Vector3.zero, Quaternion.identity, 0, new object[] { (int)cardType });
 
                 // Colocar carta dentro de Camera/HUD/
                 var hud = GameObject.Find("Camera/HUD");
                 if (hud != null)
                 {
                     cardObject.transform.SetParent(hud.transform, false);
-                    // Definir posição e rotação local
                     cardObject.transform.localPosition = new Vector3(36.93f, -20.59f, -40.29f);
                     cardObject.transform.localRotation = Quaternion.Euler(45f, 0f, 0f);
-                }
-
-                // Definir o tipo da carta em todos os clientes
-                var bonusCard = cardObject.GetComponent<BonusCard>();
-                if (bonusCard != null)
-                {
-                    bonusCard.photonView.RPC("RPC_SetCardType", RpcTarget.All, cardType);
                 }
                 break;
             }

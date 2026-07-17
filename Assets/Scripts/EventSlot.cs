@@ -11,17 +11,21 @@ public class EventSlot : MonoBehaviourPunCallbacks
     [SerializeField] private EndMatch endMatchScreen;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private BackgroundMusic backgroundMusic;
-    //private Victory victory;
-
 
     public int SlotNumber => slotNumber;
 
-    // Start is called before the first frame update
+    private EventSlot[] cachedSlots;
+    private DeckEvent cachedDeckEvent;
+    [System.NonSerialized] public MeshCollider cachedMeshCollider;
+
     void Start()
     {
         gameManager = FindFirstObjectByType<GameManager>();
         endMatchScreen = FindFirstObjectByType<EndMatch>();
         backgroundMusic = FindFirstObjectByType<BackgroundMusic>();
+        cachedSlots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
+        cachedDeckEvent = FindFirstObjectByType<DeckEvent>();
+        cachedMeshCollider = GetComponentInChildren<MeshCollider>();
     }
 
     private void OnDestroy()
@@ -43,6 +47,11 @@ public class EventSlot : MonoBehaviourPunCallbacks
         {
             if (card != null && card.CompareTag("Drew"))
             {
+                if (card.GetThemeCard() == null)
+                {
+                    Debug.LogWarning($"[EventSlot] EventCard slotCount={card.slotCount} sem ThemeCard — clique ignorado.");
+                    break;
+                }
                 GameManager.TryBeginClick(typeof(EventSlot));
                 // Enviar requisição ao MasterClient para processar o clique no slot
                 photonView.RPC("RequestSlotClick", RpcTarget.MasterClient, card.slotCount, slotNumber);
@@ -134,8 +143,8 @@ public class EventSlot : MonoBehaviourPunCallbacks
             {
                 if (card.slotCount == cardSlotCount)
                 {
-                    card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
-                    card.gameObject.GetComponent<Animator>().SetBool("wrongSlot", true);
+                    card.CardAnimator.SetInteger("slotClicked", clickedSlotNumber);
+                    card.CardAnimator.SetBool("wrongSlot", true);
                     card.tag = "Undestructable";
                     card.waitToDistance();
                 }
@@ -191,7 +200,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
         Debug.Log($"[EventSlot] EventCard encontrada: {targetCard.name}, themeCard={targetCard.GetThemeCard()?.title}");
 
-        targetCard.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
+        targetCard.CardAnimator.SetInteger("slotClicked", clickedSlotNumber);
         FinalizeCorrectSlotLocal(cardSlotCount, targetCard, clickedSlotNumber);
 
         if (PhotonNetwork.IsMasterClient && gameManager != null)
@@ -216,24 +225,22 @@ public class EventSlot : MonoBehaviourPunCallbacks
     {
         Debug.Log($"[EventSlot] FinalizeCorrectSlotLocal — slotCount={slotCount}, slot={clickedSlotNumber}");
 
-        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
-        foreach (var slot in slots)
+        foreach (var slot in cachedSlots)
         {
-            if (slot.slotNumber == clickedSlotNumber)
+            if (slot != null && slot.slotNumber == clickedSlotNumber)
             {
                 slot.gameObject.tag = "Disabled";
                 break;
             }
         }
 
-        var deckEvent = FindFirstObjectByType<DeckEvent>();
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.Log($"[EventSlot] MasterClient removendo slotCount={slotCount} do deck");
-            deckEvent.RemoveIndex(slotCount);
+            cachedDeckEvent.RemoveIndex(slotCount);
         }
 
-        card.gameObject.GetComponent<Animator>().SetInteger("slotClicked", clickedSlotNumber);
+        card.CardAnimator.SetInteger("slotClicked", clickedSlotNumber);
         card.tag = "Disabled";
 
         ResetClickProtection();
@@ -260,22 +267,20 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
     public void SetUpSlots(bool activateSlot, string tag)
     {
-        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
-        foreach (var slot in slots)
+        foreach (var slot in cachedSlots)
         {
-            if (!slot.CompareTag("Disabled"))
+            if (slot != null && !slot.CompareTag("Disabled"))
             {
                 slot.tag = tag;
-                slot.GetComponentInChildren<MeshCollider>().enabled = activateSlot;
+                slot.cachedMeshCollider.enabled = activateSlot;
             }
         }
     }
 
     public void CheckIfWin()
     {
-        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
         int slotsFilled = 0;
-        foreach (var slot in slots)
+        foreach (var slot in cachedSlots)
         {
             if (slot != null && slot.CompareTag("Disabled"))
             {

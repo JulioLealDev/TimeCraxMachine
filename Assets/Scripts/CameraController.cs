@@ -113,8 +113,6 @@ public class CameraController : MonoBehaviourPunCallbacks
         Debug.Log("[CameraController] ZoomTimelineFinished");
         if (gameManagerCache != null && gameManagerCache.IsMyTurn())
         {
-            /*Debug.Log("[CameraController] ZoomTimelineFinished - CheckIfCardWasDrew: " +gameManagerCache.CheckIfCardWasDrew() );
-            if (gameManagerCache.CheckIfCardWasDrew())*/
             if (GameStateManager.Is(GamePhase.IM_DrewEventCard))
             {
                 if (slot != null) slot.SetUpSlots(true, "Selectable");
@@ -146,7 +144,6 @@ public class CameraController : MonoBehaviourPunCallbacks
             if (!GameManager.IsMalfunctionPending)
             {
                 if (timeline != null) timeline.ActiveTimeline(true);
-                //if (gameManagerCache.CheckIfCardWasDrew() && slot != null)
                 else
                 {
                     slot.SetUpSlots(false, "Undestructable");
@@ -155,7 +152,7 @@ public class CameraController : MonoBehaviourPunCallbacks
             }
         }
         gameManagerCache?.ProcessPendingPlayerError();
-        Debug.Log("[CameraController] GameState: " +GamePhase.IM_Turn );
+        Debug.Log("[CameraController] GameState: " + GameStateManager.CurrentPhase);
         GameStateManager.TransitionTo(GamePhase.IM_Turn);
     }
 

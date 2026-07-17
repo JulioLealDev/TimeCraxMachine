@@ -31,7 +31,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < orderedPlayerList.Length; i++)
         {
-            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            if (orderedPlayerList[i].ActorNumber == photonView.OwnerActorNr)
             {
                 index = i;
             }
@@ -44,7 +44,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < orderedPlayerList.Length; i++)
         {
-            if (orderedPlayerList[i].ActorNumber == photonView.ControllerActorNr)
+            if (orderedPlayerList[i].ActorNumber == photonView.OwnerActorNr)
             {
                 nickname = orderedPlayerList[i].NickName;
                 index = i;
@@ -183,7 +183,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
 
         foreach (var card in allCards)
         {
-            if(card.photonView.OwnerActorNr == gameObject.GetPhotonView().OwnerActorNr)
+            if(card.photonView.OwnerActorNr == photonView.OwnerActorNr)
             {
                 cardList.Add(card);
             }

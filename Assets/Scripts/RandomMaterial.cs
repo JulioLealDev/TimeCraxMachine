@@ -37,20 +37,14 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
     private void RandomMaterialIdList(int materialListLenght)
     {
-
-        randomNumber = UnityEngine.Random.Range(0, materialListLenght);
-
-        if (randomNumberList.Contains(randomNumber))
+        do
         {
-            RandomMaterialIdList(materialListLenght);
+            randomNumber = UnityEngine.Random.Range(0, materialListLenght);
         }
-        else
-        {
-            randomNumberList[count] = randomNumber;
-            count++;
-        }
+        while (randomNumberList.Contains(randomNumber));
 
-            
+        randomNumberList[count] = randomNumber;
+        count++;
     }
 
     public void GetRandomMaterial(string theme)
@@ -77,10 +71,11 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         }
 
         count = 0;
+        for (int i = 0; i < randomNumberList.Length; i++) randomNumberList[i] = -1;
         while (count < 6)
         {
             RandomMaterialIdList(length);
-        };
+        }
 
         photonView.RPC("SetAllValues", RpcTarget.All, theme, randomNumberList);
 

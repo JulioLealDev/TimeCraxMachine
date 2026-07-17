@@ -33,7 +33,7 @@ namespace TimeCrax.Core
         /// Remove uma das opções de resposta do desafio.
         /// Deve ser ativada antes responder o desafio.
         /// </summary>
-        KilChallengeOption,
+        KillChallengeOption,
 
         /// <summary>
         /// Evita ter que responder o desafio.

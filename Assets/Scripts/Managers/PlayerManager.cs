@@ -37,7 +37,14 @@ namespace TimeCrax.Managers
         private bool needsCacheRefresh = true;
 
         // Propriedades públicas
-        public PlayerScript[] Players => players;
+        public PlayerScript[] Players
+        {
+            get
+            {
+                if (players == null) RefreshCache();
+                return players;
+            }
+        }
 
         private void Awake()
         {
@@ -162,77 +169,40 @@ namespace TimeCrax.Managers
         #region PlateNames Management
 
         /// <summary>
-        /// Remove um jogador que saiu do jogo
+        /// Oculta todos os elementos de UI de um slot de jogador (1-based).
         /// </summary>
-        [PunRPC]
-        public void RPC_RemovePlayerPlatename(int index)
+        public void ResetPlayerUIElements(int playerNum)
         {
-            index++;
-
-
-            var plate = GameObject.Find(GameObjectNames.GetPlateName(index));
+            var plate = GameObject.Find(GameObjectNames.GetPlateName(playerNum));
             if (plate != null)
             {
                 plate.GetComponent<MeshRenderer>().enabled = false;
                 plate.GetComponent<MeshCollider>().enabled = false;
             }
 
-            var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(index));
+            var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(playerNum));
             if (bonusSymbol != null)
-            {
                 bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
-            }
 
-            var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(index));
+            var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
             if (namePlate != null)
             {
                 namePlate.GetComponent<TMP_Text>().text = " ";
                 namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
             }
 
-            var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(index));
+            var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(playerNum));
             if (numberBonusCard != null)
-            {
                 numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
-            }
         }
 
         /// <summary>
-        /// Reseta todos os plateNames
+        /// Reseta todos os plateNames (slots 1–4).
         /// </summary>
         public void ResetAllPlatenames()
         {
-
-            for (int i = 0; i < 4; i++)
-            {
-                int playerNum = i + 1;
-
-                var plate = GameObject.Find(GameObjectNames.GetPlateName(playerNum));
-                if (plate != null)
-                {
-                    plate.GetComponent<MeshRenderer>().enabled = false;
-                    plate.GetComponent<MeshCollider>().enabled = false;
-                }
-
-                var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(playerNum));
-                if (bonusSymbol != null)
-                {
-                    bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
-                }
-
-                var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
-                if (namePlate != null)
-                {
-                    namePlate.GetComponent<TMP_Text>().text = " ";
-                    namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
-                }
-
-                var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(playerNum));
-                if (numberBonusCard != null)
-                {
-                    numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
-                }
-            }
+            for (int i = 1; i <= 4; i++)
+                ResetPlayerUIElements(i);
         }
 
         #endregion

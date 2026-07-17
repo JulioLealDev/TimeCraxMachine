@@ -1,17 +1,21 @@
 using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class Timeline : MonoBehaviourPunCallbacks
 {
     private bool zoom;
     private FinishTurn endButton;
     private Collider timelineColliderArea;
+    private MeshCollider cachedEndButtonCollider;
 
     void Start()
     {
         zoom = false;
         endButton = FindFirstObjectByType<FinishTurn>(FindObjectsInactive.Include);
+        if (endButton != null)
+            cachedEndButtonCollider = endButton.GetComponent<MeshCollider>();
 
         var areaObj = transform.Find("TimelineColliderArea");
         if (areaObj != null)
@@ -26,8 +30,8 @@ public class Timeline : MonoBehaviourPunCallbacks
 
         bool newZoom = !zoom;
 
-        if (IsMyTurn())
-            endButton.GetComponent<MeshCollider>().enabled = zoom;
+        if (IsMyTurn() && cachedEndButtonCollider != null)
+            cachedEndButtonCollider.enabled = zoom;
 
         ActiveTimeline(false);
 
@@ -42,15 +46,8 @@ public class Timeline : MonoBehaviourPunCallbacks
     /// </summary>
     private bool IsMyTurn()
     {
-        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-        foreach (var player in players)
-        {
-            if (player.photonView.IsMine && player.GetYourTurn())
-            {
-                return true;
-            }
-        }
-        return false;
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        return local != null && local.GetYourTurn();
     }
 
     [PunRPC]

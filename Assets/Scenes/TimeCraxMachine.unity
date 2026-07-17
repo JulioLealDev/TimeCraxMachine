@@ -91143,6 +91143,7 @@ GameObject:
   - component: {fileID: 1891373291}
   - component: {fileID: 1891373290}
   - component: {fileID: 1891373292}
+  - component: {fileID: 1891373293}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -91232,6 +91233,20 @@ MonoBehaviour:
   sceneViewId: 7
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &1891373293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891373289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f5b4341625f394097eae42142f5e45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimeCrax.Managers.PlayerManager
+  gameInfo: {fileID: 0}
+  playerLeftBackground: {fileID: 0}
 --- !u!4 &1892054511 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4287495665608335970, guid: 1f57a9b07a7305f448ddf2508d59c716, type: 3}

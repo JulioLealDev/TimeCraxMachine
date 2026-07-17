@@ -10,7 +10,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 {
     public int componentId;
     public int malfunctions = 0;
-    public GameObject gameInfo;
+    [SerializeField] private GameObject gameInfo;
 
     [Header("Componente Especial")]
     [Tooltip("Tipo de componente especial (None, Battery, Cooler)")]
@@ -33,6 +33,9 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
     private SoundEffects soundEffects;
     private EndMatch endMatchScreen;
+    private GameManager cachedGameManager;
+    private BackgroundMusic cachedBackgroundMusic;
+    private TurnTimer cachedTurnTimer;
     private Transform sparks;
     private Transform smoke;
     private Transform componentWithAnimator = null;
@@ -87,8 +90,10 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     void Start()
     {
         soundEffects = FindFirstObjectByType<SoundEffects>();
-
         endMatchScreen = FindFirstObjectByType<EndMatch>();
+        cachedGameManager = FindFirstObjectByType<GameManager>();
+        cachedBackgroundMusic = FindFirstObjectByType<BackgroundMusic>();
+        cachedTurnTimer = FindFirstObjectByType<TurnTimer>();
 
         // Cache do MeshCollider
         cachedMeshCollider = GetComponent<MeshCollider>();
@@ -267,53 +272,44 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
         if (gameObject.CompareTag("Selectable"))
         {
-            var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-            foreach (var player in players)
+            var player = PlayerManager.Instance?.GetCurrentTurnPlayer();
+            if (player != null)
             {
-                if (player.GetYourTurn())
+                BonusCard repairCard = BonusCardManager.Instance?.GetRepairCard(player);
+
+                if (repairCard != null)
                 {
+                    photonView.RPC("RemoveMalfunction", RpcTarget.All);
+                    repairCard.ConsumeCard();
 
+                    Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+                    gameInfo.gameObject.SetActive(true);
 
-                    // Verificar se jogador tem carta de reparo
-                    BonusCard repairCard = BonusCardManager.Instance?.GetRepairCard(player);
-
-                    if (repairCard != null)
+                    foreach (var info in infos)
                     {
-
-                        photonView.RPC("RemoveMalfunction", RpcTarget.All);
-                        repairCard.ConsumeCard();
-
-                        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-                        gameInfo.gameObject.SetActive(true);
-
-                        foreach (var info in infos)
+                        if (info.gameObject.name == "RepairInfoBackground")
                         {
-                            if (info.gameObject.name == "RepairInfoBackground")
-                            {
-                                info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
-                            }
+                            info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
                         }
-
-                        this.DelayedCall(1.5f, HideRepairInfo);
                     }
-                    else
+
+                    this.DelayedCall(1.5f, HideRepairInfo);
+                }
+                else
+                {
+                    Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+                    gameInfo.gameObject.SetActive(true);
+
+                    foreach (var info in infos)
                     {
-
-
-                        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
-                        gameInfo.gameObject.SetActive(true);
-
-                        foreach (var info in infos)
+                        if (info.gameObject.name == "ComponentInfoBackground")
                         {
-                            if (info.gameObject.name == "ComponentInfoBackground")
-                            {
-                                info.GetComponentInChildren<TextMeshProUGUI>().text = "You need a Repair Component Card to repair a component!";
-                                info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
-                            }
+                            info.GetComponentInChildren<TextMeshProUGUI>().text = "You need a Repair Component Card to repair a component!";
+                            info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
                         }
-
-                        this.DelayedCall(1.5f, HideComponentInfo);
                     }
+
+                    this.DelayedCall(1.5f, HideComponentInfo);
                 }
             }
         }
@@ -408,10 +404,9 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             //DisableTargetsAnimatorsWithDelay(2f);
 
             // Verificar condição de derrota global (3 componentes com malfunction=2)
-            var gameManager = FindFirstObjectByType<GameManager>();
-            if (gameManager != null)
+            if (cachedGameManager != null)
             {
-                gameManager.CheckGameOverCondition();
+                cachedGameManager.CheckGameOverCondition();
             }
         }
         else
@@ -459,11 +454,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         {
             case SpecialComponentType.Battery:
                 // Reduz o tempo do timer pela metade
-                var turnTimer = FindFirstObjectByType<TurnTimer>();
-                if (turnTimer != null)
-                {
-                    turnTimer.ApplyBatteryMalfunction();
-                }
+                if (cachedTurnTimer != null)
+                    cachedTurnTimer.ApplyBatteryMalfunction();
                 break;
 
             case SpecialComponentType.Cooler:
@@ -493,11 +485,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         {
             case SpecialComponentType.Battery:
                 // Restaura o tempo do timer
-                var turnTimer = FindFirstObjectByType<TurnTimer>();
-                if (turnTimer != null)
-                {
-                    turnTimer.RestoreBatteryEffect();
-                }
+                if (cachedTurnTimer != null)
+                    cachedTurnTimer.RestoreBatteryEffect();
                 break;
 
             case SpecialComponentType.Cooler:
@@ -520,16 +509,13 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
     public void EndGame()
     {
-        BackgroundMusic backgroundMusic = FindFirstObjectByType<BackgroundMusic>();
-        GameManager gameManager = FindFirstObjectByType<GameManager>();
+        cachedGameManager.DeactivateAll();
+        cachedGameManager.ResetAllComponents();
+        cachedGameManager.ResetAllPlatenames();
 
-        gameManager.DeactivateAll();
-        gameManager.ResetAllComponents();
-        gameManager.ResetAllPlatenames();
-
-        backgroundMusic.PlayGameOverSound();
+        cachedBackgroundMusic.PlayGameOverSound();
         endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
-        gameManager.Hud.SetActive(false);
+        cachedGameManager.Hud.SetActive(false);
     }
 
     [PunRPC]
@@ -572,11 +558,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             cachedMeshCollider.enabled = false;
         }
 
-        var gameManager = FindFirstObjectByType<GameManager>();
-        if (gameManager != null)
-        {
-            gameManager.BlockActions();
-        }
+        if (cachedGameManager != null)
+            cachedGameManager.BlockActions();
     }
 
     /// <summary>

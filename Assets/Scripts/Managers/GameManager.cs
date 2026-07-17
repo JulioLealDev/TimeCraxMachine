@@ -64,6 +64,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     // Propriedades públicas
     public int randomId;
     public GameObject Hud => hud;
+    public int CurrentRound => round;
+    public int CurrentTime => time;
+    public PlayerScript[] OrderedPlayers => orderedPlayers;
 
     // Estado do jogo
     private bool gameIsOn = false;
@@ -209,7 +212,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void RefreshCache()
     {
-        players          = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        var pm = PlayerManager.Instance;
+        if (pm != null)
+        {
+            pm.RefreshCache();
+            players = pm.Players;
+        }
         cachedPlateNames = FindObjectsByType<GiveCards>(FindObjectsSortMode.None);
         cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
         needsCacheRefresh = false;
@@ -364,7 +372,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void FirstTurn()
     {
-        players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        var pm = PlayerManager.Instance;
+        if (pm == null)
+        {
+            Debug.LogError("[GameManager] FirstTurn: PlayerManager.Instance é null.");
+            return;
+        }
+        players = pm.Players;
         orderedPlayers = new PlayerScript[players.Length];
         GameStateManager.TransitionTo(GamePhase.IM_FirstTurn);
 
@@ -392,7 +406,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        players = PlayerManager.Instance?.Players ?? players;
 
         bool checkTime = false;
         int maxIterations = 5;
@@ -401,6 +415,16 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             checkTime = CheckTimeAndIndex(orderedPlayers);
             iterations++;
+        }
+
+        if (!checkTime)
+        {
+            Debug.LogError($"[GameManager] Turn(): nenhum jogador válido encontrado após {maxIterations} iterações (time={time}). Forçando novo round.");
+            round++;
+            time = 0;
+            if (PhotonNetwork.IsMasterClient)
+                photonView.RPC("SyncTurnWithRound", RpcTarget.All, time, round);
+            return;
         }
 
         int numberOfPlayers = 4;
@@ -508,8 +532,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void StartTurn()
     {
+        GameStateManager.TransitionTo(GamePhase.IM_Turn);
         IsInTurnTransition = false;
         InputBlocker.Unblock();
+        BonusCardManager.Instance?.ResetSecondChance();
 
         SetNewTimelineNonSlotColliders(true);
 
@@ -520,7 +546,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
             StartTurnTimerRPC();
 
-        players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        players = PlayerManager.Instance?.Players ?? players;
 
         PlayerScript currentOrderedPlayer = null;
         if (orderedPlayers != null && time >= 0 && time < orderedPlayers.Length)
@@ -644,7 +670,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (orderedPlayers == null || orderedPlayers.Length == 0)
         {
-            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+            players = PlayerManager.Instance?.Players ?? players;
             if (players == null || players.Length == 0) return;
 
             orderedPlayers = new PlayerScript[players.Length];
@@ -945,12 +971,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
-        {
-            if (ThermometerManager.Instance.WillNextErrorCauseMalfunction())
-                IsMalfunctionPending = true;
-            _pendingPlayerErrorAfterZoomOut = true;
-        }
+        RegisterWrongAnswer();
     }
 
     public void ResetPersonsFrame()
@@ -1041,12 +1062,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
-        {
-            if (ThermometerManager.Instance.WillNextErrorCauseMalfunction())
-                IsMalfunctionPending = true;
-            _pendingPlayerErrorAfterZoomOut = true;
-        }
+        RegisterWrongAnswer();
     }
 
     public void ResetMapFrame()
@@ -1056,6 +1072,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (!IsInTurnTransition)
             this.DelayedCall(0.5f, MapZoomOut);
         CheckWinAfterMiniGame();
+    }
+
+    private void RegisterWrongAnswer()
+    {
+        if (!PhotonNetwork.IsMasterClient || ThermometerManager.Instance == null) return;
+        if (ThermometerManager.Instance.WillNextErrorCauseMalfunction())
+            IsMalfunctionPending = true;
+        _pendingPlayerErrorAfterZoomOut = true;
     }
 
     private void CheckWinAfterMiniGame()
@@ -1108,6 +1132,12 @@ public class GameManager : MonoBehaviourPunCallbacks
                 break;
             }
         }
+    }
+
+    [PunRPC]
+    public void RPC_SetSecondChanceActive(bool active)
+    {
+        BonusCardManager.Instance?.SetSecondChanceState(active);
     }
 
     public void CloseLeftCompartment()
@@ -1166,7 +1196,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         float interval = 0.3f;
         int componentCount = timeCraxComponents != null ? timeCraxComponents.Length : 0;
 
-        if (componentCount == 0) yield break;
+        if (componentCount == 0)
+        {
+            Debug.LogError("[GameManager] Roulettecomponent(): sem componentes disponíveis.");
+            AddMalfunctionInComponent();
+            yield break;
+        }
 
         while (cond < 15)
         {
@@ -1175,10 +1210,19 @@ public class GameManager : MonoBehaviourPunCallbacks
                 index = UnityEngine.Random.Range(0, componentCount);
 
             randomIndex = index;
-            timeCraxComponents[index].GetComponent<OutlineComponent>().enabled = true;
-            soundEffects.PlayRouletteSound();
+            var rouletteComp = timeCraxComponents[index];
+            if (rouletteComp != null)
+            {
+                var outline = rouletteComp.GetComponent<OutlineComponent>();
+                if (outline != null) outline.enabled = true;
+                soundEffects?.PlayRouletteSound();
+            }
             yield return new WaitForSeconds(interval);
-            timeCraxComponents[index].GetComponent<OutlineComponent>().enabled = false;
+            if (rouletteComp != null)
+            {
+                var outline = rouletteComp.GetComponent<OutlineComponent>();
+                if (outline != null) outline.enabled = false;
+            }
 
             cond++;
             interval -= 0.015f;
@@ -1200,10 +1244,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (outline != null)
             {
                 outline.enabled = true;
-                soundEffects.PlayRouletteSound();
+                soundEffects?.PlayRouletteSound();
                 yield return new WaitForSeconds(interval);
                 outline.enabled = false;
             }
+        }
+        else
+        {
+            Debug.LogWarning($"[GameManager] Roulettecomponent(): componente id={randomId} não encontrado. Malfunction aplicado sem animação.");
         }
 
         AddMalfunctionInComponent();
@@ -1223,7 +1271,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             ThermometerManager.Instance.ResetTemperatureToFirstLevel();
 
         gameCamera?.ActivateTimelineAfterMalfunction();
-        GameStateManager.TransitionTo(GamePhase.Menu);
+        GameStateManager.TransitionTo(GamePhase.IM_Turn);
     }
 
     public void ProcessPendingPlayerError()
@@ -1291,7 +1339,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void UpdatePlayersIndex()
     {
-        players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        players = PlayerManager.Instance?.Players ?? players;
         foreach (var player in players)
             player.UpdateIndex();
     }
@@ -1307,29 +1355,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 orderedPlayers[i] = null;
         }
 
-        index++;
-
-        var plate = GameObject.Find(GameObjectNames.GetPlateName(index));
-        if (plate != null)
-        {
-            plate.GetComponent<MeshRenderer>().enabled = false;
-            plate.GetComponent<MeshCollider>().enabled = false;
-        }
-
-        var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(index));
-        if (bonusSymbol != null)
-            bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
-
-        var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(index));
-        if (namePlate != null)
-        {
-            namePlate.GetComponent<TMP_Text>().text = " ";
-            namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
-        }
-
-        var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(index));
-        if (numberBonusCard != null)
-            numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
+        PlayerManager.Instance?.ResetPlayerUIElements(index + 1);
     }
 
     [PunRPC]
@@ -1348,23 +1374,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void ChangeBonusCardsView(PlayerScript player)
     {
-        if (player == null) return;
-
-        var bonusCards = GetCachedBonusCards();
-        foreach (var card in bonusCards)
-        {
-            if (card == null) continue;
-            bool isOwner = card.photonView.OwnerActorNr == player.photonView.OwnerActorNr;
-            if (isOwner)
-            {
-                card.GetComponent<Animator>().SetBool("sending", false);
-                card.GetComponent<MeshRenderer>().enabled = true;
-            }
-            else
-            {
-                card.GetComponent<MeshRenderer>().enabled = false;
-            }
-        }
+        PlayerManager.Instance?.ChangeBonusCardsView(player);
     }
 
     public void GiveCard(int numberPlayer)
@@ -1379,7 +1389,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         PlayerScript playerReceiving = null;
 
         if (players == null || players.Length == 0)
-            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+            players = PlayerManager.Instance?.Players ?? players;
 
         foreach (var player in players)
         {
@@ -1435,14 +1445,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsConnected || PhotonNetwork.LocalPlayer == null) return;
 
-        players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
+        players = PlayerManager.Instance?.Players ?? players;
         if (players == null || players.Length == 0) return;
 
         foreach (var player in players)
         {
             if (player == null || player.photonView == null) continue;
 
-            if (PhotonNetwork.LocalPlayer.ActorNumber == player.photonView.ControllerActorNr && !GameStateManager.Is(GamePhase.GameOver))
+            if (PhotonNetwork.LocalPlayer.ActorNumber == player.photonView.OwnerActorNr && !GameStateManager.Is(GamePhase.GameOver))
             {
                 if (PhotonNetwork.IsConnected && photonView != null)
                     photonView.RPC("ShowLeftPlayerInfo", RpcTarget.Others, player.nickname);
@@ -1606,31 +1616,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void ResetAllPlatenames()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            int playerNum = i + 1;
-
-            var plate = GameObject.Find(GameObjectNames.GetPlateName(playerNum));
-            if (plate != null)
-            {
-                plate.GetComponent<MeshRenderer>().enabled = false;
-                plate.GetComponent<MeshCollider>().enabled = false;
-            }
-
-            var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(playerNum));
-            if (bonusSymbol != null) bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
-
-            var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
-            if (namePlate != null)
-            {
-                namePlate.GetComponent<TMP_Text>().text = " ";
-                namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
-            }
-
-            var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(playerNum));
-            if (numberBonusCard != null)
-                numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
-        }
+        PlayerManager.Instance?.ResetAllPlatenames();
     }
 
     public void ResetAllComponents()
@@ -1680,7 +1666,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (backgroundMusic != null) backgroundMusic.PlayMenuSound();
 
         gameIsOn = false;
-        //if (gameOver != null) gameOver.gameIsOver = false;
         if (rightCompartmentAnimator != null) rightCompartmentAnimator.SetBool("open", false);
         if (deckEvent != null) deckEvent.ResetAllEventCards();
 

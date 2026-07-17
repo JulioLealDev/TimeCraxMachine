@@ -1,11 +1,21 @@
 using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class FinishTurn : MonoBehaviourPunCallbacks
 {
     [SerializeField] private Animator animator;
     [SerializeField] private SoundEffects soundEffects;
+
+    private Timeline cachedTimeline;
+    private GameManager cachedGameManager;
+
+    private void Start()
+    {
+        cachedTimeline = FindFirstObjectByType<Timeline>(FindObjectsInactive.Include);
+        cachedGameManager = FindFirstObjectByType<GameManager>();
+    }
 
     public void OnMouseDown()
     {
@@ -33,19 +43,8 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     /// </summary>
     private bool IsMyTurn()
     {
-        var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-
-        foreach (var player in players)
-        {
-            bool isMine = player.photonView.IsMine;
-            bool yourTurn = player.GetYourTurn();
-
-            if (isMine && yourTurn)
-            {
-                return true;
-            }
-        }
-        return false;
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        return local != null && local.GetYourTurn();
     }
 
     [PunRPC]
@@ -57,15 +56,13 @@ public class FinishTurn : MonoBehaviourPunCallbacks
         InputBlocker.Block();
 
         // Desativar imediatamente o collider da timeline ao finalizar o turno
-        var tl = FindFirstObjectByType<Timeline>();
-        if (tl != null) tl.ActiveTimeline(false);
+        if (cachedTimeline != null) cachedTimeline.ActiveTimeline(false);
     }
 
     public void Finish()
     {
         animator.SetBool("finishTurn", false);
-        var gameManager = FindFirstObjectByType<GameManager>();
-        gameManager.EndTurn();
+        cachedGameManager.EndTurn();
 
         GameManager.ResetClick(this);
     }

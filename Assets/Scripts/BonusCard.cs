@@ -4,9 +4,8 @@ using TMPro;
 using TimeCrax.Core;
 using TimeCrax.Managers;
 
-public class BonusCard : MonoBehaviourPunCallbacks
+public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 {
-    private PlayerScript[] players;
     public int index = 0;
 
     [Header("Tipo da Carta")]
@@ -15,6 +14,9 @@ public class BonusCard : MonoBehaviourPunCallbacks
     [Header("Referências Visuais")]
     [SerializeField] private MeshRenderer cardRenderer;
     [SerializeField] private TextMeshPro cardText;
+
+    // Cache de componentes
+    private Animator cachedAnimator;
 
     // Estado da carta
     private bool isInCenter = false;
@@ -33,13 +35,12 @@ public class BonusCard : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-
         // Auto-referências se não definidas no Inspector
         if (cardRenderer == null)
             cardRenderer = GetComponent<MeshRenderer>();
         if (cardText == null)
             cardText = GetComponentInChildren<TextMeshPro>();
+        cachedAnimator = GetComponent<Animator>();
 
         DrawBonusCard();
     }
@@ -98,7 +99,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
             BonusCardType.BonusTime          => "Bonus Time",
             BonusCardType.SecondChanceSlot   => "Second Chance",
             BonusCardType.CoolThermometer    => "Cool Thermometer",
-            BonusCardType.KilChallengeOption => "Kill Challenge Option",
+            BonusCardType.KillChallengeOption => "Kill Challenge Option",
             BonusCardType.SkipChallenge      => "Skip Challenge",
             _                                => string.Empty,
         };
@@ -174,17 +175,16 @@ public class BonusCard : MonoBehaviourPunCallbacks
     {
 
         // Decrementar contador do jogador
-        if (players == null || players.Length == 0)
+        var allPlayers = PlayerManager.Instance?.Players;
+        if (allPlayers != null)
         {
-            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-        }
-
-        foreach (var player in players)
-        {
-            if (player != null && player.photonView.OwnerActorNr == photonView.OwnerActorNr)
+            foreach (var player in allPlayers)
             {
-                player.RemoveBonusCard();
-                break;
+                if (player != null && player.photonView.OwnerActorNr == photonView.OwnerActorNr)
+                {
+                    player.RemoveBonusCard();
+                    break;
+                }
             }
         }
 
@@ -196,9 +196,8 @@ public class BonusCard : MonoBehaviourPunCallbacks
     }
     public void DrawBonusCard()
     {
-        gameObject.GetComponent<Animator>().enabled = true;
-        gameObject.GetComponent<Animator>().SetBool("drawingBonusCard", true);
-
+        cachedAnimator.enabled = true;
+        cachedAnimator.SetBool("drawingBonusCard", true);
     }
 
     public void ChangeGameStateAfterDrawing()
@@ -208,11 +207,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
 
     public void CheckingPlayer()
     {
-        // Garantir que players está populado
-        if (players == null || players.Length == 0)
-        {
-            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-        }
+        var players = PlayerManager.Instance?.Players;
 
         if (players == null || players.Length == 0)
         {
@@ -222,7 +217,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
 
         foreach (var player in players)
         {
-            if (player != null && player.GetComponent<PhotonView>().OwnerActorNr == photonView.OwnerActorNr)
+            if (player != null && player.photonView.OwnerActorNr == photonView.OwnerActorNr)
             {
                 player.DrawBonusCard();
                 ShowBonusCardOnHand(player.GetNumberOfBonusCards());
@@ -236,7 +231,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
 
     public void ShowBonusCardOnHand(int numberOfBonusCards)
     {
-        gameObject.GetComponent<Animator>().enabled = false;
+        cachedAnimator.enabled = false;
         gameObject.SetActive(false);
         ShowBonusCards(numberOfBonusCards);
     }
@@ -279,14 +274,10 @@ public class BonusCard : MonoBehaviourPunCallbacks
 
     public void DeactivateMesh()
     {
-        gameObject.GetComponent<MeshRenderer>().enabled = false;
+        cardRenderer.enabled = false;
         gameObject.SetActive(false);
 
-        // Garantir que players está populado
-        if (players == null || players.Length == 0)
-        {
-            players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
-        }
+        var players = PlayerManager.Instance?.Players;
 
         if (players == null || players.Length == 0)
         {
@@ -299,7 +290,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
         {
             if (player == null) continue;
 
-            if(player.photonView.OwnerActorNr == gameObject.GetPhotonView().OwnerActorNr)
+            if(player.photonView.OwnerActorNr == photonView.OwnerActorNr)
             {
                 owner = player;
             }
@@ -330,23 +321,19 @@ public class BonusCard : MonoBehaviourPunCallbacks
         }
     }
 
-    #region RPCs
+    #region IPunInstantiateMagicCallback
 
-    /// <summary>
-    /// RPC para sincronizar o tipo da carta em todos os clientes
-    /// </summary>
-    [PunRPC]
-    public void RPC_SetCardType(int type)
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        cardType = (BonusCardType)type;
+        var data = info.photonView.InstantiationData;
+        if (data == null || data.Length == 0) return;
 
-        // Garantir referências antes de aplicar visuais
-        if (cardRenderer == null)
-            cardRenderer = GetComponent<MeshRenderer>();
-        if (cardText == null)
-            cardText = GetComponentInChildren<TextMeshPro>();
+        // Garantir referências antes de aplicar visuais (Start ainda não rodou)
+        if (cardRenderer == null) cardRenderer = GetComponent<MeshRenderer>();
+        if (cardText == null) cardText = GetComponentInChildren<TextMeshPro>();
+        if (cachedAnimator == null) cachedAnimator = GetComponent<Animator>();
 
-        ApplyCardVisuals();
+        SetCardType((BonusCardType)(int)data[0]);
     }
 
     #endregion

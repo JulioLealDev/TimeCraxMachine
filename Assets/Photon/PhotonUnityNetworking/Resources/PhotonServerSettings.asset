@@ -134,6 +134,7 @@ MonoBehaviour:
   - RPC_SetCardType
   - RPC_ActivateRandomMapObject
   - PlayTagSound
+  - RPC_SetSecondChanceActive
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

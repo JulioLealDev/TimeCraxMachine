@@ -18,10 +18,23 @@ public class EventCard : MonoBehaviourPunCallbacks
     // Referência à carta do tema (novo sistema)
     private ThemeCard themeCard;
 
-    // Start is called before the first frame update
+    // Cache de componentes
+    private Animator cachedAnimator;
+    private MeshRenderer cachedRenderer;
+    private EventCardFollower cachedFollower;
+    private TextMeshPro cachedCardText;
+    private GameManager cachedGameManager;
+
+    public Animator CardAnimator => cachedAnimator;
+
     void Start()
     {
         cameraController = FindFirstObjectByType<CameraController>();
+        cachedAnimator = GetComponent<Animator>();
+        cachedRenderer = GetComponent<MeshRenderer>();
+        cachedFollower = GetComponent<EventCardFollower>();
+        cachedCardText = GetComponentInChildren<TextMeshPro>();
+        cachedGameManager = FindFirstObjectByType<GameManager>();
     }
 
     /// <summary>
@@ -49,17 +62,13 @@ public class EventCard : MonoBehaviourPunCallbacks
     private void DrawingEventCardInternal()
     {
         // Desancorar do slot caso o Animator tenha ficado preso em to_slotN
-        var follower = GetComponent<EventCardFollower>();
-        if (follower != null) follower.Detach();
+        if (cachedFollower != null) cachedFollower.Detach();
 
-        gameObject.GetComponent<MeshRenderer>().enabled = true;
+        cachedRenderer.enabled = true;
 
         // Ativar MeshRenderer do CardText
-        var cardText = GetComponentInChildren<TextMeshPro>();
-        if (cardText != null)
-        {
-            cardText.GetComponent<MeshRenderer>().enabled = true;
-        }
+        if (cachedCardText != null)
+            cachedCardText.GetComponent<MeshRenderer>().enabled = true;
 
         gameObject.tag = "Drew";
 
@@ -67,15 +76,13 @@ public class EventCard : MonoBehaviourPunCallbacks
         // Sem isso, se o Animator ficou preso em draw_eventCard_to_slotN (por race condition
         // em HandlePersonsWrong/HandleMapWrong), o drawingEventCard=true não dispara nenhuma
         // transição válida e a carta aparece diretamente no slot sem zoom, congelando o jogo.
-        var animator = gameObject.GetComponent<Animator>();
-        animator.SetBool("wrongSlot", false);
-        animator.SetInteger("slotClicked", 0);
-        animator.Play("draw_eventCard_idle", 0, 0);
-        animator.SetBool("drawingEventCard", true);
+        cachedAnimator.SetBool("wrongSlot", false);
+        cachedAnimator.SetInteger("slotClicked", 0);
+        cachedAnimator.Play("draw_eventCard_idle", 0, 0);
+        cachedAnimator.SetBool("drawingEventCard", true);
 
         // Desativar coliders não-slot assim que a carta é comprada
-        var gm = FindFirstObjectByType<GameManager>();
-        if (gm != null) gm.SetNewTimelineNonSlotColliders(false);
+        if (cachedGameManager != null) cachedGameManager.SetNewTimelineNonSlotColliders(false);
     }
 
     public void ZoomTimeline()
@@ -91,8 +98,7 @@ public class EventCard : MonoBehaviourPunCallbacks
     public void DistanceTimeline()
     {
         // Re-habilitar coliders não-slot ao iniciar zoom-out (antes de AwaitDistanceTimeline)
-        var gm = FindFirstObjectByType<GameManager>();
-        if (gm != null) gm.SetNewTimelineNonSlotColliders(true);
+        if (cachedGameManager != null) cachedGameManager.SetNewTimelineNonSlotColliders(true);
 
         cameraController.DistanceTimeline();
     }
@@ -103,7 +109,7 @@ public class EventCard : MonoBehaviourPunCallbacks
     /// </summary>
     public void OnFixedToSlot()
     {
-        int slotNumber = GetComponent<Animator>().GetInteger("slotClicked");
+        int slotNumber = cachedAnimator.GetInteger("slotClicked");
         if (slotNumber <= 0) return;
 
         var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
@@ -111,9 +117,8 @@ public class EventCard : MonoBehaviourPunCallbacks
         {
             if (slot.SlotNumber == slotNumber)
             {
-                var follower = GetComponent<EventCardFollower>();
-                if (follower != null)
-                    follower.AttachToSlot(slot.transform);
+                if (cachedFollower != null)
+                    cachedFollower.AttachToSlot(slot.transform);
                 break;
             }
         }
@@ -121,27 +126,22 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     public void ResetStatusCard()
     {
-        var follower = GetComponent<EventCardFollower>();
-        if (follower != null) follower.Detach();
+        if (cachedFollower != null) cachedFollower.Detach();
 
-        gameObject.GetComponent<MeshRenderer>().enabled = false;
+        cachedRenderer.enabled = false;
 
         // Desativar MeshRenderer do CardText
-        var cardText = GetComponentInChildren<TextMeshPro>();
-        if (cardText != null)
-        {
-            cardText.GetComponent<MeshRenderer>().enabled = false;
-        }
+        if (cachedCardText != null)
+            cachedCardText.GetComponent<MeshRenderer>().enabled = false;
 
-        gameObject.GetComponent<Animator>().SetBool("wrongSlot", false);
-        gameObject.GetComponent<Animator>().SetBool("drawingEventCard", false);
-        gameObject.GetComponent<Animator>().SetInteger("slotClicked", 0);
+        cachedAnimator.SetBool("wrongSlot", false);
+        cachedAnimator.SetBool("drawingEventCard", false);
+        cachedAnimator.SetInteger("slotClicked", 0);
     }
 
     public void ActivateEndButton()
     {
-        var gameManager = FindFirstObjectByType<GameManager>();
-        gameManager.ActivateEnd();
+        cachedGameManager.ActivateEnd();
     }
 
     #region Theme System
@@ -157,11 +157,8 @@ public class EventCard : MonoBehaviourPunCallbacks
         era = card.era;
 
         // Definir título no CardText
-        var cardText = GetComponentInChildren<TextMeshPro>();
-        if (cardText != null)
-        {
-            cardText.text = card.title;
-        }
+        if (cachedCardText != null)
+            cachedCardText.text = card.title;
     }
 
     /// <summary>

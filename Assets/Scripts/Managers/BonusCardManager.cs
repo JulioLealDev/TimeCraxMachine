@@ -1,4 +1,5 @@
 using UnityEngine;
+using Photon.Pun;
 using TimeCrax.Core;
 
 namespace TimeCrax.Managers
@@ -297,7 +298,15 @@ namespace TimeCrax.Managers
 
         private void ApplySecondChanceEffect()
         {
-            hasSecondChanceActive = true;
+            if (gameManager != null && gameManager.photonView != null)
+                gameManager.photonView.RPC("RPC_SetSecondChanceActive", Photon.Pun.RpcTarget.All, true);
+            else
+                hasSecondChanceActive = true;
+        }
+
+        public void SetSecondChanceState(bool active)
+        {
+            hasSecondChanceActive = active;
         }
 
         #endregion
@@ -316,7 +325,7 @@ namespace TimeCrax.Managers
                     return "SECOND CHANCE";
                 case BonusCardType.CoolThermometer:
                     return "COOL THERMOMETER";
-                case BonusCardType.KilChallengeOption:
+                case BonusCardType.KillChallengeOption:
                     return "KILL CHALLENGE OPTION";
                 case BonusCardType.SkipChallenge:
                     return "SKIP CHALLENGE";
