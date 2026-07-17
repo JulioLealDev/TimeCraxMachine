@@ -1078,10 +1078,10 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void OpenLeftCompartmentAfterZoomOut()
     {
-        if (GameStateManager.Is(!GamePhase.Victory))
+        if (!GameStateManager.Is(GamePhase.Victory))
         {
             GameStateManager.TransitionTo(GamePhase.IM_UnlockBonusDeck);
-            
+
             if (PhotonNetwork.IsMasterClient)
                 photonView.RPC("RPC_OpenLeftCompartment", RpcTarget.All);
         }

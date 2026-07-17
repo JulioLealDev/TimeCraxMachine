@@ -307,7 +307,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
                         {
                             if (info.gameObject.name == "ComponentInfoBackground")
                             {
-                                info.GetComponentInChildren<TextMeshProUGUI>().text = "You need a Repair Card to repair a component!";
+                                info.GetComponentInChildren<TextMeshProUGUI>().text = "You need a Repair Component Card to repair a component!";
                                 info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
                             }
                         }

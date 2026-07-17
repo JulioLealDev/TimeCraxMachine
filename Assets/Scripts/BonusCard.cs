@@ -10,7 +10,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
     public int index = 0;
 
     [Header("Tipo da Carta")]
-    [SerializeField] private BonusCardType cardType = BonusCardType.Repair;
+    [SerializeField] private BonusCardType cardType = BonusCardType.RepairComponent;
 
     [Header("Referências Visuais")]
     [SerializeField] private MeshRenderer cardRenderer;
@@ -94,11 +94,13 @@ public class BonusCard : MonoBehaviourPunCallbacks
     {
         return type switch
         {
-            BonusCardType.Repair => "Repair Card",
-            BonusCardType.Time => "Time Card",
-            BonusCardType.SecondChance => "Second Chance Card",
-            BonusCardType.Thermometer => "Thermometer Card",
-            _ => "Bonus Card"
+            BonusCardType.RepairComponent    => "Repair Componente",
+            BonusCardType.BonusTime          => "Bonus Time",
+            BonusCardType.SecondChanceSlot   => "Second Chance",
+            BonusCardType.CoolThermometer    => "Cool Thermometer",
+            BonusCardType.KilChallengeOption => "Kill Challenge Option",
+            BonusCardType.SkipChallenge      => "Skip Challenge",
+            _                                => string.Empty,
         };
     }
 
@@ -112,7 +114,7 @@ public class BonusCard : MonoBehaviourPunCallbacks
         if (CameraController.IsAnimating) return;
 
         // Se carta de reparo, não faz nada (auto-usa no componente)
-        if (cardType == BonusCardType.Repair) return;
+        if (cardType == BonusCardType.RepairComponent) return;
 
         if (!isInCenter)
         {

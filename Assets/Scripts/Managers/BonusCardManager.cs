@@ -114,7 +114,7 @@ namespace TimeCrax.Managers
             if (card == null) return;
 
             // Não mostrar painel para RepairCard (auto-usa)
-            if (card.CardType == BonusCardType.Repair) return;
+            if (card.CardType == BonusCardType.RepairComponent) return;
 
             // Verificar se pode ativar
             if (!CanActivateCard(card.CardType))
@@ -163,16 +163,16 @@ namespace TimeCrax.Managers
         {
             switch (cardType)
             {
-                case BonusCardType.Time:
-                case BonusCardType.Thermometer:
+                case BonusCardType.BonusTime:
+                case BonusCardType.CoolThermometer:
                     // Sempre ativáveis
                     return true;
 
-                case BonusCardType.SecondChance:
+                case BonusCardType.SecondChanceSlot:
                     // Ativável a qualquer momento (efeito dura até errar slot)
                     return !hasSecondChanceActive;
 
-                case BonusCardType.Repair:
+                case BonusCardType.RepairComponent:
                     // Auto-usa, não passa por aqui
                     return false;
 
@@ -209,7 +209,7 @@ namespace TimeCrax.Managers
             {
                 if (card != null &&
                     card.photonView.OwnerActorNr == player.photonView.OwnerActorNr &&
-                    card.CardType == BonusCardType.Repair)
+                    card.CardType == BonusCardType.RepairComponent)
                 {
                     return card;
                 }
@@ -265,15 +265,15 @@ namespace TimeCrax.Managers
         {
             switch (cardType)
             {
-                case BonusCardType.Time:
+                case BonusCardType.BonusTime:
                     ApplyTimeEffect();
                     break;
 
-                case BonusCardType.Thermometer:
+                case BonusCardType.CoolThermometer:
                     ApplyThermometerEffect();
                     break;
 
-                case BonusCardType.SecondChance:
+                case BonusCardType.SecondChanceSlot:
                     ApplySecondChanceEffect();
                     break;
             }
@@ -308,16 +308,20 @@ namespace TimeCrax.Managers
         {
             switch (cardType)
             {
-                case BonusCardType.Repair:
-                    return "CARTA DE REPARO";
-                case BonusCardType.Time:
-                    return "CARTA DE TEMPO";
-                case BonusCardType.SecondChance:
-                    return "SEGUNDA CHANCE";
-                case BonusCardType.Thermometer:
-                    return "ESFRIAR MÁQUINA";
+                case BonusCardType.RepairComponent:
+                    return "REPAIR COMPONENT";
+                case BonusCardType.BonusTime:
+                    return "BONUS TIME";
+                case BonusCardType.SecondChanceSlot:
+                    return "SECOND CHANCE";
+                case BonusCardType.CoolThermometer:
+                    return "COOL THERMOMETER";
+                case BonusCardType.KilChallengeOption:
+                    return "KILL CHALLENGE OPTION";
+                case BonusCardType.SkipChallenge:
+                    return "SKIP CHALLENGE";
                 default:
-                    return "CARTA BONUS";
+                    return " ";
             }
         }
 
