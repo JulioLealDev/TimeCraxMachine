@@ -1336,7 +1336,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -1702,7 +1702,8 @@ MonoBehaviour:
   backgroundOverlay: {fileID: 860970671}
   includeLegacyThemes: 1
   legacyThemeNames:
-  - Discovery of the Americas
+  - World History
+  - World War 2
   defaultLegacySprite: {fileID: 21300000, guid: aae5d326b6e33fc4cbc18573ec864c3e, type: 3}
   searchInput: {fileID: 1281385568}
   fadeInDuration: 0.2
@@ -19193,7 +19194,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -27735,10 +27736,6 @@ MonoBehaviour:
   incorrectIcon01: {fileID: 75878125}
   incorrectIcon02: {fileID: 1328569051}
   incorrectIcon03: {fileID: 1973748518}
-  personText01: {fileID: 176330924}
-  personText02: {fileID: 496645469}
-  personText03: {fileID: 1276213857}
-  personsFrame: {fileID: 760126877}
   cardImage01: {fileID: 1818352296}
   cardImage02: {fileID: 830938662}
   cardImage03: {fileID: 31906210}
@@ -30005,7 +30002,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -30942,7 +30939,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -39654,7 +39651,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -57765,7 +57762,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -65420,7 +65417,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -71396,7 +71393,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -87073,7 +87070,6 @@ MonoBehaviour:
   mapPin02: {fileID: 1812673196}
   mapPin03: {fileID: 641088439}
   mapPin04: {fileID: 1486745938}
-  map: {fileID: 985315329}
   correctIcon: {fileID: 1661004718}
   incorrectIcon: {fileID: 927956549}
 --- !u!1 &1716137915 stripped
@@ -87554,9 +87550,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1b0faca9c4a9c82408e82ceee7aa9f23, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1755516036}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1b0faca9c4a9c82408e82ceee7aa9f23, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1755516039}
   m_SourcePrefab: {fileID: 100100000, guid: 1b0faca9c4a9c82408e82ceee7aa9f23, type: 3}
 --- !u!4 &1755516034 stripped
 Transform:
@@ -87590,19 +87583,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1755516039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1755516035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7992757dfe3ddd74d9c5e69ee18bb99a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LeftCompartmentAnimation
-  deckBonus: {fileID: 3469287837725592005}
 --- !u!1001 &1758415393
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -89434,7 +89414,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -92792,7 +92772,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -108599,7 +108579,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8378379566945254124}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -108619,7 +108599,7 @@ RectTransform:
   - {fileID: 518711098}
   - {fileID: 912375026}
   - {fileID: 1591649368}
-  m_Father: {fileID: 7769663667141126283}
+  m_Father: {fileID: 7238339920802041953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -112122,6 +112102,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7769663667141126283}
+  - {fileID: 2690559583178838331}
   - {fileID: 1818767651}
   - {fileID: 1054568730}
   - {fileID: 500046042}
@@ -112353,8 +112334,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2690559583178838331}
+  m_Children: []
   m_Father: {fileID: 7238339920802041953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

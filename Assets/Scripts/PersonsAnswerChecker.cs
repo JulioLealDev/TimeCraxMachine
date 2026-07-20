@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using TimeCrax.Core;
 
 public class PersonsAnswerChecker : MonoBehaviour
 {
@@ -29,7 +30,11 @@ public class PersonsAnswerChecker : MonoBehaviour
     [SerializeField] private GameObject incorrectIcon02;
     [SerializeField] private GameObject incorrectIcon03;
 
-    [Header("PersonsCardImage")]
+    [Header("ResetPersonsFrame()")]
+    [SerializeField] private TMP_Text personText01;
+    [SerializeField] private TMP_Text personText02;
+    [SerializeField] private TMP_Text personText03;
+    [SerializeField] private GameObject personsFrame;
     [SerializeField] private PersonCardImage cardImage01;
     [SerializeField] private PersonCardImage cardImage02;
     [SerializeField] private PersonCardImage cardImage03;
@@ -110,7 +115,37 @@ public class PersonsAnswerChecker : MonoBehaviour
         cardImage02?.ResetToDefault();
         cardImage03?.ResetToDefault();
 
-        gameManager?.ResetPersonsFrame(); // desativa personsFrame e agenda zoom out internamente
+        ResetPersonsFrame(gameManager);
+    }
+
+    private void ResetPersonsFrame(GameManager gameManager)
+    {
+        if (personName01 != null) personName01.text = string.Empty;
+        if (personName02 != null) personName02.text = string.Empty;
+        if (personName03 != null) personName03.text = string.Empty;
+        if (personText01 != null) personText01.text = string.Empty;
+        if (personText02 != null) personText02.text = string.Empty;
+        if (personText03 != null) personText03.text = string.Empty;
+
+        foreach (var img in FindObjectsByType<PersonCardImage>(FindObjectsSortMode.None))
+        {
+            img.gameObject.tag = "Untagged";
+            var col = img.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+        foreach (var desc in FindObjectsByType<PersonDescriptionClick>(FindObjectsSortMode.None))
+        {
+            desc.gameObject.tag = "Untagged";
+            var col = desc.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+
+        if (personsFrame != null) personsFrame.SetActive(false);
+        EventSlot.ResetClickProtection();
+
+        if (!GameManager.IsInTurnTransition)
+            gameManager?.DelayedCall(0.5f, gameManager.PersonsZoomOut);
+        gameManager?.CheckWinAfterMiniGame();
     }
 
     private void HideAllIcons()

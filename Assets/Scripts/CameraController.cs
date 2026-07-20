@@ -10,6 +10,7 @@ public class CameraController : MonoBehaviourPunCallbacks
     [SerializeField] private TimelineColliderArea timelineColliderArea;
 
     public static bool IsAnimating { get; private set; }
+    public static bool IsZoomed    { get; private set; }
 
     private Timeline timeline;
     private EventSlot slot;
@@ -76,6 +77,7 @@ public class CameraController : MonoBehaviourPunCallbacks
     public void ZoomTimeline()
     {
         IsAnimating = true;
+        IsZoomed    = true;
         Debug.Log("[CameraController] ZoomTimeline");
         cameraAnimator.SetBool("distanceZoom", false);
         cameraAnimator.SetBool("zoomTimeline", true);
@@ -117,6 +119,7 @@ public class CameraController : MonoBehaviourPunCallbacks
             {
                 if (slot != null) slot.SetUpSlots(true, "Selectable");
                 if (timeline != null) timeline.ActiveTimeline(false);
+                GameStateManager.TransitionTo(GamePhase.IM_ChoosingSlot);
             }
             else
             {
@@ -134,6 +137,7 @@ public class CameraController : MonoBehaviourPunCallbacks
     void DistanceTimelineFinished()
     {
         IsAnimating = false;
+        IsZoomed    = false;
         Debug.Log("[CameraController] DistanceTimelineFinished");
         if (GameStateManager.Is(GamePhase.Victory) || GameStateManager.Is(GamePhase.GameOver)) return;
         if (gameManagerCache != null) gameManagerCache.SetNewTimelineNonSlotColliders(true);
@@ -163,6 +167,7 @@ public class CameraController : MonoBehaviourPunCallbacks
     public void ForceResetToInitialState()
     {
         IsAnimating = false;
+        IsZoomed    = false;
         cameraAnimator.SetBool("zoomTimeline", false);
         cameraAnimator.SetBool("distanceZoom", false);
 

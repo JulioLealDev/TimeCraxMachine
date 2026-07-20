@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using TimeCrax.Core;
 using TimeCrax.Themes;
 
 public class MapAnswerChecker : MonoBehaviour
@@ -14,6 +15,9 @@ public class MapAnswerChecker : MonoBehaviour
     [SerializeField] private Transform mapPin02;
     [SerializeField] private Transform mapPin03;
     [SerializeField] private Transform mapPin04;
+
+    [Header("ResetMapFrame()")]
+    [SerializeField] private GameObject map;
 
     [Header("Ícones de resultado")]
     [SerializeField] private GameObject correctIcon;
@@ -111,9 +115,9 @@ public class MapAnswerChecker : MonoBehaviour
                 pins[i].gameObject.SetActive(true);
                 pins[i].tag = "Selectable";
 
-                var col = pins[i].GetComponent<Collider>();
-                if (col != null) col.enabled = true;
-                else Debug.LogWarning($"[MapAnswerChecker] MapPin{i + 1:00} não tem Collider!");
+                //var col = pins[i].GetComponent<Collider>();
+                //if (col != null) col.enabled = false;
+                //else Debug.LogWarning($"[MapAnswerChecker] MapPin{i + 1:00} não tem Collider!");
 
                 var outline = pins[i].GetComponent<OutlineComponent>();
                 if (outline == null) outline = pins[i].gameObject.AddComponent<OutlineComponent>();
@@ -189,7 +193,25 @@ public class MapAnswerChecker : MonoBehaviour
 
         Debug.Log("[MapAnswerChecker] Chamando ResetState e ResetMapFrame");
         ResetState();
-        gameManager?.ResetMapFrame();
+        ResetMapFrame(gameManager);
+    }
+
+    private void ResetMapFrame(GameManager gameManager)
+    {
+        Transform[] pins = { mapPin01, mapPin02, mapPin03, mapPin04 };
+        foreach (var pin in pins)
+        {
+            if (pin == null) continue;
+            var col = pin.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+
+        if (map != null) map.SetActive(false);
+        EventSlot.ResetClickProtection();
+
+        if (!GameManager.IsInTurnTransition)
+            gameManager?.DelayedCall(0.5f, gameManager.MapZoomOut);
+        gameManager?.CheckWinAfterMiniGame();
     }
 
     private void ResetState()

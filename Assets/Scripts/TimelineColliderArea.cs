@@ -36,6 +36,7 @@ public class TimelineColliderArea : MonoBehaviour
 
     private void OnMouseEnter()
     {
+        if (InputBlocker.IsBlocked) return;
         if (parentOutline != null)
             parentOutline.enabled = true;
     }

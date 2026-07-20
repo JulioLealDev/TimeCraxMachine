@@ -906,7 +906,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (choice == 1)
         {
             Debug.Log($"[GameManager] Ativando Map. map={map != null}");
-            if (map != null) map.SetActive(true);
+            if (map != null)
+            {
+                map.SetActive(true);
+                this.DelayedCall(2.5f, () => EnableMeshColliders(map));
+            }
             else Debug.LogWarning("[GameManager] Referência 'map' é null no Inspector!");
             GameStateManager.TransitionTo(GamePhase.IM_MapChallenge);
             return;
@@ -914,12 +918,22 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         CurrentPersonsThemeCard = FindPersonsThemeCard(slotCount);
         Debug.Log($"[GameManager] Ativando PersonsFrame. personsFrame={personsFrame != null}, themeCard={CurrentPersonsThemeCard?.title}");
-        if (personsFrame != null) personsFrame.SetActive(true);
+        if (personsFrame != null)
+        {
+            personsFrame.SetActive(true);
+            this.DelayedCall(2.5f, () => EnableMeshColliders(personsFrame));
+        }
         else Debug.LogWarning("[GameManager] Referência 'personsFrame' é null no Inspector!");
         GameStateManager.TransitionTo(GamePhase.IM_PersonsChallenge);
         ApplyPersonsText(CurrentPersonsThemeCard);
 
         this.DelayedCall(2.5f, ActivatePersonsSelectable);
+    }
+
+    private void EnableMeshColliders(GameObject root)
+    {
+        foreach (var col in root.GetComponentsInChildren<MeshCollider>(true))
+            col.enabled = true;
     }
 
     private void ActivatePersonsSelectable()
@@ -974,29 +988,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         RegisterWrongAnswer();
     }
 
-    public void ResetPersonsFrame()
-    {
-        if (personName01 != null) personName01.text = string.Empty;
-        if (personName02 != null) personName02.text = string.Empty;
-        if (personName03 != null) personName03.text = string.Empty;
-        if (personText01 != null) personText01.text = string.Empty;
-        if (personText02 != null) personText02.text = string.Empty;
-        if (personText03 != null) personText03.text = string.Empty;
-
-        foreach (var img in FindObjectsByType<PersonCardImage>(FindObjectsSortMode.None))
-            img.gameObject.tag = "Untagged";
-        foreach (var desc in FindObjectsByType<PersonDescriptionClick>(FindObjectsSortMode.None))
-            desc.gameObject.tag = "Untagged";
-
-        if (personsFrame != null) personsFrame.SetActive(false);
-        EventSlot.ResetClickProtection();
-
-        if (!IsInTurnTransition)
-            this.DelayedCall(0.5f, PersonsZoomOut);
-        CheckWinAfterMiniGame();
-    }
-
-    private void PersonsZoomOut()
+    public void PersonsZoomOut()
     {
         if (PhotonNetwork.IsMasterClient && !_pendingPlayerErrorAfterZoomOut)
             OpenLeftCompartmentAfterZoomOut();
@@ -1065,15 +1057,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         RegisterWrongAnswer();
     }
 
-    public void ResetMapFrame()
-    {
-        if (map != null) map.SetActive(false);
-        EventSlot.ResetClickProtection();
-        if (!IsInTurnTransition)
-            this.DelayedCall(0.5f, MapZoomOut);
-        CheckWinAfterMiniGame();
-    }
-
     private void RegisterWrongAnswer()
     {
         if (!PhotonNetwork.IsMasterClient || ThermometerManager.Instance == null) return;
@@ -1082,13 +1065,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         _pendingPlayerErrorAfterZoomOut = true;
     }
 
-    private void CheckWinAfterMiniGame()
+    public void CheckWinAfterMiniGame()
     {
         var anySlot = FindFirstObjectByType<EventSlot>();
         anySlot?.CheckIfWin();
     }
 
-    private void MapZoomOut()
+    public void MapZoomOut()
     {
         if (PhotonNetwork.IsMasterClient && !_pendingPlayerErrorAfterZoomOut)
             OpenLeftCompartmentAfterZoomOut();
@@ -1123,8 +1106,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (player != null && player.photonView.IsMine && player.GetYourTurn())
             {
-                if (cachedDeckBonusMeshCollider != null)
-                    cachedDeckBonusMeshCollider.enabled = true;
+                //if (cachedDeckBonusMeshCollider != null)
+                //    cachedDeckBonusMeshCollider.enabled = true;
 
                 if (deckBonus != null)
                     deckBonus.tag = player.GetNumberOfBonusCards() < 5 ? "Selectable" : "Disabled";

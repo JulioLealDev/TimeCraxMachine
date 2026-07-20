@@ -9,7 +9,7 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     public int index = 0;
 
     [Header("Tipo da Carta")]
-    [SerializeField] private BonusCardType cardType = BonusCardType.RepairComponent;
+    [SerializeField] private BonusCardType cardType;
 
     [Header("Referências Visuais")]
     [SerializeField] private MeshRenderer cardRenderer;
@@ -24,9 +24,14 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     private Quaternion savedHandRotation;
     private Vector3 savedHandScale;
 
-    // Posição central para ativação
-    private readonly Vector3 centerPosition = new Vector3(0.1079f, 0.7694f, 0.5021f);
+    // Posição central para ativação — zoom-out
+    private readonly Vector3    centerPosition = new Vector3(0.1129f, 0.8044f, 0.5021f);
     private readonly Quaternion centerRotation = new Quaternion(-0.9202125f, 0f, 0f, 0.3914192f);
+
+    // Posição central para ativação — zoom-in (igual para todos os índices)
+    private readonly Vector3    centerPositionZoomIn = new Vector3(0.1129f, 0.470197f, -0.023674f);
+    private readonly Quaternion centerRotationZoomIn = new Quaternion(-0.8388f, 0f, 0f, 0.5445f);
+
     private const float centerScaleMultiplier = 1.2f; // +20%
 
     // Propriedades
@@ -61,7 +66,7 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     {
         // Carregar textura da pasta Resources/BonusCardImages
         string imageName = cardType.ToString();
-        Texture2D texture = Resources.Load<Texture2D>($"BonusCardImages/{imageName}");
+        Texture2D texture = Resources.Load<Texture2D>($"BonusCardImages/{imageName}Image");
 
         if (texture != null && cardRenderer != null)
         {
@@ -95,13 +100,13 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     {
         return type switch
         {
-            BonusCardType.RepairComponent    => "Repair Componente",
-            BonusCardType.BonusTime          => "Bonus Time",
-            BonusCardType.SecondChanceSlot   => "Second Chance",
-            BonusCardType.CoolThermometer    => "Cool Thermometer",
+            BonusCardType.RepairComponent     => "Repair Componente",
+            BonusCardType.BonusTime           => "Bonus Time",
+            BonusCardType.SecondChanceSlot    => "Second Chance",
+            BonusCardType.CoolThermometer     => "Cool Thermometer",
             BonusCardType.KillChallengeOption => "Kill Challenge Option",
-            BonusCardType.SkipChallenge      => "Skip Challenge",
-            _                                => string.Empty,
+            BonusCardType.SkipChallenge       => "Skip Challenge",
+            _                                 => string.Empty,
         };
     }
 
@@ -113,9 +118,7 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
         if (InputBlocker.IsBlocked) return;
         if (!photonView.IsMine) return;
         if (CameraController.IsAnimating) return;
-
-        // Se carta de reparo, não faz nada (auto-usa no componente)
-        if (cardType == BonusCardType.RepairComponent) return;
+        if (!GameStateManager.IsAnyOf(GamePhase.IM_Turn, GamePhase.IM_ChoosingSlot)) return;
 
         if (!isInCenter)
         {
@@ -131,19 +134,16 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     {
         if (isInCenter) return;
 
-        // Verificar se pode ativar
-        if (BonusCardManager.Instance != null && !BonusCardManager.Instance.CanActivateCard(cardType))
-        {
-            return;
-        }
-
-        // Salvar posição, rotação e scale atuais
+        // Salvar posição, rotação e scale atuais (world)
         savedHandPosition = transform.position;
         savedHandRotation = transform.rotation;
         savedHandScale = transform.localScale;
 
-        // Mover para centro com scale aumentado
-        transform.SetPositionAndRotation(centerPosition, centerRotation);
+        // Mover para centro com scale aumentado (world) — posição depende do estado de zoom
+        bool zoomed = CameraController.IsZoomed || CameraController.IsAnimating;
+        Vector3    targetPos = zoomed ? centerPositionZoomIn  : centerPosition;
+        Quaternion targetRot = zoomed ? centerRotationZoomIn : centerRotation;
+        transform.SetPositionAndRotation(targetPos, targetRot);
         transform.localScale = savedHandScale * centerScaleMultiplier;
         isInCenter = true;
 
@@ -188,12 +188,28 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
             }
         }
 
-        // Destruir a carta
+        // Reposicionar cartas com index maior imediatamente (desloca cada uma um slot para baixo)
         if (photonView.IsMine)
         {
+            int consumedIndex = index;
+            var allCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
+            foreach (var card in allCards)
+            {
+                if (card != null && card != this &&
+                    card.photonView.OwnerActorNr == photonView.OwnerActorNr &&
+                    card.index > consumedIndex)
+                {
+                    if (CameraController.IsZoomed || CameraController.IsAnimating)
+                        card.index -= 1;
+                    else
+                        card.ShowBonusCards(card.index);
+                }
+            }
+
             PhotonNetwork.Destroy(gameObject);
         }
     }
+
     public void DrawBonusCard()
     {
         cachedAnimator.enabled = true;
@@ -242,23 +258,23 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
         switch (numberOfBonusCards)
         {
             case 1:
-                gameObject.transform.SetPositionAndRotation(new Vector3(0f, 0.648899972f, 0.638700008f), new Quaternion(0.906307876f, 0, 0, -0.42261827f));
+                transform.SetPositionAndRotation(new Vector3(0f, 0.648899972f, 0.638700008f), new Quaternion(0.906307876f, 0, 0, -0.42261827f));
                 index = 0;
                 break;
             case 2:
-                gameObject.transform.SetPositionAndRotation(new Vector3(0.0196000002f, 0.647700012f, 0.635900021f), new Quaternion(-0.893287599f, 0.0578520186f, -0.131124616f, 0.426024318f));
+                transform.SetPositionAndRotation(new Vector3(0.0196000002f, 0.647700012f, 0.635900021f), new Quaternion(-0.893287599f, 0.0578520186f, -0.131124616f, 0.426024318f));
                 index = 1;
                 break;
             case 3:
-                gameObject.transform.SetPositionAndRotation(new Vector3(-0.0238000005f, 0.648599982f, 0.644800007f), new Quaternion(-0.9102512f, -0.0436024554f, 0.0974093974f, 0.400066316f));
+                transform.SetPositionAndRotation(new Vector3(-0.0238000005f, 0.648599982f, 0.644800007f), new Quaternion(-0.9102512f, -0.0436024554f, 0.0974093974f, 0.400066316f));
                 index = 2;
                 break;
             case 4:
-                gameObject.transform.SetPositionAndRotation(new Vector3(0.0368999988f, 0.642799973f, 0.637899995f), new Quaternion(-0.872396052f, 0.0844448283f, -0.222514987f, 0.426944137f));
+                transform.SetPositionAndRotation(new Vector3(0.0368999988f, 0.642799973f, 0.637899995f), new Quaternion(-0.8569837808609009f, 0.10065678507089615f, -0.3076842427253723f, 0.4009706974029541f));
                 index = 3;
                 break;
             case 5:
-                gameObject.transform.SetPositionAndRotation(new Vector3(-0.0425999984f, 0.648100019f, 0.655099988f), new Quaternion(-0.893432021f, -0.0762165561f, 0.201961488f, 0.393931329f));
+                transform.SetPositionAndRotation(new Vector3(-0.0425999984f, 0.648100019f, 0.655099988f), new Quaternion(-0.893432021f, -0.0762165561f, 0.201961488f, 0.393931329f));
                 index = 4;
                 break;
             default:

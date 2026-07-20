@@ -41,6 +41,8 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
         if (GameManager.IsClickProcessing(typeof(EventSlot))) return;
 
+        GameStateManager.TransitionTo(GamePhase.IM_CheckingSlot);
+
         var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
 
         foreach (var card in eventCards)

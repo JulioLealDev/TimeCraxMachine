@@ -9,6 +9,13 @@ public class DeckBonus : MonoBehaviourPunCallbacks
     [SerializeField] private Canvas gameInfo;
     [SerializeField] private SoundEffects soundEffects;
 
+    private MeshCollider cachedMeshCollider;
+
+    private void Awake()
+    {
+        cachedMeshCollider = GetComponent<MeshCollider>();
+    }
+
     public void OnMouseDown()
     {
         if (InputBlocker.IsBlocked) return;
@@ -120,8 +127,9 @@ public class DeckBonus : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void ClickDraw(int idSound)
+    public void ClickDraw(int idSound, PhotonMessageInfo info)
     {
+        if (info.Sender != photonView.Owner) return;
         if(idSound == 1)
         {
             soundEffects.TagSound();
@@ -154,6 +162,12 @@ public class DeckBonus : MonoBehaviourPunCallbacks
     public void ResetClickProtection()
     {
         GameManager.ResetClick(this);
+    }
+
+    public void ActivateCollider()
+    {
+        if (cachedMeshCollider != null)
+            cachedMeshCollider.enabled = true;
     }
 
 

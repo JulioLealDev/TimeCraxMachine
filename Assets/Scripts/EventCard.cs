@@ -38,14 +38,6 @@ public class EventCard : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// Chama RPC para comprar carta (usado quando precisa sincronizar)
-    /// </summary>
-    public void DrawEventCard()
-    {
-        photonView.RPC("DrawingEventCard", RpcTarget.All);
-    }
-
-    /// <summary>
     /// Executa a compra localmente (usado quando já está dentro de um RPC sincronizado)
     /// </summary>
     public void DrawEventCardLocal()
@@ -54,8 +46,9 @@ public class EventCard : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void DrawingEventCard()
+    public void DrawingEventCard(PhotonMessageInfo info)
     {
+        if (info.Sender != photonView.Owner) return;
         DrawingEventCardInternal();
     }
 

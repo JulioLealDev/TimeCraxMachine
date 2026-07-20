@@ -26,7 +26,7 @@ namespace TimeCrax.Managers
         [Header("UI de Ativação")]
         [SerializeField] private GameObject activationPanel;
         [SerializeField] private UnityEngine.UI.Button activateButton;
-        [SerializeField] private TMPro.TextMeshProUGUI cardTypeLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI cardTypeDescription;
 
         // Controle de clique para cancelar
         private bool waitingForClickOutside = false;
@@ -114,22 +114,22 @@ namespace TimeCrax.Managers
         {
             if (card == null) return;
 
-            // Não mostrar painel para RepairCard (auto-usa)
-            if (card.CardType == BonusCardType.RepairComponent) return;
-
-            // Verificar se pode ativar
-            if (!CanActivateCard(card.CardType))
-            {
-                return;
-            }
-
             selectedCard = card;
 
             // Atualizar UI
-            if (cardTypeLabel != null)
+            if (cardTypeDescription != null)
             {
-                cardTypeLabel.text = GetCardTypeName(card.CardType);
+                cardTypeDescription.text = GetCardTypeDescription(card.CardType);
             }
+
+            // Controlar interatividade do botão baseado na permissão de ativação
+            if (activateButton != null)
+            {
+                activateButton.interactable = CanActivateCard(card.CardType);
+            }
+
+            // Bloquear cliques em objetos 3D enquanto o painel estiver aberto
+            InputBlocker.OpenUI();
 
             // Mostrar painel
             if (activationPanel != null)
@@ -150,6 +150,13 @@ namespace TimeCrax.Managers
         {
             selectedCard = null;
             waitingForClickOutside = false;
+
+            InputBlocker.CloseUI();
+
+            if (activateButton != null)
+            {
+                activateButton.interactable = true;
+            }
 
             if (activationPanel != null)
             {
@@ -172,6 +179,11 @@ namespace TimeCrax.Managers
                 case BonusCardType.SecondChanceSlot:
                     // Ativável a qualquer momento (efeito dura até errar slot)
                     return !hasSecondChanceActive;
+
+                case BonusCardType.KillChallengeOption:
+                case BonusCardType.SkipChallenge:
+                    // Apenas ativáveis durante um desafio
+                    return GameStateManager.IsAnyOf(GamePhase.IM_MapChallenge, GamePhase.IM_PersonsChallenge);
 
                 case BonusCardType.RepairComponent:
                     // Auto-usa, não passa por aqui
@@ -277,6 +289,14 @@ namespace TimeCrax.Managers
                 case BonusCardType.SecondChanceSlot:
                     ApplySecondChanceEffect();
                     break;
+
+                case BonusCardType.KillChallengeOption:
+                    ApplyKillChallengeOptionEffect();
+                    break;
+
+                case BonusCardType.SkipChallenge:
+                    ApplySkipChallengeEffect();
+                    break;
             }
         }
 
@@ -309,26 +329,36 @@ namespace TimeCrax.Managers
             hasSecondChanceActive = active;
         }
 
+        private void ApplyKillChallengeOptionEffect()
+        {
+            // TODO: implementar lógica de eliminar uma opção errada do desafio
+        }
+
+        private void ApplySkipChallengeEffect()
+        {
+            // TODO: implementar lógica de pular o desafio atual
+        }
+
         #endregion
 
         #region Helpers
 
-        private string GetCardTypeName(BonusCardType cardType)
+        private string GetCardTypeDescription(BonusCardType cardType)
         {
             switch (cardType)
             {
                 case BonusCardType.RepairComponent:
-                    return "REPAIR COMPONENT";
+                    return "Use esta carta para reparar componetes defeituosos. Clique sobre o componente para ativá-la.";
                 case BonusCardType.BonusTime:
-                    return "BONUS TIME";
+                    return "Use esta carta para adicionar 60 segundos ao relógio.";
                 case BonusCardType.SecondChanceSlot:
-                    return "SECOND CHANCE";
+                    return "Use esta carta para ter uma segunda chance ao escolher um slot para uma carta de evento.";
                 case BonusCardType.CoolThermometer:
-                    return "COOL THERMOMETER";
+                    return "Use esta carta para resfriar a temperatura da Timecrax Machine.";
                 case BonusCardType.KillChallengeOption:
-                    return "KILL CHALLENGE OPTION";
+                    return "Use esta carta para remover uma das respostas de qualquer desafio.";
                 case BonusCardType.SkipChallenge:
-                    return "SKIP CHALLENGE";
+                    return "Use esta carta para trocar o desafio atual por outro desafio.";
                 default:
                     return " ";
             }

@@ -17,6 +17,8 @@ public enum GamePhase
     IM_MalfunctionRoulette,
     IM_UnlockBonusDeck,
     IM_DrewBonusCard,
+    IM_CheckingSlot,
+    IM_ChoosingSlot,
 
 }
 
