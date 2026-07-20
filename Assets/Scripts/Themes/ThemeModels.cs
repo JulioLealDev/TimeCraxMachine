@@ -13,6 +13,7 @@ namespace TimeCrax.Themes
     [Serializable]
     public class CardMapData
     {
+        public string question;
         public string imageUrl;
         public string localImagePath;
         public List<MapPin> pins;
@@ -31,6 +32,7 @@ namespace TimeCrax.Themes
     [Serializable]
     public class CardPersonsData
     {
+        public string question;
         public List<PersonEntry> entries;
     }
 

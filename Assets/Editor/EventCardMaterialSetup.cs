@@ -85,20 +85,18 @@ public class EventCardMaterialSetup : EditorWindow
             "OK");
     }
 
-    [MenuItem("Tools/TimeCrax/Configure RandomMaterial for Themes")]
-    public static void ConfigureRandomMaterial()
+    [MenuItem("Tools/TimeCrax/Configure LegacyThemesData for Themes")]
+    public static void ConfigureLegacyThemesData()
     {
-        // Encontrar RandomMaterial na cena
-        RandomMaterial randomMaterial = FindFirstObjectByType<RandomMaterial>();
-        if (randomMaterial == null)
+        LegacyThemesData legacyThemesData = FindFirstObjectByType<LegacyThemesData>();
+        if (legacyThemesData == null)
         {
             EditorUtility.DisplayDialog("Erro",
-                "RandomMaterial não encontrado na cena.",
+                "LegacyThemesData não encontrado na cena.",
                 "OK");
             return;
         }
 
-        // Carregar material base
         Material baseMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Themes/EventCardBase.mat");
         if (baseMaterial == null)
         {
@@ -111,7 +109,6 @@ public class EventCardMaterialSetup : EditorWindow
             }
         }
 
-        // Encontrar textura de template
         Texture2D templateTexture = null;
         string[] templateGuids = AssetDatabase.FindAssets("CardTemplate t:Texture2D");
         if (templateGuids.Length > 0)
@@ -120,22 +117,20 @@ public class EventCardMaterialSetup : EditorWindow
             templateTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(templatePath);
         }
 
-        // Configurar via SerializedObject
-        SerializedObject serializedRM = new SerializedObject(randomMaterial);
-        serializedRM.FindProperty("eventCardBaseMaterial").objectReferenceValue = baseMaterial;
-        serializedRM.FindProperty("cardTemplateTexture").objectReferenceValue = templateTexture;
-        serializedRM.ApplyModifiedProperties();
+        SerializedObject serializedObj = new SerializedObject(legacyThemesData);
+        serializedObj.FindProperty("eventCardBaseMaterial").objectReferenceValue = baseMaterial;
+        serializedObj.FindProperty("cardTemplateTexture").objectReferenceValue = templateTexture;
+        serializedObj.ApplyModifiedProperties();
 
-        // Marcar cena como modificada
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
             UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
 
-        Selection.activeGameObject = randomMaterial.gameObject;
+        Selection.activeGameObject = legacyThemesData.gameObject;
 
         string templateStatus = templateTexture != null ? "Encontrada" : "NÃO ENCONTRADA - crie CardTemplate.png";
 
         EditorUtility.DisplayDialog("Configuração",
-            $"RandomMaterial configurado!\n\n" +
+            $"LegacyThemesData configurado!\n\n" +
             $"Material Base: {(baseMaterial != null ? "OK" : "Não encontrado")}\n" +
             $"Textura Template: {templateStatus}\n\n" +
             "Salve a cena (Ctrl+S).",

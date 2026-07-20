@@ -297,7 +297,7 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
 
                 if (isKnownLegacyName)
                 {
-                    var rm = FindFirstObjectByType<RandomMaterial>();
+                    var rm = FindFirstObjectByType<LegacyThemesData>();
                     hasValidTheme = rm != null && rm.IsLegacyThemeReady(themeName);
                 }
             }

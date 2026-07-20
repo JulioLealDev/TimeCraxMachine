@@ -7,7 +7,7 @@ using UnityEngine;
 using TimeCrax.Core;
 using TimeCrax.Themes;
 
-public class RandomMaterial : MonoBehaviourPunCallbacks
+public class LegacyThemesData : MonoBehaviourPunCallbacks
 {
     [Header("Legacy Theme Materials")]
     public GameObject discoveryOfAmericasMaterials;
@@ -35,7 +35,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     [SerializeField] private Material eventCardBaseMaterial; // Material base com shader EventCardComposite
     [SerializeField] private Texture2D cardTemplateTexture; // Textura do template da carta
 
-    private void RandomMaterialIdList(int materialListLenght)
+    private void LegacyThemesDataIdList(int materialListLenght)
     {
         do
         {
@@ -47,7 +47,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         count++;
     }
 
-    public void GetRandomMaterial(string theme)
+    public void GetLegacyThemesData(string theme)
     {
 
         int length = 0;
@@ -57,7 +57,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
             case "DISCOVERY OF THE AMERICAS":
                 if (discoveryOfAmericasMaterials == null)
                 {
-                    Debug.LogError("[RandomMaterial] 'discoveryOfAmericasMaterials' não está atribuído no Inspector.");
+                    Debug.LogError("[LegacyThemesData] 'discoveryOfAmericasMaterials' não está atribuído no Inspector.");
                     return;
                 }
                 length = discoveryOfAmericasMaterials.GetComponentsInChildren<EventCardContent>().Length;
@@ -66,7 +66,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
 
         if (length == 0)
         {
-            Debug.LogError($"[RandomMaterial] Tema legado não reconhecido ou sem cartas: '{theme}'. Partida não pode iniciar.");
+            Debug.LogError($"[LegacyThemesData] Tema legado não reconhecido ou sem cartas: '{theme}'. Partida não pode iniciar.");
             return;
         }
 
@@ -74,7 +74,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
         for (int i = 0; i < randomNumberList.Length; i++) randomNumberList[i] = -1;
         while (count < 6)
         {
-            RandomMaterialIdList(length);
+            LegacyThemesDataIdList(length);
         }
 
         photonView.RPC("SetAllValues", RpcTarget.All, theme, randomNumberList);
@@ -183,7 +183,7 @@ public class RandomMaterial : MonoBehaviourPunCallbacks
     /// <summary>
     /// Seleciona 7 cartas aleatórias do tema e configura o jogo (chamado pelo Master Client)
     /// </summary>
-    public void GetRandomMaterialFromTheme()
+    public void GetLegacyThemesDataFromTheme()
     {
         if (currentTheme == null)
         {

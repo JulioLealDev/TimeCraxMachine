@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private Animator leftCompartmentAnimator;
 
     [Header("Sistemas")]
-    [SerializeField] private RandomMaterial randomMaterial;
+    [SerializeField] private LegacyThemesData legacyThemesData;
     [SerializeField] private TurnTimer turnTimer;
     [SerializeField] private GameConnection gameConnection;
     [SerializeField] private bool fullScreen = true;
@@ -296,12 +296,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (ThemeManager.Instance != null && ThemeManager.Instance.HasSelectedTheme)
             {
                 var selectedTheme = ThemeManager.Instance.SelectedTheme;
-                randomMaterial.InitializeForTheme(selectedTheme);
-                randomMaterial.GetRandomMaterialFromTheme();
+                legacyThemesData.InitializeForTheme(selectedTheme);
+                legacyThemesData.GetLegacyThemesDataFromTheme();
             }
             else
             {
-                randomMaterial.GetRandomMaterial(theme);
+                legacyThemesData.GetLegacyThemesData(theme);
             }
 
             this.DelayedCall(6f, StartGame);
@@ -913,6 +913,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
             else Debug.LogWarning("[GameManager] Referência 'map' é null no Inspector!");
             GameStateManager.TransitionTo(GamePhase.IM_MapChallenge);
+            var mapThemeCard = FindPersonsThemeCard(slotCount);
+            ChallengeQuestionUI.Instance?.Show(mapThemeCard?.map?.question);
             return;
         }
 
@@ -926,6 +928,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         else Debug.LogWarning("[GameManager] Referência 'personsFrame' é null no Inspector!");
         GameStateManager.TransitionTo(GamePhase.IM_PersonsChallenge);
         ApplyPersonsText(CurrentPersonsThemeCard);
+        ChallengeQuestionUI.Instance?.Show(CurrentPersonsThemeCard?.persons?.question);
 
         this.DelayedCall(2.5f, ActivatePersonsSelectable);
     }
@@ -1689,7 +1692,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void GetRandomEventCards(string theme)
     {
-        randomMaterial.GetRandomMaterial(theme);
+        legacyThemesData.GetLegacyThemesData(theme);
     }
 
     private static readonly HashSet<object> _clickProcessing = new HashSet<object>();
