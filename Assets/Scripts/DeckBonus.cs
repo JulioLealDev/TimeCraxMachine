@@ -1,6 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class DeckBonus : MonoBehaviourPunCallbacks
 {
@@ -101,6 +102,10 @@ public class DeckBonus : MonoBehaviourPunCallbacks
 
         // Fechar compartimento esquerdo após comprar carta
         gameManager.CloseLeftCompartment();
+
+        var turnPlayer = PlayerManager.Instance?.GetCurrentTurnPlayer();
+        if (turnPlayer != null)
+            MatchStats.AddBonusCardObtained(turnPlayer.actorNumber, turnPlayer.nickname);
 
         // Apenas o jogador da vez instancia a carta
         var players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);

@@ -184,16 +184,24 @@ namespace TimeCrax.Managers
             if (bonusSymbol != null)
                 bonusSymbol.GetComponent<SpriteRenderer>().enabled = false;
 
-            var namePlate = GameObject.Find(GameObjectNames.GetNamePlayer(playerNum));
+            var namePlate = GameObject.Find(GameObjectNames.GetPlateNameText(playerNum));
             if (namePlate != null)
             {
-                namePlate.GetComponent<TMP_Text>().text = " ";
-                namePlate.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
+                var tmp = namePlate.GetComponent<TextMeshPro>();
+                if (tmp != null)
+                {
+                    tmp.text = " ";
+                    LeanTween.value(namePlate, tmp.alpha, 0f, 0.5f)
+                        .setOnUpdate((float v) => tmp.alpha = v);
+                }
             }
 
             var numberBonusCard = GameObject.Find(GameObjectNames.GetNumberBonusCards(playerNum));
             if (numberBonusCard != null)
-                numberBonusCard.GetComponent<TextMeshProUGUI>().text = " ";
+            {
+                var tmp = numberBonusCard.GetComponent<TextMeshPro>();
+                if (tmp != null) tmp.text = " ";
+            }
         }
 
         /// <summary>
@@ -300,7 +308,7 @@ namespace TimeCrax.Managers
                 var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(numberPlayer));
                 if (findReceiverNumberCards != null)
                 {
-                    findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberBonusCards.ToString();
+                    findReceiverNumberCards.GetComponent<TextMeshPro>().text = playerReceiving.numberBonusCards.ToString();
                 }
 
                 playerSending.numberBonusCards--;
@@ -308,7 +316,7 @@ namespace TimeCrax.Managers
                 var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(time + 1));
                 if (findSenderNumberCards != null)
                 {
-                    findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberBonusCards.ToString();
+                    findSenderNumberCards.GetComponent<TextMeshPro>().text = playerSending.numberBonusCards.ToString();
                 }
 
                 lastCard.GetComponent<Animator>().enabled = true;

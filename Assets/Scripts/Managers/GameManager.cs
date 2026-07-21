@@ -252,6 +252,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         CacheComponents();
 
         gameIsOn = true;
+        MatchStats.Reset();
+        MatchStats.StartTimer();
         IsMalfunctionPending = false;
         _pendingPlayerErrorAfterZoomOut = false;
         componentsWithAnimator.Clear();
@@ -329,40 +331,55 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         SetNewTimelineColliders(true);
 
-        var components = hud.GetComponentsInChildren<Transform>();
+        var hudChildren = hud.GetComponentsInChildren<Transform>(true);
         var orderedPlayerList = PlayerManager.GetOrderedPlayerList();
+
+        foreach (var t in hudChildren)
+        {
+            if (t.name == "FinishTurn" || t.name == "QuitGame")
+            {
+                var cg = t.gameObject.GetComponent<CanvasGroup>();
+                if (cg != null) cg.LeanAlpha(1f, 2f);
+            }
+        }
 
         for (int i = 0; i < orderedPlayerList.Length; i++)
         {
-            int playerNum      = i + 1;
-            string plateNameStr  = GameObjectNames.GetPlateName(playerNum);
-            string namePlayerStr = GameObjectNames.GetNamePlayer(playerNum);
-            string bonusSymbolStr = GameObjectNames.GetBonusCardSymbol(playerNum);
-            string numberCardsStr = GameObjectNames.GetNumberBonusCards(playerNum);
+            int playerNum = i + 1;
+            string plateNameStr     = GameObjectNames.GetPlateName(playerNum);
+            string plateNameTextStr = GameObjectNames.GetPlateNameText(playerNum);
+            string bonusSymbolStr   = GameObjectNames.GetBonusCardSymbol(playerNum);
+            string bonusCardTextStr = GameObjectNames.GetNumberBonusCards(playerNum);
 
-            for (int x = 0; x < components.Length; x++)
+            foreach (var t in hudChildren)
             {
-                if (components[x].name == plateNameStr)
+                if (t.name == plateNameStr)
                 {
-                    components[x].gameObject.GetComponent<MeshRenderer>().enabled = true;
+                    t.gameObject.SetActive(true);
+                    var mr = t.GetComponent<MeshRenderer>();
+                    if (mr != null) mr.enabled = true;
+                    var mc = t.GetComponent<MeshCollider>();
+                    if (mc != null) mc.enabled = true;
                 }
-                else if (components[x].name == "FinishTurn" || components[x].name == "QuitGame")
+                else if (t.name == plateNameTextStr)
                 {
-                    components[x].gameObject.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
+                    var tmp = t.GetComponent<TextMeshPro>();
+                    if (tmp != null)
+                    {
+                        string nick = orderedPlayerList[i].NickName;
+                        tmp.text = string.IsNullOrEmpty(nick) ? $"Player0{playerNum}" : nick;
+                        tmp.alpha = 1f;
+                    }
                 }
-                else if (components[x].name == namePlayerStr)
+                else if (t.name == bonusSymbolStr)
                 {
-                    var textName = components[x].gameObject.GetComponentInChildren<TextMeshProUGUI>();
-                    textName.text = orderedPlayerList[i].NickName;
-                    textName.GetComponent<CanvasGroup>().LeanAlpha(1f, 2f);
+                    var sr = t.GetComponent<SpriteRenderer>();
+                    if (sr != null) sr.enabled = true;
                 }
-                else if (components[x].name == bonusSymbolStr)
+                else if (t.name == bonusCardTextStr)
                 {
-                    components[x].GetComponent<SpriteRenderer>().enabled = true;
-                }
-                else if (components[x].name == numberCardsStr)
-                {
-                    components[x].GetComponent<TextMeshProUGUI>().text = "0";
+                    var tmp = t.GetComponent<TextMeshPro>();
+                    if (tmp != null) tmp.text = "0";
                 }
             }
         }
@@ -1247,6 +1264,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (!IsInTurnTransition) InputBlocker.Unblock();
 
+        var malfPlayer = PlayerManager.Instance?.GetCurrentTurnPlayer();
+        if (malfPlayer != null)
+            MatchStats.AddMalfunction(malfPlayer.actorNumber, malfPlayer.nickname);
+
         foreach (var component in timeCraxComponents)
         {
             if (component != null && component.componentId == randomId)
@@ -1258,6 +1279,26 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         gameCamera?.ActivateTimelineAfterMalfunction();
         GameStateManager.TransitionTo(GamePhase.IM_Turn);
+    }
+
+    [PunRPC]
+    public void RPC_TrackMapChallenge(bool isCorrect, int actorNumber, string nickname)
+    {
+        if (isCorrect) MatchStats.AddChallengeCorrect(actorNumber, nickname);
+        else MatchStats.AddMapError(actorNumber, nickname);
+    }
+
+    [PunRPC]
+    public void RPC_TrackPersonsChallenge(bool isCorrect, int actorNumber, string nickname)
+    {
+        if (isCorrect) MatchStats.AddChallengeCorrect(actorNumber, nickname);
+        else MatchStats.AddPersonsError(actorNumber, nickname);
+    }
+
+    [PunRPC]
+    public void RPC_TrackBonusCardUsed(int actorNumber, string nickname)
+    {
+        MatchStats.AddBonusCardUsed(actorNumber, nickname);
     }
 
     public void ProcessPendingPlayerError()
@@ -1281,6 +1322,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (criticalComponents >= 2)
         {
+            MatchStats.StopTimer();
             GameStateManager.TransitionTo(GamePhase.GameOver);
             this.DelayedCall(3f, TriggerGameOver);
         }
@@ -1415,12 +1457,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             playerReceiving.numberBonusCards++;
             var findReceiverNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(numberPlayer));
             if (findReceiverNumberCards != null)
-                findReceiverNumberCards.GetComponent<TextMeshProUGUI>().text = playerReceiving.numberBonusCards.ToString();
+                findReceiverNumberCards.GetComponent<TextMeshPro>().text = playerReceiving.numberBonusCards.ToString();
 
             playerSending.numberBonusCards--;
             var findSenderNumberCards = GameObject.Find(GameObjectNames.GetNumberBonusCards(time + 1));
             if (findSenderNumberCards != null)
-                findSenderNumberCards.GetComponent<TextMeshProUGUI>().text = playerSending.numberBonusCards.ToString();
+                findSenderNumberCards.GetComponent<TextMeshPro>().text = playerSending.numberBonusCards.ToString();
 
             lastCard.GetComponent<Animator>().enabled = true;
             lastCard.GetComponent<Animator>().SetBool("sending", true);

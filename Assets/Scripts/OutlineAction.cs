@@ -17,11 +17,15 @@ public class OutlineAction : MonoBehaviour
     [Header("Cursors")]
     [SerializeField] private Texture2D defaultCursor;
     [SerializeField] private Texture2D malfunctionCursor;
+    [SerializeField] private Texture2D inspectCursor;
+    [SerializeField] private Texture2D handCursor;
     [SerializeField] private Vector2 cursorHotspot = Vector2.zero;
 
     private Transform highlight;
     private RaycastHit raycastHit;
     private bool isShowingMalfunctionCursor = false;
+    private bool isShowingInspectCursor = false;
+    private bool isShowingHandCursor = false;
 
     // Valores originais do material para restaurar apos hover
     private float originalSmoothness;
@@ -62,6 +66,8 @@ public class OutlineAction : MonoBehaviour
         if (InputBlocker.IsBlocked) return;
 
         bool shouldShowMalfunctionCursor = false;
+        bool shouldShowInspectCursor = false;
+        bool shouldShowHandCursor = false;
 
         Transform[] opcoes = menuStart.GetComponentsInChildren<Transform>();
         for (int i = 0; i < opcoes.Length; i++)
@@ -74,76 +80,123 @@ public class OutlineAction : MonoBehaviour
         if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit))
         {
             highlight = raycastHit.transform;
-            if (highlight.CompareTag("Selectable"))
+            if (IsInspectTarget(highlight))
             {
-                if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
-                {
-                    highlight.gameObject.GetComponent<OutlineComponent>().enabled = true;
+                shouldShowInspectCursor = true;
+                highlight = null;
+            }
+            else
+            {
+                if (IsHandCursorTarget(highlight))
+                    shouldShowHandCursor = true;
 
-                    for (int i = 0; i < opcoes.Length; i++)
+                if (highlight.CompareTag("Selectable"))
+                {
+                    if (highlight.gameObject.GetComponent<OutlineComponent>() != null)
                     {
-                        if (opcoes[i].name == highlight.name)
+                        highlight.gameObject.GetComponent<OutlineComponent>().enabled = true;
+
+                        for (int i = 0; i < opcoes.Length; i++)
                         {
-                            if (opcoes[i].GetComponentInChildren<TextMeshPro>() != null)
+                            if (opcoes[i].name == highlight.name)
                             {
-                                opcoes[i].GetComponentInChildren<TextMeshPro>().alpha = 1;
+                                if (opcoes[i].GetComponentInChildren<TextMeshPro>() != null)
+                                {
+                                    opcoes[i].GetComponentInChildren<TextMeshPro>().alpha = 1;
+                                }
                             }
                         }
-                    }
 
-                    var machineComponent = highlight.gameObject.GetComponent<MachineComponent>();
-                    if (machineComponent != null && machineComponent.malfunctions == 1)
+                        var machineComponent = highlight.gameObject.GetComponent<MachineComponent>();
+                        if (machineComponent != null && machineComponent.malfunctions == 1)
+                        {
+                            shouldShowMalfunctionCursor = true;
+                        }
+                    }
+                    else
                     {
-                        shouldShowMalfunctionCursor = true;
+                        var renderer = highlight.gameObject.GetComponent<MeshRenderer>();
+                        if (renderer != null && renderer.material != null)
+                        {
+                            if (highlightedMaterial != renderer.material)
+                            {
+                                highlightedMaterial = renderer.material;
+                                originalSmoothness = highlightedMaterial.GetFloat("_Glossiness");
+                                originalMetallic = highlightedMaterial.GetFloat("_Metallic");
+
+                                highlightedMaterial.SetFloat("_Glossiness", hoverSmoothness);
+                                highlightedMaterial.SetFloat("_Metallic", hoverMetallic);
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    var renderer = highlight.gameObject.GetComponent<MeshRenderer>();
-                    if (renderer != null && renderer.material != null)
-                    {
-                        if (highlightedMaterial != renderer.material)
-                        {
-                            highlightedMaterial = renderer.material;
-                            originalSmoothness = highlightedMaterial.GetFloat("_Glossiness");
-                            originalMetallic = highlightedMaterial.GetFloat("_Metallic");
-
-                            highlightedMaterial.SetFloat("_Glossiness", hoverSmoothness);
-                            highlightedMaterial.SetFloat("_Metallic", hoverMetallic);
-                        }
-                    }
+                    highlight = null;
                 }
             }
-            else
-            {
-                highlight = null;
-            }
         }
 
-        UpdateCursor(shouldShowMalfunctionCursor);
+        UpdateCursor(shouldShowMalfunctionCursor, shouldShowInspectCursor, shouldShowHandCursor);
     }
 
-    private void UpdateCursor(bool showMalfunctionCursor)
+    private bool IsInspectTarget(Transform t) =>
+        t.GetComponent<TimelineColliderArea>() != null ||
+        t.GetComponent<PersonCardImage>()        != null ||
+        t.GetComponent<PersonDescriptionClick>() != null ||
+        t.GetComponent<BonusCard>()              != null;
+
+    private bool IsHandCursorTarget(Transform t) =>
+        t.GetComponent<MapPinClick>()  != null ||
+        t.GetComponent<DeckBonus>()    != null ||
+        t.GetComponent<DeckEvent>()    != null ||
+        t.GetComponent<QuitInGaming>() != null ||
+        t.GetComponent<FinishTurn>()   != null ||
+        t.GetComponent<EventSlot>()    != null;
+
+    private void UpdateCursor(bool showMalfunctionCursor, bool showInspectCursor, bool showHandCursor)
     {
-        if (showMalfunctionCursor && !isShowingMalfunctionCursor)
+        if (showInspectCursor)
         {
-            if (malfunctionCursor != null)
+            if (!isShowingInspectCursor)
             {
-                Cursor.SetCursor(malfunctionCursor, cursorHotspot, CursorMode.Auto);
-                isShowingMalfunctionCursor = true;
+                Cursor.SetCursor(inspectCursor, cursorHotspot, CursorMode.Auto);
+                isShowingInspectCursor = true;
+                isShowingMalfunctionCursor = false;
+                isShowingHandCursor = false;
             }
         }
-        else if (!showMalfunctionCursor && isShowingMalfunctionCursor)
+        else if (showMalfunctionCursor)
         {
-            if (defaultCursor != null)
+            if (!isShowingMalfunctionCursor)
+            {
+                if (malfunctionCursor != null)
+                    Cursor.SetCursor(malfunctionCursor, cursorHotspot, CursorMode.Auto);
+                isShowingMalfunctionCursor = true;
+                isShowingInspectCursor = false;
+                isShowingHandCursor = false;
+            }
+        }
+        else if (showHandCursor)
+        {
+            if (!isShowingHandCursor)
+            {
+                if (handCursor != null)
+                    Cursor.SetCursor(handCursor, cursorHotspot, CursorMode.Auto);
+                isShowingHandCursor = true;
+                isShowingInspectCursor = false;
+                isShowingMalfunctionCursor = false;
+            }
+        }
+        else
+        {
+            if (isShowingMalfunctionCursor || isShowingInspectCursor || isShowingHandCursor)
             {
                 Cursor.SetCursor(defaultCursor, cursorHotspot, CursorMode.Auto);
+                isShowingMalfunctionCursor = false;
+                isShowingInspectCursor = false;
+                isShowingHandCursor = false;
             }
-            else
-            {
-                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            }
-            isShowingMalfunctionCursor = false;
         }
     }
 
@@ -164,6 +217,8 @@ public class OutlineAction : MonoBehaviour
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
         isShowingMalfunctionCursor = false;
+        isShowingInspectCursor = false;
+        isShowingHandCursor = false;
     }
 
     private void OnDisable()
@@ -177,5 +232,7 @@ public class OutlineAction : MonoBehaviour
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         isShowingMalfunctionCursor = false;
+        isShowingInspectCursor = false;
+        isShowingHandCursor = false;
     }
 }

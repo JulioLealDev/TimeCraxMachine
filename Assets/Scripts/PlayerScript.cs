@@ -68,7 +68,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
             return;
         }
 
-        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        var textComponent = findObject.GetComponent<TextMeshPro>();
         if (textComponent == null)
         {
             return;
@@ -102,7 +102,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
             var findObject = GameObject.Find(numberBonusCardsText);
             if (findObject != null)
             {
-                var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+                var textComponent = findObject.GetComponent<TextMeshPro>();
                 if (textComponent != null)
                 {
                     textComponent.text = numberBonusCards.ToString();
@@ -123,7 +123,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
             return;
         }
 
-        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        var textComponent = findObject.GetComponent<TextMeshPro>();
         if (textComponent == null)
         {
             return;
@@ -152,7 +152,7 @@ public class PlayerScript : MonoBehaviourPunCallbacks
             return;
         }
 
-        var textComponent = findObject.GetComponent<TextMeshProUGUI>();
+        var textComponent = findObject.GetComponent<TextMeshPro>();
         if (textComponent == null)
         {
             DestroyBonusCards(cards);

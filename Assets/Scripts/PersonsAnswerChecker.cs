@@ -1,7 +1,9 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using Photon.Pun;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class PersonsAnswerChecker : MonoBehaviour
 {
@@ -99,6 +101,16 @@ public class PersonsAnswerChecker : MonoBehaviour
         }
 
         var gameManager = FindFirstObjectByType<GameManager>();
+
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        if (local != null)
+        {
+            bool allCorrect = !anyWrong;
+            if (gameManager != null && PhotonNetwork.InRoom)
+                gameManager.photonView.RPC("RPC_TrackPersonsChallenge", RpcTarget.All, allCorrect, local.actorNumber, local.nickname);
+            else if (allCorrect) MatchStats.AddChallengeCorrect(local.actorNumber, local.nickname);
+            else MatchStats.AddPersonsError(local.actorNumber, local.nickname);
+        }
 
         // Se qualquer resposta errada, dispara o wrongSlot imediatamente
         if (anyWrong)

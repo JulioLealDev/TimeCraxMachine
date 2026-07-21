@@ -32,8 +32,6 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     private readonly Vector3    centerPositionZoomIn = new Vector3(0.1129f, 0.470197f, -0.023674f);
     private readonly Quaternion centerRotationZoomIn = new Quaternion(-0.8388f, 0f, 0f, 0.5445f);
 
-    private const float centerScaleMultiplier = 1.2f; // +20%
-
     // Propriedades
     public BonusCardType CardType => cardType;
     public bool IsInCenter => isInCenter;
@@ -139,12 +137,11 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
         savedHandRotation = transform.rotation;
         savedHandScale = transform.localScale;
 
-        // Mover para centro com scale aumentado (world) — posição depende do estado de zoom
+        // Mover para centro (world) — posição depende do estado de zoom
         bool zoomed = CameraController.IsZoomed || CameraController.IsAnimating;
         Vector3    targetPos = zoomed ? centerPositionZoomIn  : centerPosition;
         Quaternion targetRot = zoomed ? centerRotationZoomIn : centerRotation;
         transform.SetPositionAndRotation(targetPos, targetRot);
-        transform.localScale = savedHandScale * centerScaleMultiplier;
         isInCenter = true;
 
         // Abrir painel de ativação
@@ -204,6 +201,16 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
                     else
                         card.ShowBonusCards(card.index);
                 }
+            }
+
+            var local = PlayerManager.Instance?.GetLocalPlayer();
+            if (local != null)
+            {
+                var gm = FindFirstObjectByType<GameManager>();
+                if (gm != null && PhotonNetwork.InRoom)
+                    gm.photonView.RPC("RPC_TrackBonusCardUsed", RpcTarget.All, local.actorNumber, local.nickname);
+                else
+                    MatchStats.AddBonusCardUsed(local.actorNumber, local.nickname);
             }
 
             PhotonNetwork.Destroy(gameObject);

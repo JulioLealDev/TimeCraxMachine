@@ -8,9 +8,9 @@ namespace TimeCrax.Core
     {
         // Prefixos base
         private const string PlateNamePrefix = "plateName0";
-        private const string NamePlayerPrefix = "namePlayer0";
+        private const string PlateNameTextPrefix = "plateNameText0";
         private const string BonusCardSymbolPrefix = "bonusCardSymbol0";
-        private const string NumberBonusCardsPrefix = "numberBonusCards0";
+        private const string NumberBonusCardsPrefix = "bonusCardText0";
 
         /// <summary>
         /// Retorna o nome do plateName para o índice do jogador (1-based).
@@ -19,10 +19,10 @@ namespace TimeCrax.Core
         public static string GetPlateName(int playerNumber) => PlateNamePrefix + playerNumber;
 
         /// <summary>
-        /// Retorna o nome do namePlayer para o índice do jogador (1-based).
-        /// Ex: GetNamePlayer(1) retorna "namePlayer01"
+        /// Retorna o nome do plateNameText para o índice do jogador (1-based).
+        /// Ex: GetPlateNameText(1) retorna "plateNameText01"
         /// </summary>
-        public static string GetNamePlayer(int playerNumber) => NamePlayerPrefix + playerNumber;
+        public static string GetPlateNameText(int playerNumber) => PlateNameTextPrefix + playerNumber;
 
         /// <summary>
         /// Retorna o nome do bonusCardSymbol para o índice do jogador (1-based).
@@ -31,8 +31,8 @@ namespace TimeCrax.Core
         public static string GetBonusCardSymbol(int playerNumber) => BonusCardSymbolPrefix + playerNumber;
 
         /// <summary>
-        /// Retorna o nome do numberBonusCards para o índice do jogador (1-based).
-        /// Ex: GetNumberBonusCards(1) retorna "numberBonusCards01"
+        /// Retorna o nome do bonusCardText para o índice do jogador (1-based).
+        /// Ex: GetNumberBonusCards(1) retorna "bonusCardText01"
         /// </summary>
         public static string GetNumberBonusCards(int playerNumber) => NumberBonusCardsPrefix + playerNumber;
     }

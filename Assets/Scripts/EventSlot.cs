@@ -106,10 +106,10 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
         if (isCorrectSlot)
         {
-            // Slot correto - som de acerto após delay
-            this.DelayedCall(3.3f, PlayRightSound);
+            var p = PlayerManager.Instance?.GetCurrentTurnPlayer();
+            if (p != null) MatchStats.AddSlotCorrect(p.actorNumber, p.nickname);
 
-            // Processar slot correto
+            this.DelayedCall(3.3f, PlayRightSound);
             ProcessRightSlot(cardSlotCount, clickedSlotNumber);
         }
         else
@@ -133,6 +133,9 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
                 return;
             }
+
+            var p = PlayerManager.Instance?.GetCurrentTurnPlayer();
+            if (p != null) MatchStats.AddSlotError(p.actorNumber, p.nickname);
 
             InputBlocker.Block();
 
@@ -291,6 +294,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (slotsFilled == 6 && gameManager != null)
         {
+            MatchStats.StopTimer();
             GameStateManager.TransitionTo(GamePhase.Victory);
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();

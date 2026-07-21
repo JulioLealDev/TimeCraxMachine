@@ -11,7 +11,11 @@ public class ChallengeQuestionUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        if (background != null) background.alpha = 0f;
+        if (background != null)
+        {
+            background.alpha = 0f;
+            background.blocksRaycasts = false;
+        }
         GameStateManager.OnPhaseChanged += OnPhaseChanged;
     }
 

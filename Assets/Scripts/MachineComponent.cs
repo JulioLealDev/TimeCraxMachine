@@ -558,6 +558,10 @@ public class MachineComponent : MonoBehaviourPunCallbacks
             cachedMeshCollider.enabled = false;
         }
 
+        var repairPlayer = PlayerManager.Instance?.GetCurrentTurnPlayer();
+        if (repairPlayer != null)
+            MatchStats.AddRepair(repairPlayer.actorNumber, repairPlayer.nickname);
+
         if (cachedGameManager != null)
             cachedGameManager.BlockActions();
     }

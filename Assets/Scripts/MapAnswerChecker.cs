@@ -1,7 +1,9 @@
 using System.Collections;
 using UnityEngine;
+using Photon.Pun;
 using TimeCrax.Core;
 using TimeCrax.Themes;
+using TimeCrax.Managers;
 
 public class MapAnswerChecker : MonoBehaviour
 {
@@ -178,6 +180,15 @@ public class MapAnswerChecker : MonoBehaviour
 
         var gameManager = FindFirstObjectByType<GameManager>();
         Debug.Log($"[MapAnswerChecker] gameManager encontrado={gameManager != null}");
+
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        if (local != null)
+        {
+            if (gameManager != null && PhotonNetwork.InRoom)
+                gameManager.photonView.RPC("RPC_TrackMapChallenge", RpcTarget.All, isCorrect, local.actorNumber, local.nickname);
+            else if (isCorrect) MatchStats.AddChallengeCorrect(local.actorNumber, local.nickname);
+            else MatchStats.AddMapError(local.actorNumber, local.nickname);
+        }
 
         if (!isCorrect)
         {

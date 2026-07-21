@@ -7,10 +7,20 @@ using TimeCrax.Themes;
 
 public class PersonsCarousel : MonoBehaviour
 {
-    public static PersonsCarousel Instance { get; private set; }
+    private static PersonsCarousel _instance;
+    public static PersonsCarousel Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = FindFirstObjectByType<PersonsCarousel>(FindObjectsInactive.Include);
+            return _instance;
+        }
+    }
 
     [Header("UI")]
     [SerializeField] private GameObject panel;
+    [SerializeField] private GameObject challengeCanvas;
     [SerializeField] private Image currentImage;
     [SerializeField] private Button prevButton;
     [SerializeField] private Button nextButton;
@@ -25,7 +35,7 @@ public class PersonsCarousel : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        _instance = this;
         panel.SetActive(false);
         prevButton.onClick.AddListener(OnPrev);
         nextButton.onClick.AddListener(OnNext);
@@ -61,6 +71,7 @@ public class PersonsCarousel : MonoBehaviour
 
         ShowCurrent();
         panel.SetActive(true);
+        if (challengeCanvas != null) challengeCanvas.SetActive(false);
         InputBlocker.Block();
         Cursor.visible = true;
     }
@@ -96,6 +107,7 @@ public class PersonsCarousel : MonoBehaviour
             targetNameText.text = shuffledEntries[currentIndex].name;
 
         panel.SetActive(false);
+        if (challengeCanvas != null) challengeCanvas.SetActive(true);
         InputBlocker.Unblock();
         PersonsAnswerChecker.Instance?.OnSlotAssigned(currentSlotIndex);
         targetRenderer = null;
