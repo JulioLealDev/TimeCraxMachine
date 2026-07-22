@@ -21,6 +21,9 @@ public class MapAnswerChecker : MonoBehaviour
     [Header("ResetMapFrame()")]
     [SerializeField] private GameObject map;
 
+    [Header("Hover dos Pins")]
+    [SerializeField] private Material pinHoverMaterial;
+
     [Header("Ícones de resultado")]
     [SerializeField] private GameObject correctIcon;
     [SerializeField] private GameObject incorrectIcon;
@@ -121,9 +124,9 @@ public class MapAnswerChecker : MonoBehaviour
                 //if (col != null) col.enabled = false;
                 //else Debug.LogWarning($"[MapAnswerChecker] MapPin{i + 1:00} não tem Collider!");
 
-                var outline = pins[i].GetComponent<OutlineComponent>();
-                if (outline == null) outline = pins[i].gameObject.AddComponent<OutlineComponent>();
-                outline.enabled = false;
+                var hover = pins[i].GetComponent<HoverMaterialAdder>();
+                if (hover == null) hover = pins[i].gameObject.AddComponent<HoverMaterialAdder>();
+                hover.SetMaterial(pinHoverMaterial);
 
                 var click = pins[i].GetComponent<MapPinClick>();
                 if (click == null) click = pins[i].gameObject.AddComponent<MapPinClick>();
@@ -158,8 +161,9 @@ public class MapAnswerChecker : MonoBehaviour
             if (pin != null)
             {
                 pin.tag = "Untagged";
-                var outline = pin.GetComponent<OutlineComponent>();
-                if (outline != null) outline.enabled = false;
+                pin.GetComponent<HoverMaterialAdder>()?.HideHover();
+                var col = pin.GetComponent<Collider>();
+                if (col != null) col.enabled = false;
             }
         }
 
@@ -249,5 +253,69 @@ public class MapAnswerChecker : MonoBehaviour
     {
         correctIcon?.SetActive(false);
         incorrectIcon?.SetActive(false);
+    }
+
+    public void ApplyKillChallengeOption()
+    {
+        Transform[] allPins = { mapPin01, mapPin02, mapPin03, mapPin04 };
+        var activePins   = new System.Collections.Generic.List<Transform>();
+        var incorrectPins = new System.Collections.Generic.List<Transform>();
+        for (int i = 0; i < allPins.Length; i++)
+        {
+            if (allPins[i] == null || !allPins[i].gameObject.activeSelf) continue;
+            activePins.Add(allPins[i]);
+            if (i != correctPinIndex) incorrectPins.Add(allPins[i]);
+        }
+        if (incorrectPins.Count == 0) return;
+
+        Transform target = incorrectPins[UnityEngine.Random.Range(0, incorrectPins.Count)];
+        StartCoroutine(KillPinRoulette(activePins, target));
+    }
+
+    private IEnumerator KillPinRoulette(System.Collections.Generic.List<Transform> candidates, Transform target)
+    {
+        var sound = FindFirstObjectByType<SoundEffects>();
+        int lastIdx = -1;
+        float interval = 0.3f;
+
+        // Desativar colliders durante a roulette
+        foreach (var pin in candidates)
+        {
+            var col = pin.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+
+        for (int cond = 0; cond < 15; cond++)
+        {
+            int idx = UnityEngine.Random.Range(0, candidates.Count);
+            while (idx == lastIdx && candidates.Count > 1)
+                idx = UnityEngine.Random.Range(0, candidates.Count);
+            lastIdx = idx;
+
+            var hover = candidates[idx].GetComponent<HoverMaterialAdder>();
+            hover?.ShowHover();
+            sound?.PlayRouletteSound();
+            yield return new WaitForSeconds(interval);
+            hover?.HideHover();
+
+            interval -= 0.015f;
+        }
+
+        // Destaque final no alvo
+        var finalHover = target.GetComponent<HoverMaterialAdder>();
+        finalHover?.ShowHover();
+        sound?.PlayRouletteSound();
+        yield return new WaitForSeconds(interval);
+        finalHover?.HideHover();
+
+        target.gameObject.SetActive(false);
+
+        // Reativar colliders dos pins restantes
+        foreach (var pin in candidates)
+        {
+            if (pin == target) continue;
+            var col = pin.GetComponent<Collider>();
+            if (col != null) col.enabled = true;
+        }
     }
 }

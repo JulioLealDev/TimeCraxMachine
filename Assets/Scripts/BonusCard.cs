@@ -25,11 +25,11 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     private Vector3 savedHandScale;
 
     // Posição central para ativação — zoom-out
-    private readonly Vector3    centerPosition = new Vector3(0.0929f, 0.8044f, 0.5021f);
-    private readonly Quaternion centerRotation = new Quaternion(-0.9202125f, 0f, 0f, 0.3914192f);
+    private readonly Vector3    centerPosition = new Vector3(0.0929f, 0.7984f, 0.5021f);
+    private readonly Quaternion centerRotation = new Quaternion(-0.95f, 0f, 0f, 0.3914192f);
 
     // Posição central para ativação — zoom-in (igual para todos os índices)
-    private readonly Vector3    centerPositionZoomIn = new Vector3(0.0929f, 0.470197f, -0.023674f);
+    private readonly Vector3    centerPositionZoomIn = new Vector3(0.0929f, 0.437197f, -0.016674f);
     private readonly Quaternion centerRotationZoomIn = new Quaternion(-0.8388f, 0f, 0f, 0.5445f);
 
     // Propriedades

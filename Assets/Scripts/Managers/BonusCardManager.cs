@@ -347,7 +347,14 @@ namespace TimeCrax.Managers
 
         private void ApplyKillChallengeOptionEffect()
         {
-            // TODO: implementar lógica de eliminar uma opção errada do desafio
+            if (GameStateManager.IsAnyOf(GamePhase.IM_MapChallenge))
+            {
+                MapAnswerChecker.Instance?.ApplyKillChallengeOption();
+            }
+            else if (GameStateManager.IsAnyOf(GamePhase.IM_PersonsChallenge))
+            {
+                PersonsAnswerChecker.Instance?.ApplyKillChallengeOption();
+            }
         }
 
         private void ApplySkipChallengeEffect()

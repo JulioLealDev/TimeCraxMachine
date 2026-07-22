@@ -1,9 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
 using TimeCrax.Core;
 using TimeCrax.Managers;
+using TimeCrax.Themes;
 
 public class PersonsAnswerChecker : MonoBehaviour
 {
@@ -162,6 +164,87 @@ public class PersonsAnswerChecker : MonoBehaviour
         if (!GameManager.IsInTurnTransition)
             gameManager?.DelayedCall(0.5f, gameManager.PersonsZoomOut);
         gameManager?.CheckWinAfterMiniGame();
+    }
+
+    public void ApplyKillChallengeOption()
+    {
+        var candidates = new List<int>();
+        for (int i = 0; i < 3; i++)
+            if (!assigned[i]) candidates.Add(i);
+        if (candidates.Count == 0) return;
+
+        int targetSlot = candidates[UnityEngine.Random.Range(0, candidates.Count)];
+
+        OutlineComponent[] outlines = { cardImageOutline01, cardImageOutline02, cardImageOutline03 };
+        StartCoroutine(KillPersonSlotRoulette(candidates, outlines, targetSlot));
+    }
+
+    private IEnumerator KillPersonSlotRoulette(List<int> candidates, OutlineComponent[] outlines, int targetSlot)
+    {
+        var sound = FindFirstObjectByType<SoundEffects>();
+        int lastIdx = -1;
+        float interval = 0.3f;
+
+        for (int cond = 0; cond < 15; cond++)
+        {
+            int idx = UnityEngine.Random.Range(0, candidates.Count);
+            while (idx == lastIdx && candidates.Count > 1)
+                idx = UnityEngine.Random.Range(0, candidates.Count);
+            lastIdx = idx;
+
+            var outline = outlines[candidates[idx]];
+            if (outline != null) outline.enabled = true;
+            sound?.PlayRouletteSound();
+            yield return new WaitForSeconds(interval);
+            if (outline != null) outline.enabled = false;
+
+            interval -= 0.015f;
+        }
+
+        // Destaque final no slot alvo
+        var finalOutline = outlines[targetSlot];
+        if (finalOutline != null)
+        {
+            finalOutline.enabled = true;
+            sound?.PlayRouletteSound();
+            yield return new WaitForSeconds(interval);
+            finalOutline.enabled = false;
+        }
+
+        // Aplicar resposta correta
+        var shuffled = GameManager.ShuffledPersonEntries;
+        if (shuffled == null || targetSlot >= shuffled.Count) yield break;
+        PersonEntry entry = shuffled[targetSlot];
+
+        TMP_Text[]       names  = { personName01,  personName02,  personName03  };
+        PersonCardImage[] cards = { cardImage01,   cardImage02,   cardImage03   };
+        OutlineComponent[] descOutlines = { descriptionOutline01, descriptionOutline02, descriptionOutline03 };
+
+        // Imagem e nome corretos
+        var texture = ThemeStorage.LoadLocalImage(entry.localImagePath);
+        var renderer = cards[targetSlot]?.GetComponent<Renderer>();
+        if (renderer != null && texture != null)
+            renderer.material.mainTexture = texture;
+        if (names[targetSlot] != null)
+            names[targetSlot].text = entry.name;
+
+        // Desativar interação — PersonCardImage
+        if (cards[targetSlot] != null)
+        {
+            cards[targetSlot].gameObject.tag = "Untagged";
+            var col = cards[targetSlot].GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+
+        // Desativar interação — PersonDescriptionClick correspondente
+        /*if (descOutlines[targetSlot] != null)
+        {
+            descOutlines[targetSlot].gameObject.tag = "Untagged";
+            var col = descOutlines[targetSlot].GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }*/
+
+        OnSlotAssigned(targetSlot);
     }
 
     private void HideAllIcons()

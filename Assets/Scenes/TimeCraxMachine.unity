@@ -13798,6 +13798,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 01bf331058b100449b893934dafcf53a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 01bf331058b100449b893934dafcf53a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 59081ec8ea44f8b4faf9a32224f82ae6, type: 2}
@@ -13821,7 +13825,7 @@ PrefabInstance:
       addedObject: {fileID: 1423648673}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 01bf331058b100449b893934dafcf53a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1423648674}
+      addedObject: {fileID: 1423648677}
   m_SourcePrefab: {fileID: 100100000, guid: 01bf331058b100449b893934dafcf53a, type: 3}
 --- !u!4 &396221029 stripped
 Transform:
@@ -19556,7 +19560,7 @@ PrefabInstance:
       addedObject: {fileID: 641088443}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 01bf331058b100449b893934dafcf53a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 641088444}
+      addedObject: {fileID: 641088447}
   m_SourcePrefab: {fileID: 100100000, guid: 01bf331058b100449b893934dafcf53a, type: 3}
 --- !u!4 &641088439 stripped
 Transform:
@@ -19597,24 +19601,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3252119628998577106, guid: 01bf331058b100449b893934dafcf53a, type: 3}
---- !u!114 &641088444
+--- !u!114 &641088447
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 575284473}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0a464bc99485be4cbf05722a56c0231, type: 3}
+  m_Script: {fileID: 11500000, guid: d6f2e256817950c498947c9ea12328a7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineComponent
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 6
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
+  m_EditorClassIdentifier: Assembly-CSharp::HoverMaterialAdder
+  hoverMaterial: {fileID: 2100000, guid: b9856a0a1ffd4614eb5a4c9a1627653f, type: 2}
 --- !u!1 &645902749
 GameObject:
   m_ObjectHideFlags: 0
@@ -41140,6 +41139,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1124424735}
   m_CullTransparentMesh: 1
+--- !u!1 &1127573948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1127573950}
+  - component: {fileID: 1127573949}
+  m_Layer: 0
+  m_Name: LevelDesignController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1127573949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127573948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0e612dce0fa8cf478b41f4438fb4ec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugGameConfig
+  RepairComponent: 0
+  BonusTime: 0
+  SecondChanceSlot: 0
+  CoolThermometer: 0
+  KillChallengeOption: 100
+  SkipChallenge: 0
+  MapChancePct: 100
+--- !u!4 &1127573950
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127573948}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1127976790
 GameObject:
   m_ObjectHideFlags: 0
@@ -66443,24 +66493,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3252119628998577106, guid: 01bf331058b100449b893934dafcf53a, type: 3}
---- !u!114 &1423648674
+--- !u!114 &1423648677
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1423648669}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0a464bc99485be4cbf05722a56c0231, type: 3}
+  m_Script: {fileID: 11500000, guid: d6f2e256817950c498947c9ea12328a7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineComponent
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 6
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
+  m_EditorClassIdentifier: Assembly-CSharp::HoverMaterialAdder
+  hoverMaterial: {fileID: 2100000, guid: b9856a0a1ffd4614eb5a4c9a1627653f, type: 2}
 --- !u!1 &1434707489
 GameObject:
   m_ObjectHideFlags: 0
@@ -72364,7 +72409,7 @@ PrefabInstance:
       addedObject: {fileID: 1486745942}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 01bf331058b100449b893934dafcf53a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1486745943}
+      addedObject: {fileID: 1486745946}
   m_SourcePrefab: {fileID: 100100000, guid: 01bf331058b100449b893934dafcf53a, type: 3}
 --- !u!4 &1486745938 stripped
 Transform:
@@ -72405,24 +72450,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3252119628998577106, guid: 01bf331058b100449b893934dafcf53a, type: 3}
---- !u!114 &1486745943
+--- !u!114 &1486745946
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 485943267}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0a464bc99485be4cbf05722a56c0231, type: 3}
+  m_Script: {fileID: 11500000, guid: d6f2e256817950c498947c9ea12328a7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineComponent
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 6
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
+  m_EditorClassIdentifier: Assembly-CSharp::HoverMaterialAdder
+  hoverMaterial: {fileID: 2100000, guid: b9856a0a1ffd4614eb5a4c9a1627653f, type: 2}
 --- !u!1 &1491370118
 GameObject:
   m_ObjectHideFlags: 0
@@ -88093,6 +88133,7 @@ MonoBehaviour:
   mapPin03: {fileID: 641088439}
   mapPin04: {fileID: 1486745938}
   map: {fileID: 985315329}
+  pinHoverMaterial: {fileID: 2100000, guid: b9856a0a1ffd4614eb5a4c9a1627653f, type: 2}
   correctIcon: {fileID: 1661004718}
   incorrectIcon: {fileID: 927956549}
 --- !u!1 &1716137915 stripped
@@ -90345,7 +90386,7 @@ PrefabInstance:
       addedObject: {fileID: 1930499842}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 01bf331058b100449b893934dafcf53a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1930499843}
+      addedObject: {fileID: 1930499846}
   m_SourcePrefab: {fileID: 100100000, guid: 01bf331058b100449b893934dafcf53a, type: 3}
 --- !u!4 &1812673196 stripped
 Transform:
@@ -93788,24 +93829,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3252119628998577106, guid: 01bf331058b100449b893934dafcf53a, type: 3}
---- !u!114 &1930499843
+--- !u!114 &1930499846
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1930499838}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0a464bc99485be4cbf05722a56c0231, type: 3}
+  m_Script: {fileID: 11500000, guid: d6f2e256817950c498947c9ea12328a7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineComponent
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 6
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
+  m_EditorClassIdentifier: Assembly-CSharp::HoverMaterialAdder
+  hoverMaterial: {fileID: 2100000, guid: b9856a0a1ffd4614eb5a4c9a1627653f, type: 2}
 --- !u!1 &1934541072
 GameObject:
   m_ObjectHideFlags: 0
@@ -114156,6 +114192,7 @@ RectTransform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1127573950}
   - {fileID: 1356717816}
   - {fileID: 705507995}
   - {fileID: 1444372947}

@@ -926,11 +926,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         bool hasPersons = themeCard.persons?.entries != null;
         Debug.Log($"[GameManager] ThemeCard='{themeCard.title}' hasMap={hasMap} hasPersons={hasPersons}");
 
-        int choice;
-        if (hasMap && hasPersons)
-            choice = UnityEngine.Random.Range(0, 2);
-        else
-            choice = hasMap ? 1 : 0;
+        int choice = DebugGameConfig.PickChallengeType(hasMap, hasPersons);
 
         Debug.Log($"[GameManager] choice={choice} ({(choice == 1 ? "Map" : "Persons")}) → enviando RPC para todos");
         photonView.RPC("RPC_ActivateRandomMapObject", RpcTarget.All, slotCount, choice);

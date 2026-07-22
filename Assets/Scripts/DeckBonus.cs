@@ -77,7 +77,7 @@ public class DeckBonus : MonoBehaviourPunCallbacks
         {
 
             // Sortear tipo da carta (0-5 para os 6 tipos)
-            int randomType = Random.Range(0, 6);
+            int randomType = DebugGameConfig.PickBonusCardType();
 
             // Sincronizar para todos os clientes com o tipo sorteado
             photonView.RPC("ExecuteDrawBonusCard", RpcTarget.All, randomType);
