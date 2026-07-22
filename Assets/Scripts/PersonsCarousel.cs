@@ -74,6 +74,7 @@ public class PersonsCarousel : MonoBehaviour
         if (challengeCanvas != null) challengeCanvas.SetActive(false);
         InputBlocker.Block();
         Cursor.visible = true;
+        OutlineAction.RequestHandCursor();
     }
 
     private void OnPrev()
@@ -109,6 +110,7 @@ public class PersonsCarousel : MonoBehaviour
         panel.SetActive(false);
         if (challengeCanvas != null) challengeCanvas.SetActive(true);
         InputBlocker.Unblock();
+        OutlineAction.ReleaseHandCursor();
         PersonsAnswerChecker.Instance?.OnSlotAssigned(currentSlotIndex);
         targetRenderer = null;
         targetNameText = null;

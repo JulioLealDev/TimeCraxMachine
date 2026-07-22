@@ -138,6 +138,13 @@ MonoBehaviour:
   - RPC_TrackBonusCardUsed
   - RPC_TrackMapChallenge
   - RPC_TrackPersonsChallenge
+  - RPC_DrawBonusCard
+  - RPC_AddMalfunction
+  - RPC_ApplyBatteryMalfunction
+  - RPC_RestoreBatteryEffect
+  - RPC_HandleMapWrong
+  - RPC_HandlePersonsWrong
+  - RPC_ShiftCardsAfterConsume
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

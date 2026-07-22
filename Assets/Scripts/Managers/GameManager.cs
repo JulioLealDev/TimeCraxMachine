@@ -437,10 +437,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (!checkTime)
         {
             Debug.LogError($"[GameManager] Turn(): nenhum jogador válido encontrado após {maxIterations} iterações (time={time}). Forçando novo round.");
-            round++;
-            time = 0;
             if (PhotonNetwork.IsMasterClient)
-                photonView.RPC("SyncTurnWithRound", RpcTarget.All, time, round);
+            {
+                round++;
+                photonView.RPC("SyncTurnWithRound", RpcTarget.All, 0, round);
+            }
             return;
         }
 
@@ -467,11 +468,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            round++;
-            time = 0;
-
             if (PhotonNetwork.IsMasterClient)
-                photonView.RPC("SyncTurnWithRound", RpcTarget.All, time, round);
+            {
+                round++;
+                photonView.RPC("SyncTurnWithRound", RpcTarget.All, 0, round);
+            }
         }
     }
 
@@ -879,6 +880,30 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (turnTimer != null) turnTimer.StartTimerLocal(time);
     }
 
+    public void ApplyBatteryMalfunctionRPC()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        photonView.RPC("RPC_ApplyBatteryMalfunction", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void RPC_ApplyBatteryMalfunction()
+    {
+        if (turnTimer != null) turnTimer.ApplyBatteryMalfunction();
+    }
+
+    public void RestoreBatteryEffectRPC()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        photonView.RPC("RPC_RestoreBatteryEffect", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void RPC_RestoreBatteryEffect()
+    {
+        if (turnTimer != null) turnTimer.RestoreBatteryEffect();
+    }
+
     #endregion
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -978,6 +1003,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             newTimelineAnimator.SetBool("Open", false);
     }
 
+    [PunRPC]
+    public void RPC_HandlePersonsWrong()
+    {
+        HandlePersonsWrong();
+    }
+
     public void HandlePersonsWrong()
     {
         var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
@@ -1046,6 +1077,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     // ─────────────────────────────────────────────────────────────────────────
     #region Map Mini-Game
+
+    [PunRPC]
+    public void RPC_HandleMapWrong(int slotCount)
+    {
+        HandleMapWrong(slotCount);
+    }
 
     public void HandleMapWrong(int slotCount)
     {
@@ -1262,8 +1299,14 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void AddMalfunctionInComponent()
     {
+        // Executado em todos os clientes: desbloqueio de input, câmera e transição de estado local
         if (!IsInTurnTransition) InputBlocker.Unblock();
+        gameCamera?.ActivateTimelineAfterMalfunction();
+        GameStateManager.TransitionTo(GamePhase.IM_Turn);
 
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        // Apenas o MasterClient envia o RPC para aplicar o malfunction no componente sorteado
         var malfPlayer = PlayerManager.Instance?.GetCurrentTurnPlayer();
         if (malfPlayer != null)
             MatchStats.AddMalfunction(malfPlayer.actorNumber, malfPlayer.nickname);
@@ -1271,14 +1314,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         foreach (var component in timeCraxComponents)
         {
             if (component != null && component.componentId == randomId)
-                component.AddMalfunction();
+            {
+                component.photonView.RPC("RPC_AddMalfunction", RpcTarget.All);
+                break;
+            }
         }
 
-        if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
+        if (ThermometerManager.Instance != null)
             ThermometerManager.Instance.ResetTemperatureToFirstLevel();
-
-        gameCamera?.ActivateTimelineAfterMalfunction();
-        GameStateManager.TransitionTo(GamePhase.IM_Turn);
     }
 
     [PunRPC]

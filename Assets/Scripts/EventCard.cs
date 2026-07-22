@@ -37,22 +37,14 @@ public class EventCard : MonoBehaviourPunCallbacks
         cachedGameManager = FindFirstObjectByType<GameManager>();
     }
 
-    /// <summary>
-    /// Executa a compra localmente (usado quando já está dentro de um RPC sincronizado)
-    /// </summary>
-    public void DrawEventCardLocal()
-    {
-        DrawingEventCardInternal();
-    }
-
     [PunRPC]
     public void DrawingEventCard(PhotonMessageInfo info)
     {
         if (info.Sender != photonView.Owner) return;
-        DrawingEventCardInternal();
+        ExecuteDraw();
     }
 
-    private void DrawingEventCardInternal()
+    public void ExecuteDraw()
     {
         // Desancorar do slot caso o Animator tenha ficado preso em to_slotN
         if (cachedFollower != null) cachedFollower.Detach();

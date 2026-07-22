@@ -112,9 +112,13 @@ public class PersonsAnswerChecker : MonoBehaviour
             else MatchStats.AddPersonsError(local.actorNumber, local.nickname);
         }
 
-        // Se qualquer resposta errada, dispara o wrongSlot imediatamente
         if (anyWrong)
-            gameManager?.HandlePersonsWrong();
+        {
+            if (gameManager != null && PhotonNetwork.InRoom)
+                gameManager.photonView.RPC("RPC_HandlePersonsWrong", RpcTarget.All);
+            else
+                gameManager?.HandlePersonsWrong();
+        }
 
         // Fecha a NewTimeline
         gameManager?.CloseNewTimeline();

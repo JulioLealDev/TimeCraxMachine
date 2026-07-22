@@ -35,7 +35,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
     private EndMatch endMatchScreen;
     private GameManager cachedGameManager;
     private BackgroundMusic cachedBackgroundMusic;
-    private TurnTimer cachedTurnTimer;
     private Transform sparks;
     private Transform smoke;
     private Transform componentWithAnimator = null;
@@ -93,7 +92,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         endMatchScreen = FindFirstObjectByType<EndMatch>();
         cachedGameManager = FindFirstObjectByType<GameManager>();
         cachedBackgroundMusic = FindFirstObjectByType<BackgroundMusic>();
-        cachedTurnTimer = FindFirstObjectByType<TurnTimer>();
 
         // Cache do MeshCollider
         cachedMeshCollider = GetComponent<MeshCollider>();
@@ -375,7 +373,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         GameManager.ResetClick(this);
     }
 
-    public void AddMalfunction()
+    [PunRPC]
+    public void RPC_AddMalfunction()
     {
         malfunctions++;
 
@@ -453,9 +452,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         switch (specialType)
         {
             case SpecialComponentType.Battery:
-                // Reduz o tempo do timer pela metade
-                if (cachedTurnTimer != null)
-                    cachedTurnTimer.ApplyBatteryMalfunction();
+                if (cachedGameManager != null)
+                    cachedGameManager.ApplyBatteryMalfunctionRPC();
                 break;
 
             case SpecialComponentType.Cooler:
@@ -484,9 +482,8 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         switch (specialType)
         {
             case SpecialComponentType.Battery:
-                // Restaura o tempo do timer
-                if (cachedTurnTimer != null)
-                    cachedTurnTimer.RestoreBatteryEffect();
+                if (cachedGameManager != null)
+                    cachedGameManager.RestoreBatteryEffectRPC();
                 break;
 
             case SpecialComponentType.Cooler:

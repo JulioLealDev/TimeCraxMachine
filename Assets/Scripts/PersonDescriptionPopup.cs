@@ -22,6 +22,7 @@ public class PersonDescriptionPopup : MonoBehaviour
         if (challengeCanvas != null) challengeCanvas.SetActive(false);
         InputBlocker.Block();
         Cursor.visible = true;
+        OutlineAction.RequestHandCursor();
     }
 
     public void Close()
@@ -29,5 +30,6 @@ public class PersonDescriptionPopup : MonoBehaviour
         descriptionPanel.SetActive(false);
         if (challengeCanvas != null) challengeCanvas.SetActive(true);
         InputBlocker.Unblock();
+        OutlineAction.ReleaseHandCursor();
     }
 }

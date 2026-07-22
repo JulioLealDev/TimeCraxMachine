@@ -27,6 +27,11 @@ public class OutlineAction : MonoBehaviour
     private bool isShowingInspectCursor = false;
     private bool isShowingHandCursor = false;
 
+    // Cursor forçado por painéis UI (BonusCardCanvas, PersonsImagesPanel, PersonsDescriptionPanel)
+    private static int s_panelHandCursorCount = 0;
+    public static void RequestHandCursor() => s_panelHandCursorCount++;
+    public static void ReleaseHandCursor() { if (s_panelHandCursorCount > 0) s_panelHandCursorCount--; }
+
     // Valores originais do material para restaurar apos hover
     private float originalSmoothness;
     private float originalMetallic;
@@ -61,6 +66,20 @@ public class OutlineAction : MonoBehaviour
                 }
                 highlight = null;
             }
+        }
+
+        // Cursor forçado por painéis UI — ignora detecção 3D
+        if (s_panelHandCursorCount > 0)
+        {
+            if (!isShowingHandCursor)
+            {
+                if (handCursor != null)
+                    Cursor.SetCursor(handCursor, cursorHotspot, CursorMode.Auto);
+                isShowingHandCursor = true;
+                isShowingInspectCursor = false;
+                isShowingMalfunctionCursor = false;
+            }
+            return;
         }
 
         if (InputBlocker.IsBlocked) return;
@@ -142,17 +161,17 @@ public class OutlineAction : MonoBehaviour
 
     private bool IsInspectTarget(Transform t) =>
         t.GetComponent<TimelineColliderArea>() != null ||
-        t.GetComponent<PersonCardImage>()        != null ||
         t.GetComponent<PersonDescriptionClick>() != null ||
         t.GetComponent<BonusCard>()              != null;
 
     private bool IsHandCursorTarget(Transform t) =>
-        t.GetComponent<MapPinClick>()  != null ||
-        t.GetComponent<DeckBonus>()    != null ||
-        t.GetComponent<DeckEvent>()    != null ||
-        t.GetComponent<QuitInGaming>() != null ||
-        t.GetComponent<FinishTurn>()   != null ||
-        t.GetComponent<EventSlot>()    != null;
+        t.GetComponent<MapPinClick>()    != null ||
+        t.GetComponent<PersonCardImage>() != null ||
+        t.GetComponent<DeckBonus>()      != null ||
+        t.GetComponent<DeckEvent>()      != null ||
+        t.GetComponent<QuitInGaming>()   != null ||
+        t.GetComponent<FinishTurn>()     != null ||
+        t.GetComponent<EventSlot>()      != null;
 
     private void UpdateCursor(bool showMalfunctionCursor, bool showInspectCursor, bool showHandCursor)
     {

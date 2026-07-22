@@ -146,10 +146,12 @@ public class GameConnection : MonoBehaviourPunCallbacks
             {
                 PhotonNetwork.ConnectUsingSettings();
             }
-            else if (PhotonNetwork.IsConnected && !PhotonNetwork.InLobby)
+            else if (PhotonNetwork.IsConnected && !PhotonNetwork.InLobby
+                     && PhotonNetwork.NetworkClientState != Photon.Realtime.ClientState.JoiningLobby)
             {
                 PhotonNetwork.JoinLobby();
             }
+            // Se estado é JoiningLobby, OnJoinedLobby vai processar pendingRoomData
             return;
         }
 
@@ -357,10 +359,12 @@ public class GameConnection : MonoBehaviourPunCallbacks
             {
                 PhotonNetwork.ConnectUsingSettings();
             }
-            else if (PhotonNetwork.IsConnected && !PhotonNetwork.InLobby)
+            else if (PhotonNetwork.IsConnected && !PhotonNetwork.InLobby
+                     && PhotonNetwork.NetworkClientState != Photon.Realtime.ClientState.JoiningLobby)
             {
                 PhotonNetwork.JoinLobby();
             }
+            // Se estado é JoiningLobby, OnJoinedLobby vai processar pendingJoinRoomName
             return;
         }
 

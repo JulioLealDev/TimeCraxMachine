@@ -192,8 +192,16 @@ public class MapAnswerChecker : MonoBehaviour
 
         if (!isCorrect)
         {
-            Debug.Log($"[MapAnswerChecker] Chamando HandleMapWrong para slotCount={currentSlotCount}");
-            gameManager?.HandleMapWrong(currentSlotCount);
+            if (gameManager != null && PhotonNetwork.InRoom)
+            {
+                Debug.Log($"[MapAnswerChecker] Enviando RPC_HandleMapWrong para slotCount={currentSlotCount}");
+                gameManager.photonView.RPC("RPC_HandleMapWrong", RpcTarget.All, currentSlotCount);
+            }
+            else
+            {
+                Debug.Log($"[MapAnswerChecker] Chamando HandleMapWrong local para slotCount={currentSlotCount}");
+                gameManager?.HandleMapWrong(currentSlotCount);
+            }
         }
 
         // Fecha a NewTimeline

@@ -59,24 +59,22 @@ public class PlayerScript : MonoBehaviourPunCallbacks
     }
     public void DrawBonusCard()
     {
+        if (!photonView.IsMine) return;
+        photonView.RPC("RPC_DrawBonusCard", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void RPC_DrawBonusCard()
+    {
         numberBonusCards++;
 
-
         var findObject = GameObject.Find(numberBonusCardsText);
-        if (findObject == null)
-        {
-            return;
-        }
+        if (findObject == null) return;
 
         var textComponent = findObject.GetComponent<TextMeshPro>();
-        if (textComponent == null)
-        {
-            return;
-        }
+        if (textComponent == null) return;
 
-        int numberOfCards = int.Parse(textComponent.text);
-        numberOfCards++;
-        textComponent.text = numberOfCards.ToString();
+        textComponent.text = numberBonusCards.ToString();
     }
 
     public int GetNumberOfBonusCards()

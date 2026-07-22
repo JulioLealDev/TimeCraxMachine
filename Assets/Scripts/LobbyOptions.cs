@@ -204,10 +204,28 @@ public class LobbyOptions : MonoBehaviourPunCallbacks
         gameConnection.Lobby();
     }
 
+    private bool _pendingReconnect;
+
     public void RefreshConection()
     {
-        PhotonNetwork.Disconnect();
-        PhotonNetwork.ConnectUsingSettings();
+        if (PhotonNetwork.IsConnected)
+        {
+            _pendingReconnect = true;
+            PhotonNetwork.Disconnect();
+        }
+        else
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        }
+    }
+
+    public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)
+    {
+        if (_pendingReconnect)
+        {
+            _pendingReconnect = false;
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     public void BackLobbyScreen()

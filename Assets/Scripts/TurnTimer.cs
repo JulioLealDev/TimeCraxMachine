@@ -45,7 +45,6 @@ public class TurnTimer : MonoBehaviour
     {
         if (!isRunning) return;
 
-        // Apenas MasterClient controla a contagem
         if (PhotonNetwork.IsMasterClient)
         {
             remainingTime -= Time.deltaTime;
@@ -64,6 +63,12 @@ public class TurnTimer : MonoBehaviour
                 hasAutoEnded = true;
                 OnTimeExpired();
             }
+        }
+        else
+        {
+            // Client-side prediction: conta localmente entre sincronizações para
+            // eliminar saltos visuais. SyncTime() corrige qualquer drift periodicamente.
+            remainingTime = Mathf.Max(0f, remainingTime - Time.deltaTime);
         }
     }
 

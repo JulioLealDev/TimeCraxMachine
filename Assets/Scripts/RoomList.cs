@@ -23,7 +23,7 @@ public class RoomList : MonoBehaviourPunCallbacks
                     continue;
                 }
 
-                GameObject roomObj = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity, contentObj.transform);
+                GameObject roomObj = Instantiate(roomPrefab, contentObj.transform, false);
                 roomObj.name = roomList[i].Name;
                 string locked = roomList[i].CustomProperties["pass"].ToString();
                 string themeName = roomList[i].CustomProperties["the"].ToString();

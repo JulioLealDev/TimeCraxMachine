@@ -82,7 +82,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
         {
             if (eventCard.slotCount == slotCount)
             {
-                eventCard.DrawEventCardLocal();
+                eventCard.ExecuteDraw();
                 break;
             }
         }

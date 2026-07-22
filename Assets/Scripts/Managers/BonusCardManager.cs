@@ -79,6 +79,15 @@ namespace TimeCrax.Managers
 
         private void Update()
         {
+            // SecondChanceSlot: interatividade depende da fase atual — atualiza a cada frame
+            if (selectedCard != null
+                && selectedCard.CardType == BonusCardType.SecondChanceSlot
+                && activateButton != null
+                && activateButton.gameObject.activeSelf)
+            {
+                activateButton.interactable = CanActivateCard(BonusCardType.SecondChanceSlot);
+            }
+
             // Detectar clique fora para cancelar
             if (waitingForClickOutside && Input.GetMouseButtonDown(0))
             {
@@ -122,14 +131,18 @@ namespace TimeCrax.Managers
                 cardTypeDescription.text = GetCardTypeDescription(card.CardType);
             }
 
-            // Controlar interatividade do botão baseado na permissão de ativação
+            // RepairComponent não usa o botão de ativar — ativação é feita clicando no componente
             if (activateButton != null)
             {
-                activateButton.interactable = CanActivateCard(card.CardType);
+                bool showButton = card.CardType != BonusCardType.RepairComponent;
+                activateButton.gameObject.SetActive(showButton);
+                if (showButton)
+                    activateButton.interactable = CanActivateCard(card.CardType);
             }
 
             // Bloquear cliques em objetos 3D enquanto o painel estiver aberto
             InputBlocker.OpenUI();
+            OutlineAction.RequestHandCursor();
 
             // Mostrar painel
             if (activationPanel != null)
@@ -152,9 +165,11 @@ namespace TimeCrax.Managers
             waitingForClickOutside = false;
 
             InputBlocker.CloseUI();
+            OutlineAction.ReleaseHandCursor();
 
             if (activateButton != null)
             {
+                activateButton.gameObject.SetActive(true);
                 activateButton.interactable = true;
             }
 
@@ -177,8 +192,7 @@ namespace TimeCrax.Managers
                     return true;
 
                 case BonusCardType.SecondChanceSlot:
-                    // Ativável a qualquer momento (efeito dura até errar slot)
-                    return !hasSecondChanceActive;
+                    return !hasSecondChanceActive && GameStateManager.IsAnyOf(GamePhase.IM_ChoosingSlot);
 
                 case BonusCardType.KillChallengeOption:
                 case BonusCardType.SkipChallenge:
@@ -318,10 +332,12 @@ namespace TimeCrax.Managers
 
         private void ApplySecondChanceEffect()
         {
-            if (gameManager != null && gameManager.photonView != null)
-                gameManager.photonView.RPC("RPC_SetSecondChanceActive", Photon.Pun.RpcTarget.All, true);
-            else
-                hasSecondChanceActive = true;
+            if (gameManager == null || gameManager.photonView == null)
+            {
+                Debug.LogError("[BonusCardManager] ApplySecondChanceEffect: gameManager ou PhotonView nulo — segunda chance não sincronizada.");
+                return;
+            }
+            gameManager.photonView.RPC("RPC_SetSecondChanceActive", Photon.Pun.RpcTarget.All, true);
         }
 
         public void SetSecondChanceState(bool active)

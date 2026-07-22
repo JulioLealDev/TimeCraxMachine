@@ -19,6 +19,7 @@ public enum GamePhase
     IM_DrewBonusCard,
     IM_CheckingSlot,
     IM_ChoosingSlot,
+    IM_KillingOption,
 
 }
 
