@@ -269,7 +269,7 @@ namespace TimeCrax.Managers
         /// <summary>
         /// Cancela a ativação e retorna a carta para a mão
         /// </summary>
-        private void CancelActivation()
+        public void CancelActivation()
         {
 
             // Retornar carta para a mão

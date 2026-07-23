@@ -76,6 +76,7 @@ public class CameraController : MonoBehaviourPunCallbacks
     /// </summary>
     public void ZoomTimeline()
     {
+        if (GameManager.IsInTurnTransition) return;
         IsAnimating = true;
         IsZoomed    = true;
         Debug.Log("[CameraController] ZoomTimeline");

@@ -65801,7 +65801,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddf87d0f80b75743b37f2c94c62204c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnTimer
-  timeLimit: 120
+  timeLimit: 30
   syncInterval: 1
   highestPointerAnimator: {fileID: 224298385}
 --- !u!4 &1359821954

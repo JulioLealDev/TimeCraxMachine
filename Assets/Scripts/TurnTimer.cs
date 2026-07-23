@@ -161,30 +161,17 @@ public class TurnTimer : MonoBehaviour
     /// </summary>
     private void OnTimeExpired()
     {
-
-        // Parar o timer em todos os clientes
         if (gameManager != null)
-        {
             gameManager.StopTurnTimerRPC();
-        }
 
-        // Apenas MasterClient chama o auto-end
         if (PhotonNetwork.IsMasterClient && gameManager != null)
-        {
-            // Usar DelayedCall para dar um pequeno delay antes de passar o turno
             this.DelayedCall(0.5f, AutoEndTurn);
-        }
     }
 
-    /// <summary>
-    /// Passa o turno automaticamente
-    /// </summary>
     private void AutoEndTurn()
     {
         if (gameManager != null)
-        {
             gameManager.AutoEndTurn();
-        }
     }
 
     /// <summary>

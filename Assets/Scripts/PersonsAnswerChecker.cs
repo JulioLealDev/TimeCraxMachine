@@ -169,8 +169,7 @@ public class PersonsAnswerChecker : MonoBehaviour
         if (personsFrame != null) personsFrame.SetActive(false);
         EventSlot.ResetClickProtection();
 
-        if (!GameManager.IsInTurnTransition)
-            gameManager?.DelayedCall(0.5f, gameManager.PersonsZoomOut);
+        gameManager?.DelayedCall(0.5f, gameManager.ZoomOutAfterFeedback);
         gameManager?.CheckWinAfterMiniGame();
     }
 

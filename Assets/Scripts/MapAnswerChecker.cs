@@ -232,12 +232,11 @@ public class MapAnswerChecker : MonoBehaviour
         if (map != null) map.SetActive(false);
         EventSlot.ResetClickProtection();
 
-        if (!GameManager.IsInTurnTransition)
-            gameManager?.DelayedCall(0.5f, gameManager.MapZoomOut);
+        gameManager?.DelayedCall(0.5f, gameManager.ZoomOutAfterFeedback);
         gameManager?.CheckWinAfterMiniGame();
     }
 
-    private void ResetState()
+    public void ResetState()
     {
         answered = false;
         HideIcons();

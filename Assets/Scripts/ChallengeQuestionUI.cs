@@ -50,5 +50,7 @@ public class ChallengeQuestionUI : MonoBehaviour
             LeanTween.cancel(background.gameObject);
             LeanTween.alphaCanvas(background, 0f, 0.3f);
         }
+
+        questionText.text = string.Empty;
     }
 }

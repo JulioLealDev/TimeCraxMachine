@@ -72,11 +72,13 @@ public class EventCard : MonoBehaviourPunCallbacks
 
     public void ZoomTimeline()
     {
+        if (GameManager.IsInTurnTransition) return;
         cameraController.ZoomTimeline();
     }
 
     public void waitToDistance()
     {
+        if (GameManager.IsInTurnTransition) return;
         this.DelayedCall(3.3f, DistanceTimeline);
     }
 
@@ -122,6 +124,7 @@ public class EventCard : MonoBehaviourPunCallbacks
         cachedAnimator.SetBool("wrongSlot", false);
         cachedAnimator.SetBool("drawingEventCard", false);
         cachedAnimator.SetInteger("slotClicked", 0);
+        cachedAnimator.Play("draw_eventCard_idle", 0, 0);
     }
 
     public void ActivateEndButton()

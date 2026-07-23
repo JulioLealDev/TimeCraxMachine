@@ -96,6 +96,15 @@ public class PersonsCarousel : MonoBehaviour
         currentImage.enabled = sprite != null;
     }
 
+    public void Close()
+    {
+        if (!panel.activeSelf) return;
+        panel.SetActive(false);
+        if (challengeCanvas != null) challengeCanvas.SetActive(true);
+        InputBlocker.Unblock();
+        OutlineAction.ReleaseHandCursor();
+    }
+
     private void OnConfirm()
     {
         if (targetRenderer == null || loadedSprites == null) return;

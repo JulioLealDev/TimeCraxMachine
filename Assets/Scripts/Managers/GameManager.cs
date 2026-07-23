@@ -760,39 +760,60 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void AutoEndTurn()
     {
-
         if (!gameIsOn) return;
         if (GameStateManager.Is(GamePhase.GameOver)) return;
 
-        photonView.RPC("RPC_HandleTimeoutCleanup", RpcTarget.All);
+        if (PhotonNetwork.InRoom)
+            photonView.RPC("RPC_HandleTimeoutCleanup", RpcTarget.All);
+        else
+            RPC_HandleTimeoutCleanup();
     }
 
     [PunRPC]
     public void RPC_HandleTimeoutCleanup()
     {
+        // Fechar painéis abertos antes de bloquear input
+        PersonsCarousel.Instance?.Close();
+        PersonDescriptionPopup.Instance?.Close();
+        BonusCardManager.Instance?.CancelActivation();
 
         IsInTurnTransition = true;
         InputBlocker.Block();
 
-        EventCard drewCard = null;
-        var eventCards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-        foreach (var card in eventCards)
+        // Feedback já em andamento: a sequência termina normalmente e ZoomOutAfterFeedback()
+        // detecta IsInTurnTransition para pular OpenLeftCompartmentAfterZoomOut e encerrar o turno.
+        if (GameStateManager.Is(GamePhase.IM_ChallengeFeedback))
+            return;
+
+        bool challengeUnanswered = GameStateManager.IsAnyOf(
+            GamePhase.IM_MapChallenge, GamePhase.IM_PersonsChallenge);
+
+        if (challengeUnanswered)
         {
-            if (card != null && card.CompareTag("Drew"))
-            {
-                drewCard = card;
-                break;
-            }
+            // Carta já está no slot com tag "Disabled" — busca por slotCount
+            HandleChallengeWrong(CurrentPersonsSlotCount, registerWrong: false);
         }
-
-        if (drewCard != null)
+        else
         {
-            int cardSlotCount = drewCard.slotCount;
-            drewCard.ResetStatusCard();
-            drewCard.tag = "Untagged";
+            // Carta ainda na mão/seleção com tag "Drew"
+            EventCard drewCard = null;
+            foreach (var card in FindObjectsByType<EventCard>(FindObjectsSortMode.None))
+            {
+                if (card != null && card.CompareTag("Drew"))
+                {
+                    drewCard = card;
+                    break;
+                }
+            }
 
-            if (PhotonNetwork.IsMasterClient && deckEvent != null)
-                deckEvent.AddCardBack(cardSlotCount);
+            if (drewCard != null)
+            {
+                drewCard.ResetStatusCard();
+                drewCard.tag = "Untagged";
+
+                if (PhotonNetwork.IsMasterClient && deckEvent != null)
+                    deckEvent.AddCardBack(drewCard.slotCount);
+            }
         }
 
         bool wasInZoomMode = gameCamera != null && gameCamera.IsInZoomMode();
@@ -810,6 +831,36 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         var eventSlot = FindFirstObjectByType<EventSlot>();
         if (eventSlot != null) eventSlot.SetUpSlots(false, "Undestructable");
+
+        // Fechar challenge ativo se o timeout ocorreu durante (ou logo após) um desafio
+        bool mapActive     = map != null && map.activeSelf;
+        bool personsActive = personsFrame != null && personsFrame.activeSelf;
+        if (mapActive || personsActive)
+        {
+            bool wasMap = mapActive;
+
+            if (newTimelineAnimator != null)
+                newTimelineAnimator.SetBool("Open", false);
+
+            this.DelayedCall(2.5f, () =>
+            {
+                if (wasMap)
+                {
+                    MapAnswerChecker.Instance?.ResetState();
+                    if (map != null) map.SetActive(false);
+                }
+                else
+                {
+                    PersonsAnswerChecker.Instance?.ResetState();
+                    if (personsFrame != null) personsFrame.SetActive(false);
+                }
+                EventSlot.ResetClickProtection();
+            });
+
+            var challengeUI = FindFirstObjectByType<ChallengeQuestionUI>();
+            if (challengeUI != null) challengeUI.Hide();
+
+        }
 
         if (PhotonNetwork.IsMasterClient)
         {
@@ -947,7 +998,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (map != null)
             {
                 map.SetActive(true);
-                this.DelayedCall(2.5f, () => EnableMeshColliders(map));
+                this.DelayedCall(2.5f, () => { if (!IsInTurnTransition) EnableMeshColliders(map); });
             }
             else Debug.LogWarning("[GameManager] Referência 'map' é null no Inspector!");
             GameStateManager.TransitionTo(GamePhase.IM_MapChallenge);
@@ -961,14 +1012,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (personsFrame != null)
         {
             personsFrame.SetActive(true);
-            this.DelayedCall(2.5f, () => EnableMeshColliders(personsFrame));
+            this.DelayedCall(2.5f, () => { if (!IsInTurnTransition) EnableMeshColliders(personsFrame); });
         }
         else Debug.LogWarning("[GameManager] Referência 'personsFrame' é null no Inspector!");
         GameStateManager.TransitionTo(GamePhase.IM_PersonsChallenge);
         ApplyPersonsText(CurrentPersonsThemeCard);
         ChallengeQuestionUI.Instance?.Show(CurrentPersonsThemeCard?.persons?.question);
 
-        this.DelayedCall(2.5f, ActivatePersonsSelectable);
+        this.DelayedCall(2.5f, () => { if (!IsInTurnTransition) ActivatePersonsSelectable(); });
     }
 
     private void EnableMeshColliders(GameObject root)
@@ -1027,6 +1078,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(2.5f);
 
+        if (IsInTurnTransition) yield break;
+
         // Desativar challenge atual e ativar o outro
         if (wasMap)
         {
@@ -1055,6 +1108,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         // Aguardar animação e habilitar interação do novo challenge
         yield return new WaitForSeconds(2.5f);
 
+        if (IsInTurnTransition) yield break;
+
         if (wasMap)
         {
             EnableMeshColliders(personsFrame);
@@ -1072,42 +1127,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         HandlePersonsWrong();
     }
 
-    public void HandlePersonsWrong()
-    {
-        var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
-        foreach (var slot in slots)
-        {
-            if (slot.SlotNumber == CurrentPersonsSlotCount)
-            {
-                slot.gameObject.tag = "Untagged";
-                break;
-            }
-        }
-
-        var cards = FindObjectsByType<EventCard>(FindObjectsSortMode.None);
-        foreach (var card in cards)
-        {
-            if (card.slotCount == CurrentPersonsSlotCount)
-            {
-                card.GetComponent<Animator>().SetBool("wrongSlot", true);
-                int slotCount = CurrentPersonsSlotCount;
-                this.DelayedCall(4f, () =>
-                {
-                    deckEvent.AddCardBack(slotCount);
-                });
-                break;
-            }
-        }
-
-        RegisterWrongAnswer();
-    }
-
-    public void PersonsZoomOut()
-    {
-        if (PhotonNetwork.IsMasterClient && !_pendingPlayerErrorAfterZoomOut)
-            OpenLeftCompartmentAfterZoomOut();
-        gameCamera?.DistanceTimeline();
-    }
+    public void HandlePersonsWrong() => HandleChallengeWrong(CurrentPersonsSlotCount);
 
     private static ThemeCard FindPersonsThemeCard(int slotCount)
     {
@@ -1147,8 +1167,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         HandleMapWrong(slotCount);
     }
 
-    public void HandleMapWrong(int slotCount)
+    public void HandleMapWrong(int slotCount) => HandleChallengeWrong(slotCount);
+
+    private void HandleChallengeWrong(int slotCount, bool registerWrong = true)
     {
+
+        Debug.Log($"[GameManager] HandleChallengeWrong — slotCount={slotCount}");
+
         var slots = FindObjectsByType<EventSlot>(FindObjectsSortMode.None);
         foreach (var slot in slots)
         {
@@ -1165,16 +1190,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (card.slotCount == slotCount)
             {
                 card.GetComponent<Animator>().SetBool("wrongSlot", true);
-                int captured = slotCount;
-                this.DelayedCall(4f, () =>
-                {
-                    deckEvent.AddCardBack(captured);
-                });
+                this.DelayedCall(4f, () => deckEvent.AddCardBack(slotCount));
                 break;
             }
         }
 
-        RegisterWrongAnswer();
+        if (registerWrong)
+            RegisterWrongAnswer();
     }
 
     private void RegisterWrongAnswer()
@@ -1191,11 +1213,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         anySlot?.CheckIfWin();
     }
 
-    public void MapZoomOut()
+    public void ZoomOutAfterFeedback()
     {
-        if (PhotonNetwork.IsMasterClient && !_pendingPlayerErrorAfterZoomOut)
+        if (!IsInTurnTransition && PhotonNetwork.IsMasterClient && !_pendingPlayerErrorAfterZoomOut)
             OpenLeftCompartmentAfterZoomOut();
         gameCamera?.DistanceTimeline();
+        if (IsInTurnTransition && PhotonNetwork.IsMasterClient)
+            this.DelayedCall(2f, FinishTurnAfterTimeout);
     }
 
     #endregion
