@@ -359,7 +359,12 @@ namespace TimeCrax.Managers
 
         private void ApplySkipChallengeEffect()
         {
-            // TODO: implementar lógica de pular o desafio atual
+            if (gameManager == null) return;
+
+            if (PhotonNetwork.InRoom)
+                gameManager.photonView.RPC("RPC_SkipChallenge", Photon.Pun.RpcTarget.All);
+            else
+                gameManager.SkipChallenge();
         }
 
         #endregion

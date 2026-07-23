@@ -41172,8 +41172,8 @@ MonoBehaviour:
   BonusTime: 0
   SecondChanceSlot: 0
   CoolThermometer: 0
-  KillChallengeOption: 100
-  SkipChallenge: 0
+  KillChallengeOption: 0
+  SkipChallenge: 100
   MapChancePct: 100
 --- !u!4 &1127573950
 Transform:

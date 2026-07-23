@@ -255,6 +255,30 @@ public class MapAnswerChecker : MonoBehaviour
         incorrectIcon?.SetActive(false);
     }
 
+    public void DisableInteraction()
+    {
+        Transform[] pins = { mapPin01, mapPin02, mapPin03, mapPin04 };
+        foreach (var pin in pins)
+        {
+            if (pin == null) continue;
+            pin.tag = "Untagged";
+            pin.GetComponent<HoverMaterialAdder>()?.HideHover();
+            var col = pin.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+    }
+
+    public void EnableInteraction()
+    {
+        Transform[] pins = { mapPin01, mapPin02, mapPin03, mapPin04 };
+        foreach (var pin in pins)
+        {
+            if (pin == null || !pin.gameObject.activeSelf) continue;
+            var col = pin.GetComponent<Collider>();
+            if (col != null) col.enabled = true;
+        }
+    }
+
     public void ApplyKillChallengeOption()
     {
         Transform[] allPins = { mapPin01, mapPin02, mapPin03, mapPin04 };

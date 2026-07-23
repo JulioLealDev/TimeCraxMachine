@@ -102,7 +102,11 @@ public class OutlineAction : MonoBehaviour
             if (IsInspectTarget(highlight))
             {
                 shouldShowInspectCursor = true;
-                highlight = null;
+                var oc = highlight.gameObject.GetComponent<OutlineComponent>();
+                if (oc != null)
+                    oc.enabled = true;
+                else
+                    highlight = null;
             }
             else
             {

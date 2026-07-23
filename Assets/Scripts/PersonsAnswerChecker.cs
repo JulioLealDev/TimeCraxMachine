@@ -57,6 +57,14 @@ public class PersonsAnswerChecker : MonoBehaviour
         assigned = new bool[3];
         HideAllIcons();
         DisableAllOutlines();
+
+        if (personName01 != null) personName01.text = string.Empty;
+        if (personName02 != null) personName02.text = string.Empty;
+        if (personName03 != null) personName03.text = string.Empty;
+
+        cardImage01?.ResetToDefault();
+        cardImage02?.ResetToDefault();
+        cardImage03?.ResetToDefault();
     }
 
     public void OnSlotAssigned(int slotIndex)
@@ -166,6 +174,22 @@ public class PersonsAnswerChecker : MonoBehaviour
         gameManager?.CheckWinAfterMiniGame();
     }
 
+    public void DisableInteraction()
+    {
+        foreach (var img in FindObjectsByType<PersonCardImage>(FindObjectsSortMode.None))
+        {
+            img.gameObject.tag = "Untagged";
+            var col = img.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+        foreach (var desc in FindObjectsByType<PersonDescriptionClick>(FindObjectsSortMode.None))
+        {
+            desc.gameObject.tag = "Untagged";
+            var col = desc.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+    }
+
     public void ApplyKillChallengeOption()
     {
         var candidates = new List<int>();
@@ -184,6 +208,18 @@ public class PersonsAnswerChecker : MonoBehaviour
         var sound = FindFirstObjectByType<SoundEffects>();
         int lastIdx = -1;
         float interval = 0.3f;
+
+        // Desativar colliders durante a roulette
+        foreach (var img in FindObjectsByType<PersonCardImage>(FindObjectsSortMode.None))
+        {
+            var col = img.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
+        foreach (var desc in FindObjectsByType<PersonDescriptionClick>(FindObjectsSortMode.None))
+        {
+            var col = desc.GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+        }
 
         for (int cond = 0; cond < 15; cond++)
         {
@@ -228,21 +264,34 @@ public class PersonsAnswerChecker : MonoBehaviour
         if (names[targetSlot] != null)
             names[targetSlot].text = entry.name;
 
-        // Desativar interação — PersonCardImage
+        // Desativar interação permanente no slot sorteado — PersonCardImage
         if (cards[targetSlot] != null)
         {
             cards[targetSlot].gameObject.tag = "Untagged";
-            var col = cards[targetSlot].GetComponent<Collider>();
-            if (col != null) col.enabled = false;
         }
 
-        // Desativar interação — PersonDescriptionClick correspondente
-        /*if (descOutlines[targetSlot] != null)
+        // Desativar interação permanente no slot sorteado — PersonDescriptionClick
+        if (descOutlines[targetSlot] != null)
         {
             descOutlines[targetSlot].gameObject.tag = "Untagged";
-            var col = descOutlines[targetSlot].GetComponent<Collider>();
-            if (col != null) col.enabled = false;
-        }*/
+        }
+
+        // Reativar colliders dos slots restantes (não sorteados)
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == targetSlot || assigned[i]) continue;
+
+            if (cards[i] != null)
+            {
+                var col = cards[i].GetComponent<Collider>();
+                if (col != null) col.enabled = true;
+            }
+            if (descOutlines[i] != null)
+            {
+                var col = descOutlines[i].GetComponent<Collider>();
+                if (col != null) col.enabled = true;
+            }
+        }
 
         OnSlotAssigned(targetSlot);
     }

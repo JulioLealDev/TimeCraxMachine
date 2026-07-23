@@ -999,6 +999,73 @@ public class GameManager : MonoBehaviourPunCallbacks
             newTimelineAnimator.SetBool("Open", false);
     }
 
+    public void SkipChallenge() => StartCoroutine(SkipChallengeCoroutine());
+
+    [PunRPC]
+    public void RPC_SkipChallenge() => StartCoroutine(SkipChallengeCoroutine());
+
+    private IEnumerator SkipChallengeCoroutine()
+    {
+        bool wasMap = GameStateManager.Is(GamePhase.IM_MapChallenge);
+
+        GameStateManager.TransitionTo(GamePhase.IM_ChangingChallenge);
+
+        // Desativar interação do challenge atual
+        if (wasMap)
+        {
+            MapAnswerChecker.Instance?.DisableInteraction();
+        }
+        else
+        {
+            PersonsAnswerChecker.Instance?.ResetState();
+            PersonsAnswerChecker.Instance?.DisableInteraction();
+        }
+
+        // Fechar timeline
+        if (newTimelineAnimator != null)
+            newTimelineAnimator.SetBool("Open", false);
+
+        yield return new WaitForSeconds(2.5f);
+
+        // Desativar challenge atual e ativar o outro
+        if (wasMap)
+        {
+            if (map != null) map.SetActive(false);
+
+            CurrentPersonsThemeCard = FindPersonsThemeCard(CurrentPersonsSlotCount);
+            if (personsFrame != null) personsFrame.SetActive(true);
+            ApplyPersonsText(CurrentPersonsThemeCard);
+            ChallengeQuestionUI.Instance?.Show(CurrentPersonsThemeCard?.persons?.question);
+            GameStateManager.TransitionTo(GamePhase.IM_PersonsChallenge);
+        }
+        else
+        {
+            if (personsFrame != null) personsFrame.SetActive(false);
+
+            if (map != null) map.SetActive(true); // MapAnswerChecker.OnEnable → Setup()
+            var themeCard = FindPersonsThemeCard(CurrentPersonsSlotCount);
+            ChallengeQuestionUI.Instance?.Show(themeCard?.map?.question);
+            GameStateManager.TransitionTo(GamePhase.IM_MapChallenge);
+        }
+
+        // Abrir timeline
+        if (newTimelineAnimator != null)
+            newTimelineAnimator.SetBool("Open", true);
+
+        // Aguardar animação e habilitar interação do novo challenge
+        yield return new WaitForSeconds(2.5f);
+
+        if (wasMap)
+        {
+            EnableMeshColliders(personsFrame);
+            ActivatePersonsSelectable();
+        }
+        else
+        {
+            MapAnswerChecker.Instance?.EnableInteraction();
+        }
+    }
+
     [PunRPC]
     public void RPC_HandlePersonsWrong()
     {

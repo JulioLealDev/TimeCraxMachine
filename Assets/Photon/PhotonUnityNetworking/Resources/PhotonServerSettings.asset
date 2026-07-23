@@ -145,6 +145,7 @@ MonoBehaviour:
   - RPC_HandleMapWrong
   - RPC_HandlePersonsWrong
   - RPC_ShiftCardsAfterConsume
+  - RPC_SkipChallenge
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
