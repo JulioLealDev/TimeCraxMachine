@@ -77,7 +77,9 @@
       "Bash(Remove-Item \"D:\\\\Projetos\\\\Timecrax Projects\\\\TimeCrax Machine Game\\\\Assets\\\\Scripts\\\\HandCursorTarget.cs\" -Force)",
       "Bash(Remove-Item \"D:\\\\Projetos\\\\Timecrax Projects\\\\TimeCrax Machine Game\\\\Assets\\\\Scripts\\\\HandCursorTarget.cs.meta\" -Force -ErrorAction SilentlyContinue)",
       "Bash(grep *)",
-      "Bash(Get-ChildItem *)"
+      "Bash(Get-ChildItem *)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)"
     ]
   }
 }

@@ -43,6 +43,7 @@ public class QuitInGaming : MonoBehaviour
         gameManager.DeactivateAll();
         gameManager.ResetAllComponents();
         gameManager.ResetAllPlatenames();
+        gameManager.ResetAllSlotLinks();
 
         // Resetar flag para permitir novo quit em próxima partida
         isQuitting = false;

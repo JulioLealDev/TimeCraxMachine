@@ -112,10 +112,13 @@ public class PersonsAnswerChecker : MonoBehaviour
 
         var gameManager = FindFirstObjectByType<GameManager>();
 
+        bool allCorrect = !anyWrong;
+        if (allCorrect)
+            SlotLinkManager.Instance?.CheckAndActivateLinks(GameManager.CurrentPersonsSlotCount);
+
         var local = PlayerManager.Instance?.GetLocalPlayer();
         if (local != null)
         {
-            bool allCorrect = !anyWrong;
             if (gameManager != null && PhotonNetwork.InRoom)
                 gameManager.photonView.RPC("RPC_TrackPersonsChallenge", RpcTarget.All, allCorrect, local.actorNumber, local.nickname);
             else if (allCorrect) MatchStats.AddChallengeCorrect(local.actorNumber, local.nickname);

@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static List<TimeCrax.Themes.PersonEntry> ShuffledPersonEntries { get; private set; }
     public static bool IsInTurnTransition { get; set; } = false;
     public static bool IsMalfunctionPending { get; set; } = false;
+    public static int CurrentCheckingSlotCount { get; set; } = -1;
 
     // Propriedades públicas
     public int randomId;
@@ -74,6 +75,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int roundCompare;
     private int time;
     private bool _pendingPlayerErrorAfterZoomOut = false;
+    private bool _isRoulettePlaying = false;
+    private bool _turnFinishExecuted = false;
 
     // Players e componentes
     private MachineComponent[] timeCraxComponents;
@@ -552,6 +555,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         GameStateManager.TransitionTo(GamePhase.IM_Turn);
         IsInTurnTransition = false;
+        _turnFinishExecuted = false;
+        CurrentCheckingSlotCount = -1;
         InputBlocker.Unblock();
         BonusCardManager.Instance?.ResetSecondChance();
 
@@ -742,6 +747,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void FinishTurn()
     {
+        if (_turnFinishExecuted) return;
+        _turnFinishExecuted = true;
 
         if (leftCompartmentAnimator != null) leftCompartmentAnimator.SetBool("open", false);
         if (cachedDeckBonusMeshCollider != null) cachedDeckBonusMeshCollider.enabled = false;
@@ -762,6 +769,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (!gameIsOn) return;
         if (GameStateManager.Is(GamePhase.GameOver)) return;
+        if (IsInTurnTransition) return;
 
         if (PhotonNetwork.InRoom)
             photonView.RPC("RPC_HandleTimeoutCleanup", RpcTarget.All);
@@ -792,6 +800,31 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             // Carta já está no slot com tag "Disabled" — busca por slotCount
             HandleChallengeWrong(CurrentPersonsSlotCount, registerWrong: false);
+        }
+        else if (GameStateManager.Is(GamePhase.IM_CheckingSlot) && CurrentCheckingSlotCount >= 0)
+        {
+            // Slot correto foi escolhido mas o challenge ainda não iniciou.
+            // Localizar a carta pelo slotCount e devolvê-la ao deck.
+            EventCard pendingCard = null;
+            foreach (var card in FindObjectsByType<EventCard>(FindObjectsSortMode.None))
+            {
+                if (card != null && card.slotCount == CurrentCheckingSlotCount)
+                {
+                    pendingCard = card;
+                    break;
+                }
+            }
+
+            if (pendingCard != null)
+            {
+                pendingCard.ResetStatusCard();
+                pendingCard.tag = "Untagged";
+
+                if (PhotonNetwork.IsMasterClient && deckEvent != null)
+                    deckEvent.AddCardBack(pendingCard.slotCount);
+            }
+
+            CurrentCheckingSlotCount = -1;
         }
         else
         {
@@ -1289,6 +1322,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void RandomComponentNumber()
     {
+        if (_isRoulettePlaying) return;
+
         List<int> eligibleComponents = new List<int>();
 
         if (timeCraxComponents != null)
@@ -1302,6 +1337,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (eligibleComponents.Count == 0) return;
 
+        _isRoulettePlaying = true;
         int randomIndex = UnityEngine.Random.Range(0, eligibleComponents.Count);
         randomId = eligibleComponents[randomIndex];
 
@@ -1386,6 +1422,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void AddMalfunctionInComponent()
     {
+        _isRoulettePlaying = false;
         // Executado em todos os clientes: desbloqueio de input, câmera e transição de estado local
         if (!IsInTurnTransition) InputBlocker.Unblock();
         gameCamera?.ActivateTimelineAfterMalfunction();
@@ -1464,6 +1501,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         DeactivateAll();
         ResetAllComponents();
         ResetAllPlatenames();
+        ResetAllSlotLinks();
 
         var bgMusic = FindFirstObjectByType<BackgroundMusic>();
         if (bgMusic != null) bgMusic.PlayGameOverSound();
@@ -1775,6 +1813,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void ResetAllPlatenames()
     {
         PlayerManager.Instance?.ResetAllPlatenames();
+    }
+
+    public void ResetAllSlotLinks()
+    {
+        foreach (var obj in GameObject.FindGameObjectsWithTag("SlotLink"))
+        {
+            var mr = obj.GetComponent<MeshRenderer>();
+            if (mr != null) mr.enabled = false;
+        }
     }
 
     public void ResetAllComponents()

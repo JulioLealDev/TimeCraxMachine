@@ -180,6 +180,9 @@ public class MapAnswerChecker : MonoBehaviour
         correctIcon?.SetActive(isCorrect);
         incorrectIcon?.SetActive(!isCorrect);
 
+        if (isCorrect)
+            SlotLinkManager.Instance?.CheckAndActivateLinks(currentSlotCount);
+
         yield return new WaitForSeconds(2f);
 
         var gameManager = FindFirstObjectByType<GameManager>();

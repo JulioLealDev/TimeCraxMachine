@@ -56,6 +56,7 @@ public class DeckEvent : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
+            if (eventList.Count == 0) return;
             int index = Random.Range(0, eventList.Count);
             int slotCount = eventList[index];
             photonView.RPC("ExecuteDrawEventCard", RpcTarget.All, slotCount);

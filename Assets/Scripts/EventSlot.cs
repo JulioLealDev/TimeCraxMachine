@@ -106,6 +106,8 @@ public class EventSlot : MonoBehaviourPunCallbacks
 
         if (isCorrectSlot)
         {
+            GameManager.CurrentCheckingSlotCount = cardSlotCount;
+
             var p = PlayerManager.Instance?.GetCurrentTurnPlayer();
             if (p != null) MatchStats.AddSlotCorrect(p.actorNumber, p.nickname);
 
@@ -213,6 +215,8 @@ public class EventSlot : MonoBehaviourPunCallbacks
             Debug.Log($"[EventSlot] MasterClient agendando ActivateRandomMapObject em {CARD_ANIMATION_DELAY}s");
             this.DelayedCall(CARD_ANIMATION_DELAY, () =>
             {
+                GameManager.CurrentCheckingSlotCount = -1;
+                if (GameManager.IsInTurnTransition) return;
                 Debug.Log($"[EventSlot] Chamando ActivateRandomMapObject para slotCount={cardSlotCount}");
                 gameManager.ActivateRandomMapObject(cardSlotCount);
             });
@@ -262,14 +266,6 @@ public class EventSlot : MonoBehaviourPunCallbacks
         soundEffects.PlayWrongSlotSound();
     }
 
-    public void RandomComponent()
-    {
-        if (gameManager != null)
-        {
-            gameManager.RandomComponentNumber();
-        }
-    }
-
     public void SetUpSlots(bool activateSlot, string tag)
     {
         foreach (var slot in cachedSlots)
@@ -299,6 +295,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
             gameManager.ResetAllPlatenames();
+            gameManager.ResetAllSlotLinks();
             this.DelayedCall(5.5f, ShowVictoryScreen);
         }
     }
