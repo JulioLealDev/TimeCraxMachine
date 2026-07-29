@@ -342,7 +342,7 @@ namespace TimeCrax.Themes
             var textComponent = itemGO.GetComponentInChildren<TextMeshProUGUI>();
             if (textComponent != null)
             {
-                textComponent.text = "Nenhum tema disponível";
+                textComponent.text = "No themes available";
                 textComponent.fontStyle = FontStyles.Italic;
                 textComponent.color = new Color(0.6f, 0.6f, 0.6f, 1f);
             }

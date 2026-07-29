@@ -1177,16 +1177,63 @@ public class GameManager : MonoBehaviourPunCallbacks
         var entries = themeCard?.persons?.entries;
         if (entries == null) return;
 
+        if (!PhotonNetwork.InRoom)
+        {
+            ApplyPersonsShuffleLocal(entries.OrderBy(_ => UnityEngine.Random.value).ToList());
+            return;
+        }
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            var shuffled = entries.OrderBy(_ => UnityEngine.Random.value).ToList();
+            int[] indices = shuffled.Select(e => entries.IndexOf(e)).ToArray();
+            photonView.RPC("RPC_SyncPersonsShuffle", RpcTarget.All, indices);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_SyncPersonsShuffle(int[] shuffleIndices)
+    {
+        var entries = CurrentPersonsThemeCard?.persons?.entries;
+        if (entries == null) return;
+
+        var shuffled = shuffleIndices
+            .Where(i => i >= 0 && i < entries.Count)
+            .Select(i => entries[i])
+            .ToList();
+        ApplyPersonsShuffleLocal(shuffled);
+    }
+
+    private void ApplyPersonsShuffleLocal(List<TimeCrax.Themes.PersonEntry> shuffled)
+    {
+        ShuffledPersonEntries = shuffled;
+
         TMP_Text[] names = { personName01, personName02, personName03 };
         TMP_Text[] texts = { personText01, personText02, personText03 };
-
-        ShuffledPersonEntries = entries.OrderBy(_ => UnityEngine.Random.value).ToList();
 
         for (int i = 0; i < 3 && i < texts.Length; i++)
         {
             if (names[i] != null) names[i].text = string.Empty;
             if (texts[i] != null) texts[i].text = i < ShuffledPersonEntries.Count ? ShuffledPersonEntries[i].description : string.Empty;
         }
+    }
+
+    [PunRPC]
+    public void RPC_MapPinSelected(int pinIndex)
+    {
+        MapAnswerChecker.Instance?.ShowMapFeedbackForObserver(pinIndex);
+    }
+
+    [PunRPC]
+    public void RPC_PersonsSlotAssigned(int slotIndex, string personName)
+    {
+        PersonsAnswerChecker.Instance?.OnSlotAssignedFromRPC(slotIndex, personName);
+    }
+
+    [PunRPC]
+    public void RPC_ShowPersonsFeedback(bool slot0, bool slot1, bool slot2)
+    {
+        PersonsAnswerChecker.Instance?.ShowPersonsFeedbackForObserver(slot0, slot1, slot2);
     }
 
     #endregion

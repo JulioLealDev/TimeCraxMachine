@@ -111,10 +111,10 @@ namespace TimeCrax.Themes
 
             // Configurar textos
             if (titleText != null)
-                titleText.text = "Tema Necessário";
+                titleText.text = "Theme Required";
 
             if (messageText != null)
-                messageText.text = "Para entrar nesta sala, você precisa baixar o tema:";
+                messageText.text = "To join this room, you need to download the theme:";
 
             if (themeNameText != null)
                 themeNameText.text = themeName;
@@ -207,7 +207,7 @@ namespace TimeCrax.Themes
                 progressSlider.value = 0;
 
             if (progressText != null)
-                progressText.text = "Iniciando download...";
+                progressText.text = "Starting download...";
 
             // Iniciar download
             ThemeManager.Instance?.DownloadTheme(currentThemeId, OnDownloadComplete);
@@ -234,7 +234,7 @@ namespace TimeCrax.Themes
                 progressSlider.value = progress;
 
             if (progressText != null)
-                progressText.text = $"Baixando... {(progress * 100):F0}%";
+                progressText.text = $"Downloading... {(progress * 100):F0}%";
         }
 
         private void OnDownloadStatus(string status)
@@ -253,7 +253,7 @@ namespace TimeCrax.Themes
             {
 
                 if (progressText != null)
-                    progressText.text = "Download concluído!";
+                    progressText.text = "Download complete!";
 
                 // Aguardar um momento e entrar na sala
                 this.DelayedCall(0.5f, JoinRoomAfterDownload);
@@ -262,7 +262,7 @@ namespace TimeCrax.Themes
             {
 
                 if (progressText != null)
-                    progressText.text = $"Erro: {error}";
+                    progressText.text = $"Error: {error}";
 
                 // Reabilitar botões
                 if (downloadButton != null)

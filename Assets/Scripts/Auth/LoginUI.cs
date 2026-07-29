@@ -197,19 +197,19 @@ namespace TimeCrax.Auth
             // Validação local
             if (string.IsNullOrEmpty(email))
             {
-                ShowError("Digite seu email");
+                ShowError("Enter your email");
                 return;
             }
 
             if (!AuthService.ValidateEmail(email))
             {
-                ShowError("Email inválido");
+                ShowError("Invalid email");
                 return;
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                ShowError("Digite sua senha");
+                ShowError("Enter your password");
                 return;
             }
 
@@ -338,7 +338,7 @@ namespace TimeCrax.Auth
         public void OnPlayAsGuestClicked()
         {
             PlayButtonSound();
-            SessionData.Nickname = "Jogador";
+            SessionData.Nickname = "Player";
             SceneManager.LoadScene(mainMenuSceneName);
         }
 

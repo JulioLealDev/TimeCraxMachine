@@ -61,7 +61,7 @@ public class ThemeDownloadPromptSetup : EditorWindow
         titleRect.anchoredPosition = new Vector2(0, -20);
         titleRect.sizeDelta = new Vector2(-40, 50);
         TextMeshProUGUI titleText = titleGO.AddComponent<TextMeshProUGUI>();
-        titleText.text = "Tema Necessário";
+        titleText.text = "Theme Required";
         titleText.fontSize = 32;
         titleText.fontStyle = FontStyles.Bold;
         titleText.alignment = TextAlignmentOptions.Center;
@@ -76,7 +76,7 @@ public class ThemeDownloadPromptSetup : EditorWindow
         messageRect.anchoredPosition = new Vector2(0, -80);
         messageRect.sizeDelta = new Vector2(-40, 40);
         TextMeshProUGUI messageText = messageGO.AddComponent<TextMeshProUGUI>();
-        messageText.text = "Para entrar nesta sala, você precisa baixar o tema:";
+        messageText.text = "To join this room, you need to download the theme:";
         messageText.fontSize = 18;
         messageText.alignment = TextAlignmentOptions.Center;
         messageText.color = Color.white;

@@ -523,11 +523,11 @@ namespace TimeCrax.Themes
                 if (ThemeManager.Instance.HasSelectedTheme)
                 {
                     var theme = ThemeManager.Instance.SelectedTheme;
-                    selectedThemeText.text = $"Selecionado: {theme.name}";
+                    selectedThemeText.text = $"Selected: {theme.name}";
                 }
                 else
                 {
-                    selectedThemeText.text = "Nenhum tema selecionado";
+                    selectedThemeText.text = "No theme selected";
                 }
             }
         }

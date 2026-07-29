@@ -61,11 +61,11 @@ namespace TimeCrax.Themes
 
             // Preencher informações
             if (nameText != null)
-                nameText.text = theme.name ?? "Sem nome";
+                nameText.text = theme.name ?? "Unnamed";
 
             if (creatorText != null)
             {
-                string firstName = theme.creatorName?.Split(' ')[0] ?? "Autor desconhecido";
+                string firstName = theme.creatorName?.Split(' ')[0] ?? "Unknown author";
                 creatorText.text = firstName;
             }
 
@@ -137,7 +137,7 @@ namespace TimeCrax.Themes
             {
                 downloadButton.gameObject.SetActive(!isDownloaded && !isDownloading);
                 if (downloadButtonText != null)
-                    downloadButtonText.text = "Baixar";
+                    downloadButtonText.text = "Download";
             }
 
             // Barra de progresso

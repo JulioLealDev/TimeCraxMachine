@@ -126,18 +126,18 @@ namespace TimeCrax.Auth
         {
             return code switch
             {
-                INVALID_CREDENTIALS => "Email ou senha incorretos",
-                EMAIL_IN_USE => "Este email já está em uso",
-                INVALID_EMAIL => "Email inválido",
-                INVALID_ROLE => "Tipo de usuário inválido",
-                PASSWORD_REQUIRED => "Senha é obrigatória",
-                PASSWORD_TOO_SHORT => "Senha deve ter no mínimo 12 caracteres",
-                PASSWORD_NO_UPPERCASE => "Senha deve conter pelo menos uma letra maiúscula",
-                PASSWORD_NO_LOWERCASE => "Senha deve conter pelo menos uma letra minúscula",
-                PASSWORD_NO_DIGIT => "Senha deve conter pelo menos um número",
-                USER_NOT_FOUND => "Usuário não encontrado",
-                TOO_MANY_REQUESTS => "Muitas tentativas. Aguarde alguns minutos.",
-                _ => "Erro desconhecido. Tente novamente."
+                INVALID_CREDENTIALS => "Incorrect email or password",
+                EMAIL_IN_USE => "This email is already in use",
+                INVALID_EMAIL => "Invalid email",
+                INVALID_ROLE => "Invalid user type",
+                PASSWORD_REQUIRED => "Password is required",
+                PASSWORD_TOO_SHORT => "Password must be at least 12 characters",
+                PASSWORD_NO_UPPERCASE => "Password must contain at least one uppercase letter",
+                PASSWORD_NO_LOWERCASE => "Password must contain at least one lowercase letter",
+                PASSWORD_NO_DIGIT => "Password must contain at least one number",
+                USER_NOT_FOUND => "User not found",
+                TOO_MANY_REQUESTS => "Too many attempts. Please wait a few minutes.",
+                _ => "Unknown error. Please try again."
             };
         }
     }

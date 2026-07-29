@@ -146,6 +146,10 @@ MonoBehaviour:
   - RPC_HandlePersonsWrong
   - RPC_ShiftCardsAfterConsume
   - RPC_SkipChallenge
+  - RPC_MapPinSelected
+  - RPC_PersonsSlotAssigned
+  - RPC_ShowPersonsFeedback
+  - RPC_SyncPersonsShuffle
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

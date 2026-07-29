@@ -75,7 +75,7 @@ namespace TimeCrax.Themes
         {
             if (!TokenManager.IsLoggedIn)
             {
-                onComplete?.Invoke(ThemeStorageResult.Fail("Usuário não está logado"));
+                onComplete?.Invoke(ThemeStorageResult.Fail("User is not logged in"));
                 yield break;
             }
 
@@ -92,13 +92,13 @@ namespace TimeCrax.Themes
 
                 if (www.result == UnityWebRequest.Result.ConnectionError)
                 {
-                    onComplete?.Invoke(ThemeStorageResult.Fail("Erro de conexão"));
+                    onComplete?.Invoke(ThemeStorageResult.Fail("Connection error"));
                     yield break;
                 }
 
                 if (www.responseCode == 401)
                 {
-                    onComplete?.Invoke(ThemeStorageResult.Fail("Sessão expirada"));
+                    onComplete?.Invoke(ThemeStorageResult.Fail("Session expired"));
                     yield break;
                 }
 
@@ -111,12 +111,12 @@ namespace TimeCrax.Themes
                     }
                     catch (Exception)
                     {
-                        onComplete?.Invoke(ThemeStorageResult.Fail("Erro ao processar resposta"));
+                        onComplete?.Invoke(ThemeStorageResult.Fail("Error processing response"));
                     }
                     yield break;
                 }
 
-                onComplete?.Invoke(ThemeStorageResult.Fail($"Erro: {www.responseCode}"));
+                onComplete?.Invoke(ThemeStorageResult.Fail($"Error: {www.responseCode}"));
             }
         }
 
@@ -133,11 +133,11 @@ namespace TimeCrax.Themes
         {
             if (!TokenManager.IsLoggedIn)
             {
-                onComplete?.Invoke(ThemeDownloadResult.Fail("Usuário não está logado"));
+                onComplete?.Invoke(ThemeDownloadResult.Fail("User is not logged in"));
                 yield break;
             }
 
-            OnDownloadStatus?.Invoke("Baixando dados do tema...");
+            OnDownloadStatus?.Invoke("Downloading theme data...");
             OnDownloadProgress?.Invoke(0f);
 
             string url = $"{AuthService.Instance.ApiBaseUrl}/themes/{themeId}/download";
@@ -153,25 +153,25 @@ namespace TimeCrax.Themes
 
                 if (www.result == UnityWebRequest.Result.ConnectionError)
                 {
-                    onComplete?.Invoke(ThemeDownloadResult.Fail("Erro de conexão"));
+                    onComplete?.Invoke(ThemeDownloadResult.Fail("Connection error"));
                     yield break;
                 }
 
                 if (www.responseCode == 401)
                 {
-                    onComplete?.Invoke(ThemeDownloadResult.Fail("Sessão expirada"));
+                    onComplete?.Invoke(ThemeDownloadResult.Fail("Session expired"));
                     yield break;
                 }
 
                 if (www.responseCode == 404)
                 {
-                    onComplete?.Invoke(ThemeDownloadResult.Fail("Tema não encontrado"));
+                    onComplete?.Invoke(ThemeDownloadResult.Fail("Theme not found"));
                     yield break;
                 }
 
                 if (www.responseCode != 200)
                 {
-                    onComplete?.Invoke(ThemeDownloadResult.Fail($"Erro: {www.responseCode}"));
+                    onComplete?.Invoke(ThemeDownloadResult.Fail($"Error: {www.responseCode}"));
                     yield break;
                 }
 
@@ -182,7 +182,7 @@ namespace TimeCrax.Themes
                 }
                 catch (Exception)
                 {
-                    onComplete?.Invoke(ThemeDownloadResult.Fail("Erro ao processar dados do tema"));
+                    onComplete?.Invoke(ThemeDownloadResult.Fail("Error processing theme data"));
                     yield break;
                 }
 
@@ -198,7 +198,7 @@ namespace TimeCrax.Themes
                 // Usar response.image (nova API) ou response.coverImageUrl (compatibilidade)
                 string coverUrl = response.image ?? response.coverImageUrl;
 
-                OnDownloadStatus?.Invoke("Baixando capa...");
+                OnDownloadStatus?.Invoke("Downloading cover...");
                 yield return StartCoroutine(DownloadImage(
                     coverUrl,
                     ThemeStorage.GetLocalImagePath(themeId, "cover.webp"),
@@ -215,7 +215,7 @@ namespace TimeCrax.Themes
                 // Download das imagens das cartas
                 foreach (var card in response.cards)
                 {
-                    OnDownloadStatus?.Invoke($"Baixando carta {downloadedImages}/{response.cards.Count}...");
+                    OnDownloadStatus?.Invoke($"Downloading card {downloadedImages}/{response.cards.Count}...");
 
                     string imageName = $"card_{card.orderIndex}.webp";
                     string localPath = ThemeStorage.GetLocalImagePath(themeId, imageName);
@@ -247,7 +247,7 @@ namespace TimeCrax.Themes
 
                 ThemeStorage.SaveTheme(themeData);
 
-                OnDownloadStatus?.Invoke("Download concluído!");
+                OnDownloadStatus?.Invoke("Download complete!");
                 OnDownloadProgress?.Invoke(1f);
 
                 onComplete?.Invoke(ThemeDownloadResult.Ok(themeData));

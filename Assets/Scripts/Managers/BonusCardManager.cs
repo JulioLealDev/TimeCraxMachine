@@ -376,11 +376,11 @@ namespace TimeCrax.Managers
             switch (cardType)
             {
                 case BonusCardType.RepairComponent:
-                    return "Use esta carta para reparar componetes defeituosos. Clique sobre o componente para ativá-la.";
+                    return "Use this card to repair faulty components. Click on a component to activate it.";
                 case BonusCardType.BonusTime:
-                    return "Use esta carta para adicionar 60 segundos ao relógio.";
+                    return "Use this card to add 60 seconds to the clock.";
                 case BonusCardType.SecondChanceSlot:
-                    return "Use esta carta para ter uma segunda chance ao escolher um slot para uma carta de evento.";
+                    return "Use this card to get a second chance when choosing a slot for an event card.";
                 case BonusCardType.CoolThermometer:
                     return "Use esta carta para resfriar a temperatura da Timecrax Machine.";
                 case BonusCardType.KillChallengeOption:

@@ -141,7 +141,7 @@ namespace TimeCrax.Auth
         {
             if (!TokenManager.IsLoggedIn)
             {
-                onComplete?.Invoke(UserResult.Fail("Usuário não está logado"));
+                onComplete?.Invoke(UserResult.Fail("User is not logged in"));
                 yield break;
             }
 
@@ -272,7 +272,7 @@ namespace TimeCrax.Auth
             // Erro de rede
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
-                return AuthResult.Fail("NETWORK_ERROR", "Erro de conexão. Verifique sua internet.");
+                return AuthResult.Fail("NETWORK_ERROR", "Connection error. Please check your internet connection.");
             }
 
             // Rate limiting
@@ -291,7 +291,7 @@ namespace TimeCrax.Auth
                 }
                 catch (Exception)
                 {
-                    return AuthResult.Fail("PARSE_ERROR", "Erro ao processar resposta do servidor");
+                    return AuthResult.Fail("PARSE_ERROR", "Error processing server response");
                 }
             }
 
@@ -308,16 +308,16 @@ namespace TimeCrax.Auth
                     if (!string.IsNullOrEmpty(errorResponse.errors.email))
                         return AuthResult.Fail(errorResponse.errors.email);
                     if (!string.IsNullOrEmpty(errorResponse.errors.firstName))
-                        return AuthResult.Fail(errorResponse.errors.firstName, "Nome é obrigatório (mínimo 2 caracteres)");
+                        return AuthResult.Fail(errorResponse.errors.firstName, "First name is required (minimum 2 characters)");
                     if (!string.IsNullOrEmpty(errorResponse.errors.lastName))
-                        return AuthResult.Fail(errorResponse.errors.lastName, "Sobrenome é obrigatório (mínimo 2 caracteres)");
+                        return AuthResult.Fail(errorResponse.errors.lastName, "Last name is required (minimum 2 characters)");
                 }
 
                 return AuthResult.Fail(errorResponse.code ?? "UNKNOWN_ERROR");
             }
             catch
             {
-                return AuthResult.Fail("UNKNOWN_ERROR", $"Erro do servidor: {www.responseCode}");
+                return AuthResult.Fail("UNKNOWN_ERROR", $"Server error: {www.responseCode}");
             }
         }
 
@@ -329,13 +329,13 @@ namespace TimeCrax.Auth
 
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
-                return UserResult.Fail("Erro de conexão. Verifique sua internet.");
+                return UserResult.Fail("Connection error. Please check your internet connection.");
             }
 
             if (www.responseCode == 401)
             {
                 TokenManager.ClearTokens();
-                return UserResult.Fail("Sessão expirada. Faça login novamente.");
+                return UserResult.Fail("Session expired. Please log in again.");
             }
 
             if (www.responseCode == 200)
@@ -347,11 +347,11 @@ namespace TimeCrax.Auth
                 }
                 catch (Exception)
                 {
-                    return UserResult.Fail("Erro ao processar dados do usuário");
+                    return UserResult.Fail("Error processing user data");
                 }
             }
 
-            return UserResult.Fail($"Erro do servidor: {www.responseCode}");
+            return UserResult.Fail($"Server error: {www.responseCode}");
         }
 
         #endregion

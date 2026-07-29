@@ -664,7 +664,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8a48a7ab1068481409021ab091318d80, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8a48a7ab1068481409021ab091318d80, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -957,7 +957,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 47a719c6d7a036f4185f96e0214c1948, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 47a719c6d7a036f4185f96e0214c1948, type: 3}
       propertyPath: m_IsActive
@@ -1182,13 +1182,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 06ea672692f64b548876e87e98a5c057, type: 2}
-  year: 1497
-  title: "Am\xE9rico Vesp\xFAcio reconhece um novo continente"
+  year: 1498
+  title: 'Columbus''s third voyage to American '
   era: AD
   map:
-    question: "Onde Crist\xF3v\xE3o colombo atracou seu navio quando chegou a America?"
+    question: On which peninsula did Christopher Columbus first reach the South American
+      mainland?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question05
     pins:
     - x: 0.2
       y: -0.15
@@ -1203,53 +1204,49 @@ MonoBehaviour:
     question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
-      name: Vasco da Gama
-      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
-        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
-        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
-        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
-        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
-        contornando o continente africano, chegando a Calecute em 1498, feito que
-        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
-        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
-        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
-        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
-        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
-        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
-        portuguesa."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/BartolomeuColombo
+      name: Bartholomew Columbus
+      description: Born around 1461, in the Republic of Genoa, acquired experience
+        as a navigator, cartographer, and administrator during the Age of Discovery.
+        Participated in the transatlantic expeditions that began in 1493 and collaborated
+        in the exploration and organization of the first Spanish possessions in the
+        Caribbean. In 1496, founded the city of Santo Domingo, considered the first
+        permanent European settlement in the Americas, playing a central role in
+        its initial administration. Also held governmental functions on the island
+        of Hispaniola, facing internal conflicts and difficulties related to colonization.
+        Throughout this trajectory, contributed to the consolidation of Spanish presence
+        in the New World and to the development of the first overseas administrative
+        structures. Died in 1514, in the city of Santo Domingo, on the island of
+        Hispaniola.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
-      name: "Pedro \xC1lvarez Cabral"
-      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
-        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
-        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
-        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
-        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
-        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
-        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
-        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
-        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
-        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
-        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
-        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
-        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      name: Christopher Columbus
+      description: Born around 1451 in the Republic of Genoa, he received training
+        related to navigation, cartography, and maritime trade. After several years
+        in the Iberian Peninsula, he presented a project to reach the East by sailing
+        westward across the Atlantic Ocean. In 1492, he led an expedition of three
+        ships that reached an island in the Bahamas, establishing the first permanent
+        contact between Europe and the Americas in the modern era. Subsequently,
+        he commanded three more voyages, exploring various Caribbean islands, the
+        coast of Central America, and part of South America. Although he believed
+        he had reached Asia, his expeditions profoundly altered world history, initiating
+        European expansion into the Americas. He died in 1506 in the city of Valladolid,
+        in the Kingdom of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
-      name: "Am\xE9rico Vesp\xFAcio"
-      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
-        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
-        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
-        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
-        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
-        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
-        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
-        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
-        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
-        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
-        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
-        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
-        Faleceu em 22 de fevereiro de 1512, em Sevilha."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/DiegoColombo
+      name: Diego Columbus
+      description: "Here is the translation into English, with all gender-specific
+        words (*he*, *his*, *him*, etc.) removed or avoided:  ---  Born around 1479,
+        in Porto Santo, in the Madeira archipelago, spent childhood amid the maritime
+        expeditions of the Spanish Crown. Still young, took part in voyages to the
+        New World and, years later, obtained recognition of hereditary rights over
+        the titles and privileges granted to the family. In 1509, assumed the offices
+        of Admiral of the Ocean Sea, Viceroy, and Governor of the Indies, administering
+        Spanish territories in the Caribbean from the island of Hispaniola. During
+        that period, promoted the development of Santo Domingo and faced legal disputes
+        with the Crown regarding the extent of administrative powers. Died in 1526,
+        in the town of Montalb\xE1n, in the Kingdom of Castile, leaving an important
+        legacy in Spanish colonial administration."
 --- !u!1001 &50132367
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1320,7 +1317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b49b0dbffe91d344c8fcc9a361738f91, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b49b0dbffe91d344c8fcc9a361738f91, type: 3}
       propertyPath: m_IsActive
@@ -1987,6 +1984,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!4 &99270195 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+  m_PrefabInstance: {fileID: 1442615428}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &99851409
 GameObject:
   m_ObjectHideFlags: 0
@@ -2716,7 +2718,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d2e69d9753670e7469d34e553ec5a0d4, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d2e69d9753670e7469d34e553ec5a0d4, type: 3}
       propertyPath: m_TagString
@@ -2781,13 +2783,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: bdbb77b16ed0f9e4d89b24845642fa8d, type: 2}
-  year: 1492
-  title: "Chegada \xE0s Bahamas (Guanahani)"
+  year: 1493
+  title: "Retorno de Colombo \xE0 Espanha"
   era: AD
   map:
-    question: "Onde Crist\xF3v\xE3o colombo atracou seu navio quando chegou a America?"
+    question: At which port did Christopher Columbus disembark after returning from
+      his first voyage to the American continent?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question02
     pins:
     - x: 0.2
       y: -0.15
@@ -2802,53 +2805,47 @@ MonoBehaviour:
     question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
-      name: Vasco da Gama
-      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
-        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
-        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
-        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
-        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
-        contornando o continente africano, chegando a Calecute em 1498, feito que
-        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
-        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
-        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
-        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
-        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
-        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
-        portuguesa."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      name: Christopher Columbus
+      description: Born around 1451 in the Republic of Genoa, he received training
+        related to navigation, cartography, and maritime trade. After several years
+        in the Iberian Peninsula, he presented a project to reach the East by sailing
+        westward across the Atlantic Ocean. In 1492, he led an expedition of three
+        ships that reached an island in the Bahamas, establishing the first permanent
+        contact between Europe and the Americas in the modern era. Subsequently,
+        he commanded three more voyages, exploring various Caribbean islands, the
+        coast of Central America, and part of South America. Although he believed
+        he had reached Asia, his expeditions profoundly altered world history, initiating
+        European expansion into the Americas. He died in 1506 in the city of Valladolid,
+        in the Kingdom of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
-      name: "Pedro \xC1lvarez Cabral"
-      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
-        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
-        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
-        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
-        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
-        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
-        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
-        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
-        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
-        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
-        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
-        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
-        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Isabel1
+      name: Isabella I of Castile
+      description: "Born in 1451, in the town of Madrigal de las Altas Torres, in
+        the Kingdom of Castile, ascended to the throne in 1474 and promoted far\u2011reaching
+        administrative and political reforms. Together with the Crown of Aragon,
+        consolidated the unification of the main kingdoms of the Iberian Peninsula
+        and supported the completion of the Reconquista in 1492. In the same year,
+        authorized and financed a maritime expedition that crossed the Atlantic Ocean
+        westward, an initiative that resulted in permanent contact between Europe
+        and the Americas. The support she provided transformed European maritime
+        expansion and greatly extended the overseas domains of the Spanish monarchy.
+        Died in 1504, in the town of Medina del Campo, leaving a lasting legacy for
+        the history of Spain and the Age of Discovery."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
-      name: "Am\xE9rico Vesp\xFAcio"
-      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
-        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
-        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
-        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
-        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
-        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
-        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
-        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
-        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
-        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
-        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
-        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
-        Faleceu em 22 de fevereiro de 1512, em Sevilha."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Fernando2
+      name: Ferdinand II of Aragon
+      description: "Born in 1452, in the town of Sos del Rey Cat\xF3lico, in the
+        Kingdom of Aragon, ascended to the throne in 1479 and played a decisive role
+        in the consolidation of the Spanish monarchy. Together with the Crown of
+        Castile, promoted the political unification of the main kingdoms of the Iberian
+        Peninsula and supported the completion of the Reconquista in 1492. In the
+        same year, authorized and financed a maritime expedition that crossed the
+        Atlantic Ocean westward, opening the way for European expansion into the
+        Americas. Also took part in the signing of the Treaty of Tordesillas in 1494,
+        which defined the division of the newly discovered lands between Portugal
+        and Spain. Died in 1516, in the locality of Madrigalejo, leaving a notable
+        legacy for European politics and maritime expansion."
 --- !u!1001 &160144170
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8361,7 +8358,7 @@ GameObject:
   - component: {fileID: 167707213}
   - component: {fileID: 167707215}
   - component: {fileID: 167707214}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: timelineYear06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9608,7 +9605,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e9fb7ed7d4f1b0e4c9098ba1616c7b0d, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e9fb7ed7d4f1b0e4c9098ba1616c7b0d, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -10552,7 +10549,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 39fcc24db11f0c54185c0bb5e4ca4455, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 39fcc24db11f0c54185c0bb5e4ca4455, type: 3}
       propertyPath: m_IsActive
@@ -14244,7 +14241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: aeb75d185e150fc44b6461669648d79c, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: aeb75d185e150fc44b6461669648d79c, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -14467,7 +14464,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bb25a77c8d88bde409f2a0adc82289a9, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bb25a77c8d88bde409f2a0adc82289a9, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -16322,7 +16319,7 @@ Light:
   serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 0.9372549, b: 0.8235294, a: 1}
-  m_Intensity: 1.5
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -16478,7 +16475,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ca64da45cec8d024c9314b931469d341, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ca64da45cec8d024c9314b931469d341, type: 3}
       propertyPath: m_IsActive
@@ -18334,7 +18331,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 534b42e1fbd61324cb77667e47929a80, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 534b42e1fbd61324cb77667e47929a80, type: 3}
       propertyPath: m_TagString
@@ -19523,7 +19520,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ddd0a5dc131149140aaa727e33d5d328, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ddd0a5dc131149140aaa727e33d5d328, type: 3}
       propertyPath: m_IsActive
@@ -19813,7 +19810,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8fade45eecbbcbf4dbf2afc8071e4541, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8fade45eecbbcbf4dbf2afc8071e4541, type: 3}
       propertyPath: m_TagString
@@ -21887,7 +21884,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 95c82c40af3f15b428d974f5dc1ea191, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 95c82c40af3f15b428d974f5dc1ea191, type: 3}
       propertyPath: m_IsActive
@@ -23329,7 +23326,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 3f656b9b7d571854785736298897fccd, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 3f656b9b7d571854785736298897fccd, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -23386,12 +23383,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: af404b33d760ca745a02f123876116d9, type: 2}
   year: 1500
-  title: "Pedro \xC1lvares Cabral chega ao Brasil"
+  title: " Pedro \xC1lvares Cabral arrives in Brazil"
   era: AD
   map:
-    question: "Onde Crist\xF3v\xE3o colombo atracou seu navio quando chegou a America?"
+    question: At which location on the Brazilian coast did the Portuguese fleet make
+      its first landing during the 1500 expedition?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question06
     pins:
     - x: 0.2
       y: -0.15
@@ -23406,53 +23404,45 @@ MonoBehaviour:
     question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
-      name: Vasco da Gama
-      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
-        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
-        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
-        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
-        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
-        contornando o continente africano, chegando a Calecute em 1498, feito que
-        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
-        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
-        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
-        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
-        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
-        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
-        portuguesa."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/PedroAlvarez
+      name: "Pedro \xC1lvares Cabral"
+      description: "Born around 1467, in Belmonte, in the Kingdom of Portugal, belonged
+        to the lesser nobility and received training related to navigation, military
+        strategy, and court affairs. In 1500, took command of a large expedition
+        bound for India that, during the crossing of the Atlantic Ocean, reached
+        lands situated on the eastern coast of South America, currently corresponding
+        to Brazil. After arrival, continued the voyage rounding the African continent
+        until reaching Calicut, contributing to the strengthening of Portuguese trade
+        routes with the East. The expedition consolidated Portuguese presence in
+        the Atlantic and marked one of the most important events of the Age of Discovery.
+        Died around 1520, in the city of Santar\xE9m, in the Kingdom of Portugal."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
-      name: "Pedro \xC1lvarez Cabral"
-      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
-        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
-        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
-        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
-        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
-        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
-        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
-        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
-        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
-        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
-        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
-        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
-        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/PeroVaz
+      name: Pero Vaz de Caminha
+      description: Born around 1450, in the city of Porto, in the Kingdom of Portugal,
+        held functions as a clerk of the Crown and stood out for administrative and
+        diplomatic experience. In 1500, took part in the Portuguese expedition bound
+        for India, being responsible for the official record of the main events of
+        the voyage. After arriving at the lands located on the eastern coast of South
+        America, wrote a detailed letter addressed to the king of Portugal, describing
+        the landscape, the inhabitants, and the first impressions of the territory.
+        This document became one of the most important historical accounts of the
+        early Portuguese presence in Brazil. Subsequently, continued the journey
+        to the East, dying in the same year during an attack on the Portuguese trading
+        post of Calicut, in present-day India.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
-      name: "Am\xE9rico Vesp\xFAcio"
-      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
-        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
-        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
-        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
-        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
-        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
-        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
-        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
-        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
-        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
-        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
-        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
-        Faleceu em 22 de fevereiro de 1512, em Sevilha."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/NicolauCoelho
+      name: Nicolau Coelho
+      description: Born around 1460, in the Kingdom of Portugal, stood out as an
+        experienced navigator during the Age of Discovery and took part in some of
+        the most important Portuguese maritime expeditions. In 1497, joined the fleet
+        that established the first sea route between Europe and India by rounding
+        the African continent. Three years later, took part in the expedition that
+        reached the eastern coast of South America, contributing to the recognition
+        and taking of possession of the territory in the name of the Portuguese Crown.
+        After that episode, continued the voyage to India, participating in commercial
+        and military missions in the Indian Ocean. Died in 1504, during the return
+        voyage to Portugal, near the eastern African coast, victim of illness.
 --- !u!1 &742660263
 GameObject:
   m_ObjectHideFlags: 0
@@ -30281,7 +30271,7 @@ GameObject:
   - component: {fileID: 780548327}
   - component: {fileID: 780548329}
   - component: {fileID: 780548328}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: timelineYear04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31429,7 +31419,7 @@ GameObject:
   - component: {fileID: 807229269}
   - component: {fileID: 807229271}
   - component: {fileID: 807229270}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: timelineYear01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32977,6 +32967,115 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersonDescriptionClick
   sourceText: {fileID: 1276213857}
+--- !u!1 &875817297
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 875817298}
+  - component: {fileID: 875817299}
+  m_Layer: 0
+  m_Name: EventCardContent_09
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &875817298
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875817297}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &875817299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875817297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 7912eef567d1fab479c955fdf12ecc6b, type: 2}
+  year: 1507
+  title: ' The continent is named "America"'
+  era: AD
+  map:
+    question: In which city was the map that first used the name "America" to identify
+      the new continent published?
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question09
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/MartinWaldseemuller
+      name: " Martin Waldseem\xFCller"
+      description: "Born around 1470, in the region of W\xFCrttemberg, in the Holy
+        Roman Empire, stood out as a cartographer, geographer, and humanist. Throughout
+        the career, devoted to the study of new geographic discoveries made during
+        the Age of Discovery, gathering information from European navigators and
+        explorers. In 1507, published an innovative world map that identified, for
+        the first time, the new continent with the name \"America,\" in recognition
+        of the conclusions disseminated by Amerigo Vespucci. The work became a milestone
+        in the history of cartography and profoundly influenced the representation
+        of the world in subsequent centuries. Also took part in the production of
+        important maps and terrestrial globes, contributing to the advancement of
+        European geographic knowledge. Died around 1520, in the city of Saint-Di\xE9,
+        in present-day France."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/AmericoVespucio
+      name: Amerigo Vespucci
+      description: 'Born in 1454, in the city of Florence, stood out as a merchant,
+        cartographer, and navigator during the Age of Discovery. After establishing
+        connections with Portuguese and Spanish expeditions, took part in exploratory
+        voyages along the coast of South America between 1499 and 1502. The extensive
+        exploration of the coastline led to the conclusion that the lands found were
+        not part of Asia, but constituted a continent previously unknown to Europeans.
+        This interpretation was disseminated in letters that exercised great influence
+        on the cartography of the time. In 1507, a world map began to identify the
+        new continent with the name "America," in recognition of the conclusions
+        reached. Died in 1512, in the city of Seville, leaving an important legacy
+        for geography and maritime exploration.  '
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/MathiasRingMann
+      name: Matthias Ringmann
+      description: "Born in 1482, in the region of Alsace, then belonging to the
+        Holy Roman Empire, stood out as a humanist, geographer, poet, and scholar
+        of Renaissance cartography. Took part in the group of scholars established
+        in Saint-Di\xE9, dedicated to the study of new geographic discoveries and
+        the production of maps. In 1507, collaborated in the preparation of the work
+        Cosmographiae Introductio, published together with an innovative world map
+        that used for the first time the name \"America\" to designate the new continent,
+        inspired by the descriptions attributed to Amerigo Vespucci. The work exercised
+        great influence on European cartography and contributed to consolidating
+        that designation. Died in 1511, probably in S\xE9lestat, leaving an important
+        legacy for geography and Renaissance humanism."
 --- !u!1 &877612425
 GameObject:
   m_ObjectHideFlags: 0
@@ -33048,6 +33147,115 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &883346375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 883346376}
+  - component: {fileID: 883346377}
+  m_Layer: 0
+  m_Name: EventCardContent_07
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &883346376
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883346375}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &883346377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883346375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: f8c4cd29f73e93347906d686e1467245, type: 2}
+  year: 1501
+  title: ' Amerigo Vespucci recognizes a new continent'
+  era: AD
+  map:
+    question: While exploring the coast of which continent did Amerigo Vespucci conclude
+      that the newly discovered lands were not part of Asia?
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question07
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/AmericoVespucio
+      name: Amerigo Vespucci
+      description: 'Born in 1454, in the city of Florence, stood out as a merchant,
+        cartographer, and navigator during the Age of Discovery. After establishing
+        connections with Portuguese and Spanish expeditions, took part in exploratory
+        voyages along the coast of South America between 1499 and 1502. The extensive
+        exploration of the coastline led to the conclusion that the lands found were
+        not part of Asia, but constituted a continent previously unknown to Europeans.
+        This interpretation was disseminated in letters that exercised great influence
+        on the cartography of the time. In 1507, a world map began to identify the
+        new continent with the name "America," in recognition of the conclusions
+        reached. Died in 1512, in the city of Seville, leaving an important legacy
+        for geography and maritime exploration.  '
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/GoncaloCoelho
+      name: "Gon\xE7alo Coelho "
+      description: Born in the second half of the 15th century, in the Kingdom of
+        Portugal, stood out as a navigator and commander of expeditions during the
+        Age of Discovery. Between 1501 and 1502, led an important exploratory voyage
+        along the eastern coast of South America, contributing to the recognition
+        of extensive areas of the coastline currently belonging to Brazil. The expedition
+        carried out geographic surveys, identified bays, capes, and rivers, and reinforced
+        Portuguese presence in the region. During this voyage, counted on the participation
+        of Amerigo Vespucci, whose observations contributed to the recognition that
+        the explored lands belonged to a new continent. Although many details of
+        the trajectory remain uncertain, the role played in Atlantic explorations
+        was decisive in expanding European geographic knowledge in the early 16th
+        century.
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Manuel1
+      name: Manuel I of Portugal
+      description: Born in 1469, in the town of Alcochete, in the Kingdom of Portugal,
+        ascended to the throne in 1495 and conducted one of the periods of greatest
+        maritime expansion in Portuguese history. During the reign, supported expeditions
+        that consolidated the sea route to India, promoted exploration of the Atlantic
+        Ocean, and expanded Portuguese presence in Africa, Asia, and the Americas.
+        Under the authority of the Crown, the expedition that reached the coast of
+        present-day Brazil in 1500 was organized, reinforcing Portuguese overseas
+        domains. Also encouraged the development of Eastern trade and strengthened
+        diplomatic relations with various kingdoms. Died in 1521, in the city of
+        Lisbon, leaving a decisive legacy for the consolidation of Portugal as one
+        of the greatest maritime powers of the Age of Discovery.
 --- !u!1 &884094861
 GameObject:
   m_ObjectHideFlags: 0
@@ -33521,13 +33729,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 108efd8f4cb67204aaddfaa449c86078, type: 2}
-  year: 1493
-  title: "Retorno de Colombo \xE0 Espanha"
+  year: 1494
+  title: Spain and Portugal conclude the Treaty of Tordesillas
   era: AD
   map:
-    question: "Onde Crist\xF3v\xE3o colombo atracou seu navio quando chegou a America?"
+    question: In which city was the treaty signed that divided the newly discovered
+      lands between Portugal and Castile?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question03
     pins:
     - x: 0.2
       y: -0.15
@@ -33542,53 +33751,47 @@ MonoBehaviour:
     question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
-      name: Vasco da Gama
-      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
-        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
-        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
-        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
-        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
-        contornando o continente africano, chegando a Calecute em 1498, feito que
-        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
-        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
-        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
-        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
-        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
-        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
-        portuguesa."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Joao2
+      name: John II of Portugal
+      description: Born in 1455, in the city of Lisbon, ascended to the throne of
+        Portugal in 1481 and strengthened the authority of the Crown, promoting important
+        administrative and military reforms. Demonstrated great interest in Portuguese
+        maritime expansion, encouraging expeditions along the African coast and supporting
+        the improvement of oceanic routes. In 1494, took part in the negotiations
+        that resulted in the Treaty of Tordesillas, an agreement that established
+        the division of discovered and yet-to-be-discovered lands between Portugal
+        and Castile. During the reign, contributed to consolidating Portugal as one
+        of the main maritime powers of Europe, laying the foundations for future
+        voyages toward India and Brazil. Died in 1495, in the city of Alvor, in the
+        Kingdom of Portugal.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
-      name: "Pedro \xC1lvarez Cabral"
-      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
-        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
-        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
-        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
-        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
-        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
-        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
-        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
-        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
-        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
-        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
-        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
-        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Isabel1
+      name: Isabella I of Castile
+      description: "Born in 1451, in the town of Madrigal de las Altas Torres, in
+        the Kingdom of Castile, ascended to the throne in 1474 and promoted far\u2011reaching
+        administrative and political reforms. Together with the Crown of Aragon,
+        consolidated the unification of the main kingdoms of the Iberian Peninsula
+        and supported the completion of the Reconquista in 1492. In the same year,
+        authorized and financed a maritime expedition that crossed the Atlantic Ocean
+        westward, an initiative that resulted in permanent contact between Europe
+        and the Americas. The support she provided transformed European maritime
+        expansion and greatly extended the overseas domains of the Spanish monarchy.
+        Died in 1504, in the town of Medina del Campo, leaving a lasting legacy for
+        the history of Spain and the Age of Discovery."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
-      name: "Am\xE9rico Vesp\xFAcio"
-      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
-        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
-        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
-        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
-        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
-        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
-        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
-        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
-        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
-        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
-        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
-        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
-        Faleceu em 22 de fevereiro de 1512, em Sevilha."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Fernando2
+      name: Ferdinand II of Aragon
+      description: "Born in 1452, in the town of Sos del Rey Cat\xF3lico, in the
+        Kingdom of Aragon, ascended to the throne in 1479 and played a decisive role
+        in the consolidation of the Spanish monarchy. Together with the Crown of
+        Castile, promoted the political unification of the main kingdoms of the Iberian
+        Peninsula and supported the completion of the Reconquista in 1492. In the
+        same year, authorized and financed a maritime expedition that crossed the
+        Atlantic Ocean westward, opening the way for European expansion into the
+        Americas. Also took part in the signing of the Treaty of Tordesillas in 1494,
+        which defined the division of the newly discovered lands between Portugal
+        and Spain. Died in 1516, in the locality of Madrigalejo, leaving a notable
+        legacy for European politics and maritime expansion."
 --- !u!1 &905945222
 GameObject:
   m_ObjectHideFlags: 0
@@ -33733,7 +33936,7 @@ GameObject:
   - component: {fileID: 907459684}
   - component: {fileID: 907459686}
   - component: {fileID: 907459685}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: timelineYear03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41550,7 +41753,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9ca2c29df53817444941c6e061628d31, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9ca2c29df53817444941c6e061628d31, type: 3}
       propertyPath: m_TagString
@@ -41822,7 +42025,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: efbef99bcb2f8874aa002ca7143f0844, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: efbef99bcb2f8874aa002ca7143f0844, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -43164,13 +43367,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0e612dce0fa8cf478b41f4438fb4ec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebugGameConfig
-  RepairComponent: 0
-  BonusTime: 0
-  SecondChanceSlot: 0
-  CoolThermometer: 0
-  KillChallengeOption: 0
-  SkipChallenge: 100
-  MapChancePct: 100
+  RepairComponent: 16
+  BonusTime: 16
+  SecondChanceSlot: 16
+  CoolThermometer: 16
+  KillChallengeOption: 16
+  SkipChallenge: 16
+  MapChancePct: 50
 --- !u!4 &1127573950
 Transform:
   m_ObjectHideFlags: 0
@@ -43517,7 +43720,7 @@ RectTransform:
   m_GameObject: {fileID: 1140715427}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0.2}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 543450653081972124}
@@ -43574,12 +43777,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 36
+  m_fontSize: 5
+  m_fontSizeBase: 5
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
-  m_fontSizeMax: 30
+  m_fontSizeMax: 31.42
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -44750,7 +44953,7 @@ GameObject:
   - component: {fileID: 1200235920}
   - component: {fileID: 1200235922}
   - component: {fileID: 1200235921}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: timelineYear02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50259,7 +50462,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f3fe6f216fd80e649976811b84acc934, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f3fe6f216fd80e649976811b84acc934, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -61018,7 +61221,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ac9914783390fce42bf36bdbd3cde347, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ac9914783390fce42bf36bdbd3cde347, type: 3}
       propertyPath: m_TagString
@@ -62498,7 +62701,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 57d7f5e781f085c4b80747817f811086, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 57d7f5e781f085c4b80747817f811086, type: 3}
       propertyPath: m_TagString
@@ -68366,7 +68569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddf87d0f80b75743b37f2c94c62204c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnTimer
-  timeLimit: 30
+  timeLimit: 180
   syncInterval: 1
   highestPointerAnimator: {fileID: 224298385}
 --- !u!4 &1359821954
@@ -68533,7 +68736,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: effca6f8d4679384189ab4a0abac29b5, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: effca6f8d4679384189ab4a0abac29b5, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -69303,6 +69506,71 @@ RectTransform:
   m_AnchoredPosition: {x: 839, y: -464}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &1442615428
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1671730430}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.54
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0484
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.012
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.604514
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.3668281
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.3668281
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.604514
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 62.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6ff9cdcf901ec4f4d8dac3beccba68be, type: 2}
+    - target: {fileID: 919132149155446097, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_Name
+      value: LegendeDerSciligru (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6f98d15a7feeb914f9011cc3c73a61fc, type: 3}
 --- !u!1 &1442807049
 GameObject:
   m_ObjectHideFlags: 0
@@ -69510,7 +69778,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6cce2a0bd7bdff64f995f8c39105fab3, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6cce2a0bd7bdff64f995f8c39105fab3, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -69603,7 +69871,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c8b218617891e4840878f11bb412ef4d, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c8b218617891e4840878f11bb412ef4d, type: 3}
       propertyPath: m_TagString
@@ -69698,7 +69966,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d41b2f6198135704985a11ebcf5a894b, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d41b2f6198135704985a11ebcf5a894b, type: 3}
       propertyPath: m_IsActive
@@ -70006,6 +70274,9 @@ Transform:
   - {fileID: 2018467855}
   - {fileID: 44571614}
   - {fileID: 739385640}
+  - {fileID: 883346376}
+  - {fileID: 1550642275}
+  - {fileID: 875817298}
   m_Father: {fileID: 336008438}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1476712451
@@ -80324,7 +80595,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 827e0abd54fa0624fbd447d53091311f, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 827e0abd54fa0624fbd447d53091311f, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -80450,7 +80721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7d586107e9955a5408291005b0a3180c, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7d586107e9955a5408291005b0a3180c, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -80756,7 +81027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8ca1674f1f355fc49965b75978f10812, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8ca1674f1f355fc49965b75978f10812, type: 3}
       propertyPath: m_IsActive
@@ -80909,6 +81180,115 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1546670742}
   m_CullTransparentMesh: 1
+--- !u!1 &1550642274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1550642275}
+  - component: {fileID: 1550642276}
+  m_Layer: 0
+  m_Name: EventCardContent_08
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1550642275
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550642274}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.05265612, y: -0.14954263, z: -0.26614082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1472967106}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1550642276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550642274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812c6d50dc75d5e47bb0d928c9a53f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 43775675dee99fc46ac42375ca309823, type: 2}
+  year: 1503
+  title: " Creation of the Casa de Contrata\xE7\xE3o"
+  era: AD
+  map:
+    question: In which Spanish city was the institution responsible for regulating
+      trade and navigation with the New World established?
+    imageUrl: 
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question08
+    pins:
+    - x: 0.2
+      y: -0.15
+    - x: -0.07
+      y: 0.08
+    - x: 0.19
+      y: 0.02
+    - x: 0.14
+      y: -0.03
+    correctPinIndex: 3
+  persons:
+    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    entries:
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Isabel1
+      name: Isabella I of Castile
+      description: "Born in 1451, in the town of Madrigal de las Altas Torres, in
+        the Kingdom of Castile, ascended to the throne in 1474 and promoted far\u2011reaching
+        administrative and political reforms. Together with the Crown of Aragon,
+        consolidated the unification of the main kingdoms of the Iberian Peninsula
+        and supported the completion of the Reconquista in 1492. In the same year,
+        authorized and financed a maritime expedition that crossed the Atlantic Ocean
+        westward, an initiative that resulted in permanent contact between Europe
+        and the Americas. The support she provided transformed European maritime
+        expansion and greatly extended the overseas domains of the Spanish monarchy.
+        Died in 1504, in the town of Medina del Campo, leaving a lasting legacy for
+        the history of Spain and the Age of Discovery."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Fernando2
+      name: Ferdinand II of Aragon
+      description: "Born in 1452, in the town of Sos del Rey Cat\xF3lico, in the
+        Kingdom of Aragon, ascended to the throne in 1479 and played a decisive role
+        in the consolidation of the Spanish monarchy. Together with the Crown of
+        Castile, promoted the political unification of the main kingdoms of the Iberian
+        Peninsula and supported the completion of the Reconquista in 1492. In the
+        same year, authorized and financed a maritime expedition that crossed the
+        Atlantic Ocean westward, opening the way for European expansion into the
+        Americas. Also took part in the signing of the Treaty of Tordesillas in 1494,
+        which defined the division of the newly discovered lands between Portugal
+        and Spain. Died in 1516, in the locality of Madrigalejo, leaving a notable
+        legacy for European politics and maritime expansion."
+    - imageUrl: 
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/JuanRodriguezFonseca
+      name: "Juan Rodr\xEDguez de Fonseca"
+      description: "Born in 1451, in the town of Toro, in the Kingdom of Castile,
+        received religious training and stood out as an administrator in the service
+        of the Spanish Crown. From the 1490s onward, assumed coordination of matters
+        related to overseas expeditions, playing a fundamental role in the planning,
+        financing, and organization of voyages to the New World. Also supervised
+        the administration of the first Spanish colonies in the Americas, influencing
+        decisions on settlement, exploration, and government of the newly discovered
+        territories. In 1503, took part in the creation of the Casa de Contrataci\xF3n
+        of Seville, an institution responsible for controlling trade and navigation
+        between Spain and the overseas possessions. Died in 1524, in the city of
+        Burgos, leaving an important legacy for the administration of the Spanish
+        colonial empire."
 --- !u!1001 &1554284227
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -88594,7 +88974,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f470c22c95605874b98ce37ffe3ff6bc, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f470c22c95605874b98ce37ffe3ff6bc, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -89705,6 +90085,7 @@ Transform:
   - {fileID: 444545128}
   - {fileID: 1169483045}
   - {fileID: 508505486}
+  - {fileID: 99270195}
   - {fileID: 1009901090}
   - {fileID: 1638329335}
   - {fileID: 1607338560}
@@ -90952,7 +91333,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 68e1d806c119cd74ea58ab7fd88cf007, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 68e1d806c119cd74ea58ab7fd88cf007, type: 3}
       propertyPath: m_IsActive
@@ -91754,7 +92135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8f3c3ffa8c116b844854c6882a23a098, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8f3c3ffa8c116b844854c6882a23a098, type: 3}
       propertyPath: m_TagString
@@ -94599,7 +94980,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -229.1596, y: -146}
+  m_AnchoredPosition: {x: -229.15967, y: -146}
   m_SizeDelta: {x: -898.6966, y: -647.0023}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1850802443
@@ -96240,7 +96621,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 58fcaba6a249f0046a5172f29d90b030, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 58fcaba6a249f0046a5172f29d90b030, type: 3}
       propertyPath: m_TagString
@@ -96464,7 +96845,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1a21f98ef0d49a6409dd68f634000ed2, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1a21f98ef0d49a6409dd68f634000ed2, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -96520,13 +96901,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 780562d36c71f1542a565fcc3a6ccb44, type: 2}
-  year: 1491
-  title: "Crist\xF3v\xE3o Colombo chega \xE0 Am\xE9rica"
+  year: 1492
+  title: ' Christopher Columbus arrives in the Americas (Guanahani)'
   era: AD
   map:
-    question: "Onde Crist\xF3v\xE3o colombo atracou seu navio quando chegou a America?"
+    question: Where did Christopher Columbus first land during the voyage that marked
+      the beginning of permanent contact between Europe and the Americas?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question01
     pins:
     - x: 0.2
       y: -0.15
@@ -96541,53 +96923,47 @@ MonoBehaviour:
     question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
-      name: Vasco da Gama
-      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
-        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
-        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
-        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
-        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
-        contornando o continente africano, chegando a Calecute em 1498, feito que
-        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
-        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
-        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
-        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
-        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
-        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
-        portuguesa."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      name: Christopher Columbus
+      description: Born around 1451 in the Republic of Genoa, received training related
+        to navigation, cartography, and maritime trade. After several years in the
+        Iberian Peninsula, presented a project to reach the East by sailing westward
+        across the Atlantic Ocean. In 1492, led an expedition of three ships that
+        reached an island in the Bahamas, establishing the first permanent contact
+        between Europe and the Americas in the modern era. Subsequently, commanded
+        three more voyages, exploring various Caribbean islands, the coast of Central
+        America, and part of South America. Although believed had reached Asia, the
+        expeditions profoundly altered world history, initiating European expansion
+        into the Americas. Died in 1506 in the city of Valladolid, in the Kingdom
+        of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
-      name: "Pedro \xC1lvarez Cabral"
-      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
-        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
-        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
-        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
-        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
-        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
-        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
-        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
-        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
-        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
-        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
-        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
-        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/RodrigoTriana
+      name: Rodrigo de Triana
+      description: Born in the second half of the 15th century in Castile, dedicated
+        himself to navigation and took part in maritime expeditions during the Age
+        of Discovery. In 1492, joined the crew of one of the vessels on the first
+        voyage across the Atlantic Ocean financed by the Spanish Crown. In the early
+        hours of October 12, was traditionally recognized as the first person from
+        the expedition to spot land, announcing the arrival at an island in the Bahamas.
+        Despite the significance of this feat, a dispute arose over the attribution
+        of the reward promised for the first sighting. The episode became one of
+        the most famous in the history of maritime exploration. The subsequent events
+        of the life remain poorly documented, contributing to the enigmatic character
+        of the historical trajectory.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
-      name: "Am\xE9rico Vesp\xFAcio"
-      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
-        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
-        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
-        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
-        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
-        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
-        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
-        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
-        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
-        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
-        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
-        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
-        Faleceu em 22 de fevereiro de 1512, em Sevilha."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/MartinAlonso
+      name: "Mart\xEDn Alonso Pinz\xF3n"
+      description: Born around 1441 in Palos de la Frontera, in the Kingdom of Castile,
+        stood out as an experienced navigator, shipowner, and maritime merchant.
+        The reputation earned within the naval community was decisive in assembling
+        crews and ensuring the success of an important transatlantic expedition in
+        1492. During the voyage, took command of the caravel Pinta, playing a key
+        role in navigation and in the decisions made throughout the crossing. Took
+        part in the arrival at the Bahamas islands and the initial exploration of
+        the Caribbean, contributing to the establishment of the first routes between
+        Europe and the newly found lands. Died in 1493, shortly after the expedition's
+        return to Spain, leaving a significant legacy for the history of the Age
+        of Discovery.
 --- !u!1 &1904123930
 GameObject:
   m_ObjectHideFlags: 0
@@ -97135,7 +97511,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f65626b0d29bd134cbc0a15b440e691a, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f65626b0d29bd134cbc0a15b440e691a, type: 3}
       propertyPath: m_IsActive
@@ -98100,7 +98476,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fecb9bc7902a21241afc5c0f222a475c, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fecb9bc7902a21241afc5c0f222a475c, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -98955,7 +99331,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0377b312fea14da4ebfc01b7f99cdf1a, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0377b312fea14da4ebfc01b7f99cdf1a, type: 3}
       propertyPath: m_TagString
@@ -99030,13 +99406,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: f68bb6e8b2174a94e9a603e6e0b85d56, type: 2}
-  year: 1494
-  title: Tratado de Tordesilhas
+  year: 1496
+  title: ' Founding of the city of Santo Domingo'
   era: AD
   map:
-    question: "Onde Crist\xF3v\xE3o colombo atracou seu navio quando chegou a America?"
+    question: In which city was the first permanent European settlement in the Americas
+      established?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/map
+    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question04
     pins:
     - x: 0.2
       y: -0.15
@@ -99051,53 +99428,48 @@ MonoBehaviour:
     question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Vasco
-      name: Vasco da Gama
-      description: "Nascido por volta de 1460, provavelmente em Sines, no Reino de
-        Portugal, pertenceu \xE0 pequena nobreza e recebeu forma\xE7\xE3o ligada
-        \xE0 navega\xE7\xE3o e \xE0s atividades mar\xEDtimas. Viveu em Portugal durante
-        grande parte da vida, servindo \xE0 Coroa em importantes miss\xF5es. Em 1497,
-        comandou a expedi\xE7\xE3o que encontrou uma rota mar\xEDtima para a \xCDndia
-        contornando o continente africano, chegando a Calecute em 1498, feito que
-        transformou o com\xE9rcio entre a Europa e o Oriente. Posteriormente, liderou
-        novas viagens ao oceano \xCDndico e desempenhou papel decisivo na consolida\xE7\xE3o
-        da presen\xE7a portuguesa na regi\xE3o. Em 1524, foi nomeado vice-rei da
-        \xCDndia portuguesa. Faleceu em 24 de dezembro de 1524, na cidade de Cochim,
-        na \xCDndia portuguesa. Anos depois, os seus restos mortais foram trasladados
-        para Portugal, onde permanecem como parte do legado da expans\xE3o mar\xEDtima
-        portuguesa."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/BartolomeuColombo
+      name: Bartholomew Columbus
+      description: Born around 1461, in the Republic of Genoa, acquired experience
+        as a navigator, cartographer, and administrator during the Age of Discovery.
+        Participated in the transatlantic expeditions that began in 1493 and collaborated
+        in the exploration and organization of the first Spanish possessions in the
+        Caribbean. In 1496, founded the city of Santo Domingo, considered the first
+        permanent European settlement in the Americas, playing a central role in
+        its initial administration. Also held governmental functions on the island
+        of Hispaniola, facing internal conflicts and difficulties related to colonization.
+        Throughout this trajectory, contributed to the consolidation of Spanish presence
+        in the New World and to the development of the first overseas administrative
+        structures. Died in 1514, in the city of Santo Domingo, on the island of
+        Hispaniola.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Cabral
-      name: "Pedro \xC1lvarez Cabral"
-      description: "Nascido por volta de 1467 ou 1468, em Belmonte, no Reino de Portugal,
-        pertenceu \xE0 nobreza e recebeu forma\xE7\xE3o voltada \xE0 administra\xE7\xE3o,
-        \xE0 estrat\xE9gia militar e \xE0 navega\xE7\xE3o. Viveu principalmente em
-        Portugal, mantendo v\xEDnculos com a corte durante parte da vida. Em 1500,
-        recebeu o comando de uma expedi\xE7\xE3o \xE0s \xCDndias que alcan\xE7ou
-        terras na costa da Am\xE9rica do Sul, posteriormente incorporadas ao Imp\xE9rio
-        Portugu\xEAs, em 22 de abril daquele ano. A viagem prosseguiu at\xE9 a \xCDndia,
-        contribuindo para a consolida\xE7\xE3o das rotas comerciais portuguesas,
-        apesar das perdas provocadas por tempestades e conflitos no oceano \xCDndico.
-        Ap\xF3s esse feito, afastou-se gradualmente da vida p\xFAblica. Faleceu por
-        volta de 1520, provavelmente em Santar\xE9m, no Reino de Portugal, onde foi
-        sepultado na Igreja da Gra\xE7a, deixando um legado marcante para a expans\xE3o
-        mar\xEDtima portuguesa e para a Era das Navega\xE7\xF5es."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      name: Christopher Columbus
+      description: Born around 1451 in the Republic of Genoa, he received training
+        related to navigation, cartography, and maritime trade. After several years
+        in the Iberian Peninsula, he presented a project to reach the East by sailing
+        westward across the Atlantic Ocean. In 1492, he led an expedition of three
+        ships that reached an island in the Bahamas, establishing the first permanent
+        contact between Europe and the Americas in the modern era. Subsequently,
+        he commanded three more voyages, exploring various Caribbean islands, the
+        coast of Central America, and part of South America. Although he believed
+        he had reached Asia, his expeditions profoundly altered world history, initiating
+        European expansion into the Americas. He died in 1506 in the city of Valladolid,
+        in the Kingdom of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Americo
-      name: "Am\xE9rico Vesp\xFAcio"
-      description: "Nascido em 9 de mar\xE7o de 1454, em Floren\xE7a, na atual It\xE1lia,
-        recebeu forma\xE7\xE3o em com\xE9rcio, cartografia e navega\xE7\xE3o. Viveu
-        inicialmente em Floren\xE7a e, mais tarde, estabeleceu-se em Sevilha, no
-        Reino de Espanha, onde participou da organiza\xE7\xE3o de expedi\xE7\xF5es
-        mar\xEDtimas. Entre 1499 e 1502, realizou viagens pela costa da Am\xE9rica
-        do Sul, descrevendo caracter\xEDsticas que o levaram \xE0 conclus\xE3o de
-        que aquelas terras pertenciam a um continente at\xE9 ent\xE3o desconhecido
-        pelos europeus, e n\xE3o faziam parte da \xC1sia. Os relatos dessas expedi\xE7\xF5es
-        contribu\xEDram para ampliar o conhecimento geogr\xE1fico da \xE9poca, e
-        o continente americano passou a receber esse nome em sua homenagem. Em 1508,
-        foi nomeado Piloto-Mor da Casa de Contrata\xE7\xE3o de Sevilha, respons\xE1vel
-        pela forma\xE7\xE3o de navegadores e atualiza\xE7\xE3o das cartas n\xE1uticas.
-        Faleceu em 22 de fevereiro de 1512, em Sevilha."
+      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/FranciscoRoldan
+      name: "Francisco Rold\xE1n"
+      description: Born around 1460, in the Kingdom of Castile, held administrative
+        roles during the early years of Spanish colonization in the Americas. In
+        1493, joined the second transatlantic expedition organized by the Spanish
+        Crown and was appointed chief judicial authority of the island of Hispaniola.
+        A few years later, led a revolt of settlers against the local administration,
+        motivated by conflicts related to governing conditions and the distribution
+        of land and privileges. The movement weakened the established authority and
+        contributed to changes in the administration of Spanish possessions in the
+        New World. After a reconciliation agreement, remained on the island until
+        dying in 1502, during a hurricane that struck the coast of Hispaniola, when
+        the vessel aboard which the journey was being made sank.
 --- !u!4 &2021136898 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6cce2a0bd7bdff64f995f8c39105fab3, type: 3}
@@ -110730,7 +111102,7 @@ GameObject:
   - component: {fileID: 2133920289}
   - component: {fileID: 2133920291}
   - component: {fileID: 2133920290}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: timelineYear05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -112141,7 +112513,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &919132148577038241
 GameObject:
   m_ObjectHideFlags: 0
@@ -115231,13 +115603,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1338907540963501439}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 543450652344555795}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!33 &4541248244838173324
 MeshFilter:
   m_ObjectHideFlags: 0

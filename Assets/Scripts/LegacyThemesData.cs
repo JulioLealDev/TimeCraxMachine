@@ -190,8 +190,8 @@ public class LegacyThemesData : MonoBehaviourPunCallbacks
             return;
         }
 
-        // Selecionar 7 cartas aleatórias do tema
-        selectedCards = SelectRandomCards(currentTheme.cards, 7);
+        // Selecionar 6 cartas aleatórias do tema
+        selectedCards = SelectRandomCards(currentTheme.cards, 6);
 
         // Criar array de índices das cartas selecionadas para sincronizar via RPC
         int[] selectedIndices = new int[selectedCards.Count];

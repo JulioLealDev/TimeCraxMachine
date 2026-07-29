@@ -282,7 +282,7 @@ namespace TimeCrax.Themes
                     case "NameText":
                         var nameText = child.GetComponent<TextMeshProUGUI>();
                         if (nameText != null)
-                            nameText.text = theme.name ?? "Sem nome";
+                            nameText.text = theme.name ?? "Unnamed";
                         break;
 
                     case "ThemeCreator":
@@ -290,7 +290,7 @@ namespace TimeCrax.Themes
                     case "CreatorText":
                         var creatorText = child.GetComponent<TextMeshProUGUI>();
                         if (creatorText != null)
-                            creatorText.text = theme.creatorName ?? "Autor desconhecido";
+                            creatorText.text = theme.creatorName ?? "Unknown author";
                         break;
 
                     case "ThemeNumberOfCards":

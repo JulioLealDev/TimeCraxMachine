@@ -93,6 +93,7 @@ public class PersonsAnswerChecker : MonoBehaviour
         GameObject[] incorrect = { incorrectIcon01, incorrectIcon02, incorrectIcon03 };
 
         bool anyWrong = false;
+        bool[] results = new bool[3];
 
         for (int i = 0; i < 3; i++)
         {
@@ -100,17 +101,24 @@ public class PersonsAnswerChecker : MonoBehaviour
                 && i < shuffled.Count
                 && names[i] != null
                 && names[i].text == shuffled[i].name;
-
+            results[i] = isCorrect;
             if (!isCorrect) anyWrong = true;
+        }
 
-            correct[i]?.SetActive(isCorrect);
-            incorrect[i]?.SetActive(!isCorrect);
+        var gameManager = FindFirstObjectByType<GameManager>();
+
+        // Broadcast result to observers before showing locally so timing aligns
+        if (gameManager != null && PhotonNetwork.InRoom)
+            gameManager.photonView.RPC("RPC_ShowPersonsFeedback", RpcTarget.Others, results[0], results[1], results[2]);
+
+        for (int i = 0; i < 3; i++)
+        {
+            correct[i]?.SetActive(results[i]);
+            incorrect[i]?.SetActive(!results[i]);
 
             if (i < 2)
                 yield return new WaitForSeconds(1f);
         }
-
-        var gameManager = FindFirstObjectByType<GameManager>();
 
         bool allCorrect = !anyWrong;
         if (allCorrect)
@@ -137,6 +145,70 @@ public class PersonsAnswerChecker : MonoBehaviour
         gameManager?.CloseNewTimeline();
 
         // t+2.5s: reset completo do PersonsFrame
+        yield return new WaitForSeconds(2.5f);
+
+        ResetState();
+        cardImage01?.ResetToDefault();
+        cardImage02?.ResetToDefault();
+        cardImage03?.ResetToDefault();
+
+        ResetPersonsFrame(gameManager);
+    }
+
+    public void OnSlotAssignedFromRPC(int slotIndex, string personName)
+    {
+        if (slotIndex < 0 || slotIndex > 2) return;
+
+        TMP_Text[]       names = { personName01, personName02, personName03 };
+        PersonCardImage[] cards = { cardImage01,  cardImage02,  cardImage03  };
+
+        if (names[slotIndex] != null)
+            names[slotIndex].text = personName;
+
+        var entry = GameManager.ShuffledPersonEntries?.Find(e => e.name == personName);
+        if (entry != null && !string.IsNullOrEmpty(entry.localImagePath))
+        {
+            var texture = ThemeStorage.LoadLocalImage(entry.localImagePath);
+            var renderer = cards[slotIndex]?.GetComponent<Renderer>();
+            if (renderer != null && texture != null)
+                renderer.material.mainTexture = texture;
+        }
+
+        assigned[slotIndex] = true;
+
+        if (assigned[0] && assigned[1] && assigned[2])
+        {
+            GameStateManager.TransitionTo(GamePhase.IM_ChallengeFeedback);
+            InputBlocker.Block();
+            Cursor.visible = true;
+        }
+    }
+
+    public void ShowPersonsFeedbackForObserver(bool slot0, bool slot1, bool slot2)
+    {
+        StartCoroutine(ObserverPersonsFeedbackSequence(slot0, slot1, slot2));
+    }
+
+    private IEnumerator ObserverPersonsFeedbackSequence(bool s0, bool s1, bool s2)
+    {
+        bool[]       results  = { s0, s1, s2 };
+        GameObject[] correct  = { correctIcon01,  correctIcon02,  correctIcon03  };
+        GameObject[] incorrect = { incorrectIcon01, incorrectIcon02, incorrectIcon03 };
+
+        for (int i = 0; i < 3; i++)
+        {
+            correct[i]?.SetActive(results[i]);
+            incorrect[i]?.SetActive(!results[i]);
+            if (i < 2) yield return new WaitForSeconds(1f);
+        }
+
+        bool allCorrect = s0 && s1 && s2;
+        if (allCorrect)
+            SlotLinkManager.Instance?.CheckAndActivateLinks(GameManager.CurrentPersonsSlotCount);
+
+        var gameManager = FindFirstObjectByType<GameManager>();
+        gameManager?.CloseNewTimeline();
+
         yield return new WaitForSeconds(2.5f);
 
         ResetState();

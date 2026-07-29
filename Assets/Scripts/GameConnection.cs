@@ -230,7 +230,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
         // Atualizar chat e lista localmente
         if (chatLog != null)
         {
-            chatLog.text += "\n" + newPlayer.NickName + " entrou na sala";
+            chatLog.text += "\n" + newPlayer.NickName + " joined the room";
         }
         ListPlayersInRoom();
 
@@ -257,7 +257,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
 
         if (chatLog != null)
         {
-            chatLog.text += "\n" + otherPlayer.NickName + " saiu da sala";
+            chatLog.text += "\n" + otherPlayer.NickName + " left the room";
         }
         ListPlayersInRoom();
 
@@ -440,7 +440,7 @@ public class GameConnection : MonoBehaviourPunCallbacks
         if (chatLog != null)
         {
             // Limpar chat ao entrar e mostrar todos os jogadores na sala
-            chatLog.text = "Você entrou na sala";
+            chatLog.text = "You joined the room";
 
 
         }

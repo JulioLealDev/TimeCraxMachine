@@ -344,7 +344,7 @@ namespace TimeCrax.Themes
             var nameText = cardGO.GetComponentInChildren<TextMeshProUGUI>();
             if (nameText != null)
             {
-                nameText.text = "Nenhum tema disponível";
+                nameText.text = "No themes available";
                 nameText.fontStyle = FontStyles.Italic;
                 nameText.color = new Color(0.6f, 0.6f, 0.6f, 1f);
             }

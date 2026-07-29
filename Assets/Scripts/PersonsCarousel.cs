@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Photon.Pun;
 using TimeCrax.Themes;
 
 public class PersonsCarousel : MonoBehaviour
@@ -113,8 +114,13 @@ public class PersonsCarousel : MonoBehaviour
         if (texture != null)
             targetRenderer.material.mainTexture = texture;
 
+        string personName = shuffledEntries[currentIndex].name;
         if (targetNameText != null)
-            targetNameText.text = shuffledEntries[currentIndex].name;
+            targetNameText.text = personName;
+
+        var gm = FindFirstObjectByType<GameManager>();
+        if (gm != null && PhotonNetwork.InRoom)
+            gm.photonView.RPC("RPC_PersonsSlotAssigned", RpcTarget.Others, currentSlotIndex, personName);
 
         panel.SetActive(false);
         if (challengeCanvas != null) challengeCanvas.SetActive(true);

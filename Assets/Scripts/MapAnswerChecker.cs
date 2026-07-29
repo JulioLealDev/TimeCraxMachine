@@ -113,8 +113,8 @@ public class MapAnswerChecker : MonoBehaviour
             {
                 var pinData = mapData.pins[i];
                 var localPos  = pins[i].localPosition;
-                localPos.x    = pinData.x;
-                localPos.z    = pinData.y;
+                localPos.x    = Mathf.Clamp(pinData.x, -0.19f, 0.19f);
+                localPos.z    = Mathf.Clamp(pinData.y, -0.19f, 0.14f);
                 pins[i].localPosition = localPos;
 
                 pins[i].gameObject.SetActive(true);
@@ -167,7 +167,59 @@ public class MapAnswerChecker : MonoBehaviour
             }
         }
 
+        var gm = FindFirstObjectByType<GameManager>();
+        if (gm != null && PhotonNetwork.InRoom)
+            gm.photonView.RPC("RPC_MapPinSelected", RpcTarget.Others, pinIndex);
+
         StartCoroutine(RevealFeedbackSequence(pinIndex));
+    }
+
+    public void ShowMapFeedbackForObserver(int pinIndex)
+    {
+        if (answered) return;
+        answered = true;
+
+        Debug.Log($"[MapAnswerChecker] Observer: Pin selecionado index={pinIndex}");
+
+        GameStateManager.TransitionTo(GamePhase.IM_ChallengeFeedback);
+        InputBlocker.Block();
+        Cursor.visible = true;
+
+        Transform[] pins = { mapPin01, mapPin02, mapPin03, mapPin04 };
+        foreach (var pin in pins)
+        {
+            if (pin != null)
+            {
+                pin.tag = "Untagged";
+                pin.GetComponent<HoverMaterialAdder>()?.HideHover();
+                var col = pin.GetComponent<Collider>();
+                if (col != null) col.enabled = false;
+            }
+        }
+
+        StartCoroutine(ObserverMapFeedbackSequence(pinIndex));
+    }
+
+    private IEnumerator ObserverMapFeedbackSequence(int pinIndex)
+    {
+        yield return new WaitForSeconds(1f);
+
+        bool isCorrect = pinIndex == correctPinIndex;
+        correctIcon?.SetActive(isCorrect);
+        incorrectIcon?.SetActive(!isCorrect);
+
+        if (isCorrect)
+            SlotLinkManager.Instance?.CheckAndActivateLinks(currentSlotCount);
+
+        yield return new WaitForSeconds(2f);
+
+        var gameManager = FindFirstObjectByType<GameManager>();
+        gameManager?.CloseNewTimeline();
+
+        yield return new WaitForSeconds(2.5f);
+
+        ResetState();
+        ResetMapFrame(gameManager);
     }
 
     private IEnumerator RevealFeedbackSequence(int clickedIndex)
