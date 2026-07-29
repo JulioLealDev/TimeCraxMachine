@@ -150,6 +150,7 @@ MonoBehaviour:
   - RPC_PersonsSlotAssigned
   - RPC_ShowPersonsFeedback
   - RPC_SyncPersonsShuffle
+  - RPC_FinishTurnClicked
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

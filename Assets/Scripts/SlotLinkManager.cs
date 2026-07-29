@@ -32,10 +32,10 @@ public class SlotLinkManager : MonoBehaviour
         int hi = answeredSlotIndex + 1;
 
         if (lo >= 1 && filledSlots.Contains(lo))
-            this.DelayedCall(2f, () => ActivateLinksForPair(lo));
+            this.DelayedCall(4f, () => ActivateLinksForPair(lo));
 
         if (hi <= 6 && filledSlots.Contains(hi))
-            this.DelayedCall(2f, () => ActivateLinksForPair(answeredSlotIndex));
+            this.DelayedCall(4f, () => ActivateLinksForPair(answeredSlotIndex));
     }
 
     // lowerSlotIndex é o menor dos dois índices adjacentes preenchidos (1-based).

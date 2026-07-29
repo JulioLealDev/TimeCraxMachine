@@ -272,35 +272,35 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
         switch (numberOfBonusCards)
         {
             case 1:
-                pos = zoomed ? new Vector3(0f, 0.27767640352249148f, 0.049448609352111819f)
+                pos = zoomed ? new Vector3(0f, 0.24767640352249148f, 0.049448609352111819f)
                              : new Vector3(0f, 0.648899972f, 0.638700008f);
                 rot = zoomed ? new Quaternion(0.8142168521881104f, 0f, 0f, -0.5805608630180359f)
                              : new Quaternion(0.906307876f, 0f, 0f, -0.42261827f);
                 index = 0;
                 break;
             case 2:
-                pos = zoomed ? new Vector3(0.0196000002f, 0.277558506f, 0.0464046597f)
+                pos = zoomed ? new Vector3(0.0196000002f, 0.247558506f, 0.0464046597f)
                              : new Vector3(0.0196000002f, 0.647700012f, 0.635900021f);
                 rot = zoomed ? new Quaternion(-0.800794184f, 0.0807581916f, -0.118400335f, 0.581539512f)
                              : new Quaternion(-0.893287599f, 0.0578520186f, -0.131124616f, 0.426024318f);
                 index = 1;
                 break;
             case 3:
-                pos = zoomed ? new Vector3(-0.0238000005f, 0.275212228f, 0.0550368428f)
+                pos = zoomed ? new Vector3(-0.0238000005f, 0.245212228f, 0.0550368428f)
                              : new Vector3(-0.0238000005f, 0.648599982f, 0.644800007f);
                 rot = zoomed ? new Quaternion(-0.822200298f, -0.0606084503f, 0.0878429338f, 0.559103787f)
                              : new Quaternion(-0.9102512f, -0.0436024554f, 0.0974093974f, 0.400066316f);
                 index = 2;
                 break;
             case 4:
-                pos = zoomed ? new Vector3(0.0368999988f, 0.27226722240448f, 0.04651761054992676f)
+                pos = zoomed ? new Vector3(0.0368999988f, 0.24226722240448f, 0.04651761054992676f)
                              : new Vector3(0.0368999988f, 0.642799973f, 0.637899995f);
                 rot = zoomed ? new Quaternion(-0.7696585059165955f, 0.1549926996231079f, -0.28421589732170107f, 0.5502949953079224f)
                              : new Quaternion(-0.8569837808609009f, 0.10065678507089615f, -0.3076842427253723f, 0.4009706974029541f);
                 index = 3;
                 break;
             case 5:
-                pos = zoomed ? new Vector3(-0.0425999984f, 0.271057576f, 0.0644749999f)
+                pos = zoomed ? new Vector3(-0.0425999984f, 0.241057576f, 0.0644749999f)
                              : new Vector3(-0.0425999984f, 0.648100019f, 0.655099988f);
                 rot = zoomed ? new Quaternion(-0.806779146f, -0.111712635f, 0.184709758f, 0.550009191f)
                              : new Quaternion(-0.893432021f, -0.0762165561f, 0.201961488f, 0.393931329f);

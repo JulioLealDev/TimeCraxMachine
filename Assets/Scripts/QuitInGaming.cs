@@ -37,7 +37,6 @@ public class QuitInGaming : MonoBehaviour
     public void CloseHUD()
     {
         if (gameManager == null) return;
-
         if (gameManager.Hud != null) gameManager.Hud.SetActive(false);
 
         gameManager.DeactivateAll();

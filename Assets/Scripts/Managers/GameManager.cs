@@ -1548,7 +1548,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         DeactivateAll();
         ResetAllComponents();
         ResetAllPlatenames();
-        ResetAllSlotLinks();
+        //ResetAllSlotLinks();
 
         var bgMusic = FindFirstObjectByType<BackgroundMusic>();
         if (bgMusic != null) bgMusic.PlayGameOverSound();
