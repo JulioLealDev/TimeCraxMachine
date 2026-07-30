@@ -1,4 +1,5 @@
 using UnityEngine;
+using TimeCrax.Managers;
 
 [RequireComponent(typeof(Renderer))]
 public class HoverMaterialAdder : MonoBehaviour
@@ -8,6 +9,9 @@ public class HoverMaterialAdder : MonoBehaviour
     private Renderer targetRenderer;
     private Material[] originalMaterials;
     private bool hoverActive = false;
+    private bool requiresTurn = false;
+
+    public void SetRequiresTurn(bool value) => requiresTurn = value;
 
     private void Awake()
     {
@@ -33,6 +37,11 @@ public class HoverMaterialAdder : MonoBehaviour
 
     private void OnMouseEnter()
     {
+        if (requiresTurn)
+        {
+            var local = PlayerManager.Instance?.GetLocalPlayer();
+            if (local == null || !local.GetYourTurn()) return;
+        }
         ShowHover();
     }
 

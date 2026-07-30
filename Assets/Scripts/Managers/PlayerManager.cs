@@ -72,7 +72,7 @@ namespace TimeCrax.Managers
         {
             players = FindObjectsByType<PlayerScript>(FindObjectsSortMode.None);
             cachedPlateNames = FindObjectsByType<GiveCards>(FindObjectsSortMode.None);
-            cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
+            cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             needsCacheRefresh = false;
         }
 
@@ -95,7 +95,7 @@ namespace TimeCrax.Managers
         {
             if (needsCacheRefresh || cachedBonusCards == null)
             {
-                cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsSortMode.None);
+                cachedBonusCards = FindObjectsByType<BonusCard>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             }
             return cachedBonusCards;
         }

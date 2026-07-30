@@ -45,7 +45,26 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
             cardText = GetComponentInChildren<TextMeshPro>();
         cachedAnimator = GetComponent<Animator>();
 
+        GameStateManager.OnPhaseChanged += OnPhaseChanged;
         DrawBonusCard();
+    }
+
+    private void OnDestroy()
+    {
+        GameStateManager.OnPhaseChanged -= OnPhaseChanged;
+    }
+
+    private void OnPhaseChanged(GamePhase previous, GamePhase next)
+    {
+        if (next != GamePhase.IM_Turn && next != GamePhase.IM_FirstTurn) return;
+
+        var turnPlayer = PlayerManager.Instance?.GetCurrentTurnPlayer();
+        bool isTurnPlayer = turnPlayer != null && photonView.OwnerActorNr == turnPlayer.photonView.OwnerActorNr;
+
+        if (!isTurnPlayer)
+            gameObject.SetActive(false);
+        else if (!gameObject.activeSelf)
+            ShowBonusCards(index + 1);
     }
 
     /// <summary>
@@ -146,10 +165,10 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 
         // Abrir painel de ativação
         if (BonusCardManager.Instance != null)
-        {
             BonusCardManager.Instance.ShowActivationPanel(this);
-        }
 
+        if (PhotonNetwork.InRoom)
+            photonView.RPC("RPC_ShowActivationForObservers", RpcTarget.Others);
     }
 
     /// <summary>
@@ -163,6 +182,8 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
         transform.localScale = savedHandScale;
         isInCenter = false;
 
+        if (PhotonNetwork.InRoom && photonView.IsMine)
+            photonView.RPC("RPC_HideActivationPanelForObservers", RpcTarget.Others);
     }
 
     /// <summary>
@@ -187,6 +208,8 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 
         if (photonView.IsMine)
         {
+            photonView.RPC("RPC_HideActivationPanelForObservers", RpcTarget.Others);
+
             // RPC enviado antes do Destroy: as cartas ainda existem quando o
             // reposicionamento é processado em todos os clientes.
             photonView.RPC("RPC_ShiftCardsAfterConsume", RpcTarget.All, photonView.OwnerActorNr, index);
@@ -265,6 +288,13 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 
     public void ShowBonusCards(int numberOfBonusCards)
     {
+        var turnPlayer = PlayerManager.Instance?.GetCurrentTurnPlayer();
+        if (turnPlayer == null || photonView.OwnerActorNr != turnPlayer.photonView.OwnerActorNr)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         bool zoomed = CameraController.IsZoomed || CameraController.IsAnimating;
         Vector3 pos = Vector3.zero;
         Quaternion rot = Quaternion.identity;
@@ -368,6 +398,34 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
         else
         {
         }
+    }
+
+    [PunRPC]
+    public void RPC_ShowActivationForObservers()
+    {
+        savedHandPosition = transform.position;
+        savedHandRotation = transform.rotation;
+        savedHandScale    = transform.localScale;
+
+        bool zoomed = CameraController.IsZoomed || CameraController.IsAnimating;
+        transform.SetPositionAndRotation(
+            zoomed ? centerPositionZoomIn : centerPosition,
+            zoomed ? centerRotationZoomIn : centerRotation);
+        isInCenter = true;
+
+        BonusCardManager.Instance?.ShowActivationPanelForObserver(cardType);
+    }
+
+    [PunRPC]
+    public void RPC_HideActivationPanelForObservers()
+    {
+        if (isInCenter)
+        {
+            transform.SetPositionAndRotation(savedHandPosition, savedHandRotation);
+            transform.localScale = savedHandScale;
+            isInCenter = false;
+        }
+        BonusCardManager.Instance?.HideActivationPanelForObserver();
     }
 
     #region IPunInstantiateMagicCallback

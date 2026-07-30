@@ -21,6 +21,7 @@ public enum GamePhase
     IM_ChoosingSlot,
     IM_KillingOption,
     IM_ChangingChallenge,
+    IM_FinishingTurn
 
 }
 

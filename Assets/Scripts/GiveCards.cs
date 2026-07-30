@@ -12,7 +12,7 @@ public class GiveCards : MonoBehaviour
     private void OnMouseDown()
     {
         // Bloquear clique durante animações de câmera
-        if (CameraController.IsAnimating) return;
+        /*if (CameraController.IsAnimating) return;
 
         if (!GameManager.TryBeginClick(this)) return;
 
@@ -63,7 +63,7 @@ public class GiveCards : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
     }
 
     private int GetPlayerNumberFromPlateName()

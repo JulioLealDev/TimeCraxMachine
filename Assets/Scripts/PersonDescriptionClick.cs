@@ -1,5 +1,7 @@
 using UnityEngine;
 using TMPro;
+using Photon.Pun;
+using TimeCrax.Managers;
 
 public class PersonDescriptionClick : MonoBehaviour
 {
@@ -8,9 +10,21 @@ public class PersonDescriptionClick : MonoBehaviour
     void OnMouseDown()
     {
         if (InputBlocker.IsBlocked) return;
+        if (!IsMyTurn()) return;
         if (PersonDescriptionPopup.Instance == null) return;
         if (sourceText == null) return;
 
-        PersonDescriptionPopup.Instance.Open(sourceText.text);
+        string text = sourceText.text;
+        PersonDescriptionPopup.Instance.Open(text);
+
+        var gm = FindFirstObjectByType<GameManager>();
+        if (gm != null && PhotonNetwork.InRoom)
+            gm.photonView.RPC("RPC_OpenPersonDescription", RpcTarget.Others, text);
+    }
+
+    private bool IsMyTurn()
+    {
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        return local != null && local.GetYourTurn();
     }
 }

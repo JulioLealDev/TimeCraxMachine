@@ -159,6 +159,8 @@ public class PersonsAnswerChecker : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex > 2) return;
 
+        PersonsCarousel.Instance?.CloseForObserver();
+
         TMP_Text[]       names = { personName01, personName02, personName03 };
         PersonCardImage[] cards = { cardImage01,  cardImage02,  cardImage03  };
 

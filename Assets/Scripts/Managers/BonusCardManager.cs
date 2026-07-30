@@ -180,6 +180,28 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
+        /// Exibe o painel de ativação para observadores (sem botão de ativar)
+        /// </summary>
+        public void ShowActivationPanelForObserver(BonusCardType cardType)
+        {
+            if (cardTypeDescription != null)
+                cardTypeDescription.text = GetCardTypeDescription(cardType);
+            if (activateButton != null)
+                activateButton.gameObject.SetActive(false);
+            if (activationPanel != null)
+                activationPanel.SetActive(true);
+        }
+
+        /// <summary>
+        /// Esconde o painel de ativação para observadores
+        /// </summary>
+        public void HideActivationPanelForObserver()
+        {
+            if (activationPanel != null)
+                activationPanel.SetActive(false);
+        }
+
+        /// <summary>
         /// Verifica se uma carta pode ser ativada no momento atual
         /// </summary>
         public bool CanActivateCard(BonusCardType cardType)
@@ -382,11 +404,11 @@ namespace TimeCrax.Managers
                 case BonusCardType.SecondChanceSlot:
                     return "Use this card to get a second chance when choosing a slot for an event card.";
                 case BonusCardType.CoolThermometer:
-                    return "Use esta carta para resfriar a temperatura da Timecrax Machine.";
+                    return "Use this card to cool down the temperature of the Timecrax Machine.";
                 case BonusCardType.KillChallengeOption:
-                    return "Use esta carta para remover uma das respostas de qualquer desafio.";
+                    return "Use this card to remove one of the answers from any challenge.";
                 case BonusCardType.SkipChallenge:
-                    return "Use esta carta para trocar o desafio atual por outro desafio.";
+                    return "Use this card to swap the current challenge for another challenge.";
                 default:
                     return " ";
             }

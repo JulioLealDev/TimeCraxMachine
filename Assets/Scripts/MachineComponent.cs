@@ -504,18 +504,6 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         }
     }
 
-    /*public void EndGame()
-    {
-        cachedGameManager.DeactivateAll();
-        cachedGameManager.ResetAllComponents();
-        cachedGameManager.ResetAllPlatenames();
-        cachedGameManager.ResetAllSlotLinks();
-
-        cachedBackgroundMusic.PlayGameOverSound();
-        endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
-        cachedGameManager.Hud.SetActive(false);
-    }*/
-
     [PunRPC]
     public void RemoveMalfunction()
     {

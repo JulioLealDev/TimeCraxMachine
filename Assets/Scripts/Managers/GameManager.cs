@@ -619,8 +619,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                 if (timeCraxComponent.malfunctions == 1)
                 {
                     timeCraxComponent.tag = "Selectable";
+                    var col = timeCraxComponent.GetComponent<MeshCollider>();
+                    if (col != null) col.enabled = true;
                 }
-
             }
 
             if (cachedEndButtonMeshCollider  != null) cachedEndButtonMeshCollider.enabled  = true;
@@ -660,6 +661,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 var plate = GameObject.Find(GameObjectNames.GetPlateName(i + 1));
                 if (plate != null)
                     plate.GetComponent<MeshCollider>().enabled = false;
+            }
+
+            foreach (var timeCraxComponent in timeCraxComponents)
+            {
+                if (timeCraxComponent != null && timeCraxComponent.malfunctions == 1)
+                {
+                    var col = timeCraxComponent.GetComponent<MeshCollider>();
+                    if (col != null) col.enabled = false;
+                }
             }
         }
     }
@@ -749,6 +759,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (_turnFinishExecuted) return;
         _turnFinishExecuted = true;
+
+        GameStateManager.TransitionTo(GamePhase.IM_FinishingTurn);
 
         if (leftCompartmentAnimator != null) leftCompartmentAnimator.SetBool("open", false);
         if (cachedDeckBonusMeshCollider != null) cachedDeckBonusMeshCollider.enabled = false;
@@ -1236,6 +1248,30 @@ public class GameManager : MonoBehaviourPunCallbacks
         PersonsAnswerChecker.Instance?.ShowPersonsFeedbackForObserver(slot0, slot1, slot2);
     }
 
+    [PunRPC]
+    public void RPC_OpenPersonDescription(string text)
+    {
+        PersonDescriptionPopup.Instance?.OpenForObserver(text);
+    }
+
+    [PunRPC]
+    public void RPC_ClosePersonDescription()
+    {
+        PersonDescriptionPopup.Instance?.CloseForObserver();
+    }
+
+    [PunRPC]
+    public void RPC_OpenPersonsCarousel(string imagePath)
+    {
+        PersonsCarousel.Instance?.OpenForObserver(imagePath);
+    }
+
+    [PunRPC]
+    public void RPC_UpdatePersonsCarouselImage(string imagePath)
+    {
+        PersonsCarousel.Instance?.UpdateObserverImage(imagePath);
+    }
+
     #endregion
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -1564,12 +1600,14 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void SetUpComponents()
     {
-        foreach (var player in players)
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        bool isMyTurn = local != null && local.GetYourTurn();
+        foreach (var component in timeCraxComponents)
         {
-            foreach (var component in timeCraxComponents)
+            if (component != null && component.malfunctions == 1)
             {
-                if (component.malfunctions == 1)
-                    component.GetComponent<MeshCollider>().enabled = player.GetYourTurn();
+                var col = component.GetComponent<MeshCollider>();
+                if (col != null) col.enabled = isMyTurn;
             }
         }
     }

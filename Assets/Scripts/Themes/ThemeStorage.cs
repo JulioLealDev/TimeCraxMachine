@@ -183,6 +183,14 @@ namespace TimeCrax.Themes
             var resourcesTex = Resources.Load<Texture2D>(barePath);
             if (resourcesTex != null) return resourcesTex;
 
+            // Some legacy paths use a "Textures/" prefix that isn't part of the Resources folder structure.
+            // e.g. "Textures/DiscoveryOfTheAmericas/Persons/X" → try "DiscoveryOfTheAmericas/Persons/X"
+            /*if (barePath.StartsWith("Textures/"))
+            {
+                resourcesTex = Resources.Load<Texture2D>(barePath.Substring(9));
+                if (resourcesTex != null) return resourcesTex;
+            }*/
+
             // Try absolute file path (downloaded themes or explicit full paths)
             if (File.Exists(localPath))
             {

@@ -127,6 +127,7 @@ public class MapAnswerChecker : MonoBehaviour
                 var hover = pins[i].GetComponent<HoverMaterialAdder>();
                 if (hover == null) hover = pins[i].gameObject.AddComponent<HoverMaterialAdder>();
                 hover.SetMaterial(pinHoverMaterial);
+                hover.SetRequiresTurn(true);
 
                 var click = pins[i].GetComponent<MapPinClick>();
                 if (click == null) click = pins[i].gameObject.AddComponent<MapPinClick>();

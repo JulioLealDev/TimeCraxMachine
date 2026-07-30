@@ -295,8 +295,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
             gameManager.DeactivateAll();
             gameManager.ResetAllComponents();
             gameManager.ResetAllPlatenames();
-            gameManager.ResetAllSlotLinks();
-            this.DelayedCall(5.5f, ShowVictoryScreen);
+            this.DelayedCall(2.5f, ShowVictoryScreen);
         }
     }
 
@@ -306,6 +305,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         {
             endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
             endMatchScreen.UpdateTitle();
+            gameManager.ResetAllSlotLinks();
         }
         if (gameManager != null)
         {

@@ -27,6 +27,7 @@ public class Timeline : MonoBehaviourPunCallbacks
         if (InputBlocker.IsBlocked) return;
         if (CameraController.IsAnimating) return;
         if (!GameStateManager.Is(GamePhase.IM_Turn)) return;
+        if (!IsMyTurn()) return;
         if (!GameManager.TryBeginClick(this)) return;
 
         bool newZoom = !zoom;

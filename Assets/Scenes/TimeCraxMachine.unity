@@ -1370,22 +1370,22 @@ MonoBehaviour:
     question: On which peninsula did Christopher Columbus first reach the South American
       mainland?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question05
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question05
     pins:
-    - x: 0.2
-      y: -0.15
-    - x: -0.07
-      y: 0.08
-    - x: 0.19
+    - x: -0.13
+      y: -0.112
+    - x: 0.025
+      y: -0.085
+    - x: 0.07
       y: 0.02
-    - x: 0.14
-      y: -0.03
-    correctPinIndex: 3
+    - x: -0.02
+      y: 0.03
+    correctPinIndex: 0
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/BartolomeuColombo
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/BartolomeuColombo
       name: Bartholomew Columbus
       description: Born around 1461, in the Republic of Genoa, acquired experience
         as a navigator, cartographer, and administrator during the Age of Discovery.
@@ -1400,7 +1400,7 @@ MonoBehaviour:
         structures. Died in 1514, in the city of Santo Domingo, on the island of
         Hispaniola.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/CristovaoColombo
       name: Christopher Columbus
       description: Born around 1451 in the Republic of Genoa, he received training
         related to navigation, cartography, and maritime trade. After several years
@@ -1414,20 +1414,18 @@ MonoBehaviour:
         European expansion into the Americas. He died in 1506 in the city of Valladolid,
         in the Kingdom of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/DiegoColombo
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/DiegoColombo
       name: Diego Columbus
-      description: "Here is the translation into English, with all gender-specific
-        words (*he*, *his*, *him*, etc.) removed or avoided:  ---  Born around 1479,
-        in Porto Santo, in the Madeira archipelago, spent childhood amid the maritime
-        expeditions of the Spanish Crown. Still young, took part in voyages to the
-        New World and, years later, obtained recognition of hereditary rights over
-        the titles and privileges granted to the family. In 1509, assumed the offices
-        of Admiral of the Ocean Sea, Viceroy, and Governor of the Indies, administering
-        Spanish territories in the Caribbean from the island of Hispaniola. During
-        that period, promoted the development of Santo Domingo and faced legal disputes
-        with the Crown regarding the extent of administrative powers. Died in 1526,
-        in the town of Montalb\xE1n, in the Kingdom of Castile, leaving an important
-        legacy in Spanish colonial administration."
+      description: "Born around 1479, in Porto Santo, in the Madeira archipelago,
+        spent childhood amid the maritime expeditions of the Spanish Crown. Still
+        young, took part in voyages to the New World and, years later, obtained recognition
+        of hereditary rights over the titles and privileges granted to the family.
+        In 1509, assumed the offices of Admiral of the Ocean Sea, Viceroy, and Governor
+        of the Indies, administering Spanish territories in the Caribbean from the
+        island of Hispaniola. During that period, promoted the development of Santo
+        Domingo and faced legal disputes with the Crown regarding the extent of administrative
+        powers. Died in 1526, in the town of Montalb\xE1n, in the Kingdom of Castile,
+        leaving an important legacy in Spanish colonial administration."
 --- !u!1001 &50132367
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3178,22 +3176,22 @@ MonoBehaviour:
     question: At which port did Christopher Columbus disembark after returning from
       his first voyage to the American continent?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question02
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question02
     pins:
-    - x: 0.2
-      y: -0.15
-    - x: -0.07
+    - x: 0.095
+      y: -0.092
+    - x: 0.13
       y: 0.08
-    - x: 0.19
-      y: 0.02
-    - x: 0.14
-      y: -0.03
-    correctPinIndex: 3
+    - x: 0.02
+      y: 0.11
+    - x: 0.155
+      y: -0.02
+    correctPinIndex: 0
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/CristovaoColombo
       name: Christopher Columbus
       description: Born around 1451 in the Republic of Genoa, he received training
         related to navigation, cartography, and maritime trade. After several years
@@ -3207,7 +3205,7 @@ MonoBehaviour:
         European expansion into the Americas. He died in 1506 in the city of Valladolid,
         in the Kingdom of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Isabel1
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Isabel1
       name: Isabella I of Castile
       description: "Born in 1451, in the town of Madrigal de las Altas Torres, in
         the Kingdom of Castile, ascended to the throne in 1474 and promoted far\u2011reaching
@@ -3221,7 +3219,7 @@ MonoBehaviour:
         Died in 1504, in the town of Medina del Campo, leaving a lasting legacy for
         the history of Spain and the Age of Discovery."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Fernando2
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Fernando2
       name: Ferdinand II of Aragon
       description: "Born in 1452, in the town of Sos del Rey Cat\xF3lico, in the
         Kingdom of Aragon, ascended to the throne in 1479 and played a decisive role
@@ -8922,19 +8920,19 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1262901646}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 5eb914a832957dd42aaf08534e230fd3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.0004238328
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5eb914a832957dd42aaf08534e230fd3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01699996
+      value: 1.9326146
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5eb914a832957dd42aaf08534e230fd3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.171
+      value: 0.5829634
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5eb914a832957dd42aaf08534e230fd3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9075,6 +9073,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 175780991}
   m_SourcePrefab: {fileID: 100100000, guid: 5eb914a832957dd42aaf08534e230fd3, type: 3}
+--- !u!4 &175780987 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5eb914a832957dd42aaf08534e230fd3, type: 3}
+  m_PrefabInstance: {fileID: 175780986}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &175780988 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4464251984522392810, guid: 5eb914a832957dd42aaf08534e230fd3, type: 3}
@@ -13289,8 +13292,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Onde Pedro Alvarez Cabral atracou seu navio na primeira vez em que chegou
-    a America?
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
@@ -23059,7 +23061,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: "e for esse o caso, posso mostrar uma configura\xE7\xE3o completa dos RectTransform
+    (anchors, pivots e offsets) para cada elemento, de forma que o layout permane\xE7a
+    proporcional em qualquer resolu\xE7\xE3o"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3a656fb7d45a71842b405e2ff5c20711, type: 2}
   m_sharedMaterial: {fileID: -4720158634676440490, guid: 3a656fb7d45a71842b405e2ff5c20711, type: 2}
@@ -23086,7 +23090,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44.5
+  m_fontSize: 31.05
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -23148,15 +23152,15 @@ RectTransform:
   m_GameObject: {fileID: 657259195}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1051776363}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 110, y: 30}
-  m_SizeDelta: {x: 680, y: 500}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 157.5, y: 50}
+  m_SizeDelta: {x: -1435, y: -700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &667768350
 GameObject:
@@ -24558,16 +24562,16 @@ RectTransform:
   m_GameObject: {fileID: 728023674}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1148166604}
   m_Father: {fileID: 1051776363}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -160}
-  m_SizeDelta: {x: 225, y: 65}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -237.5}
+  m_SizeDelta: {x: -1650, y: -1005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &728023676
 MonoBehaviour:
@@ -25072,22 +25076,22 @@ MonoBehaviour:
     question: At which location on the Brazilian coast did the Portuguese fleet make
       its first landing during the 1500 expedition?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question06
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question06
     pins:
-    - x: 0.2
+    - x: -0.112
+      y: -0.02
+    - x: -0.04
       y: -0.15
     - x: -0.07
-      y: 0.08
-    - x: 0.19
-      y: 0.02
-    - x: 0.14
-      y: -0.03
-    correctPinIndex: 3
+      y: 0.09
+    - x: -0.14
+      y: 0.05
+    correctPinIndex: 0
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/PedroAlvarez
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/PedroAlvarez
       name: "Pedro \xC1lvares Cabral"
       description: "Born around 1467, in Belmonte, in the Kingdom of Portugal, belonged
         to the lesser nobility and received training related to navigation, military
@@ -25100,7 +25104,7 @@ MonoBehaviour:
         the Atlantic and marked one of the most important events of the Age of Discovery.
         Died around 1520, in the city of Santar\xE9m, in the Kingdom of Portugal."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/PeroVaz
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/PeroVaz
       name: Pero Vaz de Caminha
       description: Born around 1450, in the city of Porto, in the Kingdom of Portugal,
         held functions as a clerk of the Crown and stood out for administrative and
@@ -25114,7 +25118,7 @@ MonoBehaviour:
         to the East, dying in the same year during an attack on the Portuguese trading
         post of Calicut, in present-day India.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/NicolauCoelho
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/NicolauCoelho
       name: Nicolau Coelho
       description: Born around 1460, in the Kingdom of Portugal, stood out as an
         experienced navigator during the Age of Discovery and took part in some of
@@ -25153,15 +25157,15 @@ RectTransform:
   m_GameObject: {fileID: 742660263}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.45, y: 0.45, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1051776363}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1580, y: 1024}
+  m_SizeDelta: {x: -870, y: -400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &742660265
 MonoBehaviour:
@@ -31247,12 +31251,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -34702,23 +34706,23 @@ MonoBehaviour:
     question: In which city was the map that first used the name "America" to identify
       the new continent published?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question09
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question09
     pins:
-    - x: 0.2
-      y: -0.15
-    - x: -0.07
-      y: 0.08
-    - x: 0.19
-      y: 0.02
-    - x: 0.14
-      y: -0.03
-    correctPinIndex: 3
+    - x: 0.155
+      y: -0.125
+    - x: -0.06
+      y: 0.05
+    - x: 0.01
+      y: -0.035
+    - x: 0.095
+      y: -0.09
+    correctPinIndex: 2
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/MartinWaldseemuller
-      name: " Martin Waldseem\xFCller"
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/MartinWaldseemuller
+      name: "Martin Waldseem\xFCller"
       description: "Born around 1470, in the region of W\xFCrttemberg, in the Holy
         Roman Empire, stood out as a cartographer, geographer, and humanist. Throughout
         the career, devoted to the study of new geographic discoveries made during
@@ -34732,7 +34736,7 @@ MonoBehaviour:
         European geographic knowledge. Died around 1520, in the city of Saint-Di\xE9,
         in present-day France."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/AmericoVespucio
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/AmericoVespucio
       name: Amerigo Vespucci
       description: 'Born in 1454, in the city of Florence, stood out as a merchant,
         cartographer, and navigator during the Age of Discovery. After establishing
@@ -34746,7 +34750,7 @@ MonoBehaviour:
         reached. Died in 1512, in the city of Seville, leaving an important legacy
         for geography and maritime exploration.  '
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/MathiasRingMann
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/MatthiasRingmann
       name: Matthias Ringmann
       description: "Born in 1482, in the region of Alsace, then belonging to the
         Holy Roman Empire, stood out as a humanist, geographer, poet, and scholar
@@ -34882,22 +34886,22 @@ MonoBehaviour:
     question: While exploring the coast of which continent did Amerigo Vespucci conclude
       that the newly discovered lands were not part of Asia?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question07
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question07
     pins:
-    - x: 0.2
+    - x: -0.05
       y: -0.15
-    - x: -0.07
-      y: 0.08
-    - x: 0.19
-      y: 0.02
+    - x: -0.18
+      y: 0
+    - x: 0.1
+      y: 0.05
     - x: 0.14
       y: -0.03
-    correctPinIndex: 3
+    correctPinIndex: 0
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/AmericoVespucio
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/AmericoVespucio
       name: Amerigo Vespucci
       description: 'Born in 1454, in the city of Florence, stood out as a merchant,
         cartographer, and navigator during the Age of Discovery. After establishing
@@ -34911,7 +34915,7 @@ MonoBehaviour:
         reached. Died in 1512, in the city of Seville, leaving an important legacy
         for geography and maritime exploration.  '
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/GoncaloCoelho
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/GoncaloCoelho
       name: "Gon\xE7alo Coelho "
       description: Born in the second half of the 15th century, in the Kingdom of
         Portugal, stood out as a navigator and commander of expeditions during the
@@ -34926,7 +34930,7 @@ MonoBehaviour:
         was decisive in expanding European geographic knowledge in the early 16th
         century.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Manuel1
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Manuel1
       name: Manuel I of Portugal
       description: Born in 1469, in the town of Alcochete, in the Kingdom of Portugal,
         ascended to the throne in 1495 and conducted one of the periods of greatest
@@ -35548,22 +35552,22 @@ MonoBehaviour:
     question: In which city was the treaty signed that divided the newly discovered
       lands between Portugal and Castile?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question03
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question03
     pins:
-    - x: 0.2
-      y: -0.15
+    - x: 0.04
+      y: 0.05
     - x: -0.07
       y: 0.08
-    - x: 0.19
-      y: 0.02
+    - x: 0
+      y: -0.06
     - x: 0.14
       y: -0.03
-    correctPinIndex: 3
+    correctPinIndex: 0
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Joao2
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Joao2
       name: John II of Portugal
       description: Born in 1455, in the city of Lisbon, ascended to the throne of
         Portugal in 1481 and strengthened the authority of the Crown, promoting important
@@ -35577,7 +35581,7 @@ MonoBehaviour:
         voyages toward India and Brazil. Died in 1495, in the city of Alvor, in the
         Kingdom of Portugal.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Isabel1
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Isabel1
       name: Isabella I of Castile
       description: "Born in 1451, in the town of Madrigal de las Altas Torres, in
         the Kingdom of Castile, ascended to the throne in 1474 and promoted far\u2011reaching
@@ -35591,7 +35595,7 @@ MonoBehaviour:
         Died in 1504, in the town of Medina del Campo, leaving a lasting legacy for
         the history of Spain and the Age of Discovery."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Fernando2
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Fernando2
       name: Ferdinand II of Aragon
       description: "Born in 1452, in the town of Sos del Rey Cat\xF3lico, in the
         Kingdom of Aragon, ascended to the throne in 1479 and played a decisive role
@@ -46406,10 +46410,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 72
   m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -63731,6 +63735,7 @@ Transform:
   - {fileID: 1088545111}
   - {fileID: 419591541}
   - {fileID: 543450652019852336}
+  - {fileID: 175780987}
   - {fileID: 624697912}
   - {fileID: 2052384130}
   - {fileID: 224298378}
@@ -65971,7 +65976,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -381.00003}
+  m_AnchoredPosition: {x: 0, y: -381}
   m_SizeDelta: {x: -1562, y: -947}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1336945397
@@ -71200,7 +71205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddf87d0f80b75743b37f2c94c62204c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnTimer
-  timeLimit: 180
+  timeLimit: 180000
   syncInterval: 1
   highestPointerAnimator: {fileID: 224298385}
 --- !u!4 &1359821954
@@ -84111,22 +84116,22 @@ MonoBehaviour:
     question: In which Spanish city was the institution responsible for regulating
       trade and navigation with the New World established?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question08
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question08
     pins:
-    - x: 0.2
-      y: -0.15
-    - x: -0.07
-      y: 0.08
-    - x: 0.19
-      y: 0.02
+    - x: 0.069
+      y: -0.088
+    - x: 0.13
+      y: 0.09
+    - x: 0
+      y: 0.11
     - x: 0.14
       y: -0.03
-    correctPinIndex: 3
+    correctPinIndex: 0
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Isabel1
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Isabel1
       name: Isabella I of Castile
       description: "Born in 1451, in the town of Madrigal de las Altas Torres, in
         the Kingdom of Castile, ascended to the throne in 1474 and promoted far\u2011reaching
@@ -84140,7 +84145,7 @@ MonoBehaviour:
         Died in 1504, in the town of Medina del Campo, leaving a lasting legacy for
         the history of Spain and the Age of Discovery."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/Fernando2
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/Fernando2
       name: Ferdinand II of Aragon
       description: "Born in 1452, in the town of Sos del Rey Cat\xF3lico, in the
         Kingdom of Aragon, ascended to the throne in 1479 and played a decisive role
@@ -84154,7 +84159,7 @@ MonoBehaviour:
         and Spain. Died in 1516, in the locality of Madrigalejo, leaving a notable
         legacy for European politics and maritime expansion."
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/JuanRodriguezFonseca
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/JuanRodriguezFonseca
       name: "Juan Rodr\xEDguez de Fonseca"
       description: "Born in 1451, in the town of Toro, in the Kingdom of Castile,
         received religious training and stood out as an administrator in the service
@@ -92304,7 +92309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 270}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -665.00006, y: 0}
+  m_AnchoredPosition: {x: -665, y: 0}
   m_SizeDelta: {x: -1270, y: -730}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1656774924
@@ -100092,22 +100097,22 @@ MonoBehaviour:
     question: Where did Christopher Columbus first land during the voyage that marked
       the beginning of permanent contact between Europe and the Americas?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question01
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question01
     pins:
-    - x: 0.2
-      y: -0.15
+    - x: 0.08
+      y: 0.127
     - x: -0.07
-      y: 0.08
-    - x: 0.19
       y: 0.02
-    - x: 0.14
-      y: -0.03
-    correctPinIndex: 3
+    - x: 0.024
+      y: 0.01
+    - x: -0.12
+      y: -0.12
+    correctPinIndex: 0
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/CristovaoColombo
       name: Christopher Columbus
       description: Born around 1451 in the Republic of Genoa, received training related
         to navigation, cartography, and maritime trade. After several years in the
@@ -100121,7 +100126,7 @@ MonoBehaviour:
         into the Americas. Died in 1506 in the city of Valladolid, in the Kingdom
         of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/RodrigoTriana
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/RodrigoTriana
       name: Rodrigo de Triana
       description: Born in the second half of the 15th century in Castile, dedicated
         himself to navigation and took part in maritime expeditions during the Age
@@ -100135,7 +100140,7 @@ MonoBehaviour:
         of the life remain poorly documented, contributing to the enigmatic character
         of the historical trajectory.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/MartinAlonso
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/MartinAlonso
       name: "Mart\xEDn Alonso Pinz\xF3n"
       description: Born around 1441 in Palos de la Frontera, in the Kingdom of Castile,
         stood out as an experienced navigator, shipowner, and maritime merchant.
@@ -102597,22 +102602,22 @@ MonoBehaviour:
     question: In which city was the first permanent European settlement in the Americas
       established?
     imageUrl: 
-    localImagePath: res:Textures/DiscoveryOfTheAmericas/Maps/Question04
+    localImagePath: res:DiscoveryOfTheAmericas/Maps/Question04
     pins:
-    - x: 0.2
-      y: -0.15
-    - x: -0.07
-      y: 0.08
-    - x: 0.19
-      y: 0.02
-    - x: 0.14
+    - x: -0.045
+      y: -0.09
+    - x: -0.115
+      y: 0.049
+    - x: 0
+      y: 0.078
+    - x: 0.12
       y: -0.03
     correctPinIndex: 3
   persons:
-    question: "Associe cada personalidade hist\xF3rica \xE0 sua descri\xE7\xE3o correta."
+    question: Match each historical personality to the correct description text.
     entries:
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/BartolomeuColombo
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/BartolomeuColombo
       name: Bartholomew Columbus
       description: Born around 1461, in the Republic of Genoa, acquired experience
         as a navigator, cartographer, and administrator during the Age of Discovery.
@@ -102627,7 +102632,7 @@ MonoBehaviour:
         structures. Died in 1514, in the city of Santo Domingo, on the island of
         Hispaniola.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/CristovaoColombo
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/CristovaoColombo
       name: Christopher Columbus
       description: Born around 1451 in the Republic of Genoa, he received training
         related to navigation, cartography, and maritime trade. After several years
@@ -102641,7 +102646,7 @@ MonoBehaviour:
         European expansion into the Americas. He died in 1506 in the city of Valladolid,
         in the Kingdom of Castile.
     - imageUrl: 
-      localImagePath: res:Textures/DiscoveryOfTheAmericas/Persons/FranciscoRoldan
+      localImagePath: res:DiscoveryOfTheAmericas/Persons/FranciscoRoldan
       name: "Francisco Rold\xE1n"
       description: Born around 1460, in the Kingdom of Castile, held administrative
         roles during the early years of Spanish colonization in the Americas. In
@@ -102696,7 +102701,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.64404297, y: 0.0715332}
+  m_AnchoredPosition: {x: -0.64416504, y: 0.0715332}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &2022939538
@@ -121979,11 +121984,9 @@ SceneRoots:
   - {fileID: 758730015}
   - {fileID: 163619646}
   - {fileID: 1186026637}
-  - {fileID: 2145839231}
+  - {fileID: 336008438}
   - {fileID: 1865630400}
   - {fileID: 751731493}
-  - {fileID: 336008438}
-  - {fileID: 1359821954}
   - {fileID: 3804601872223381272}
   - {fileID: 2296111580987021529}
   - {fileID: 3215052166525497379}
@@ -121992,5 +121995,6 @@ SceneRoots:
   - {fileID: 6062375359542801937}
   - {fileID: 952423956}
   - {fileID: 441947030}
+  - {fileID: 1359821954}
+  - {fileID: 2145839231}
   - {fileID: 746703649}
-  - {fileID: 175780986}

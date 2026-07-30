@@ -11,7 +11,7 @@ public class UserNameDisplay : MonoBehaviour
 {
     [Header("Configuração")]
     [SerializeField] private TextMeshPro textMesh;
-    [SerializeField] private string guestName = "Jogador";
+    [SerializeField] private string guestName = "Player";
 
     private void Start()
     {

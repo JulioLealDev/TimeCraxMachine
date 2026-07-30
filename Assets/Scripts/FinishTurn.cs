@@ -52,6 +52,8 @@ public class FinishTurn : MonoBehaviourPunCallbacks
     {
         soundEffects.PressHudButtonSound();
 
+        GameStateManager.TransitionTo(GamePhase.IM_FinishingTurn);
+
         GameManager.IsInTurnTransition = true;
         InputBlocker.Block();
 

@@ -151,6 +151,12 @@ MonoBehaviour:
   - RPC_ShowPersonsFeedback
   - RPC_SyncPersonsShuffle
   - RPC_FinishTurnClicked
+  - RPC_HideActivationPanelForObservers
+  - RPC_ShowActivationForObservers
+  - RPC_ClosePersonDescription
+  - RPC_OpenPersonDescription
+  - RPC_OpenPersonsCarousel
+  - RPC_UpdatePersonsCarouselImage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

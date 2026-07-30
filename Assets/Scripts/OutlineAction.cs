@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class OutlineAction : MonoBehaviour
 {
@@ -99,7 +100,11 @@ public class OutlineAction : MonoBehaviour
         if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit))
         {
             highlight = raycastHit.transform;
-            if (IsInspectTarget(highlight))
+            if (!IsMyTurn() && IsChallengeObject(highlight))
+            {
+                highlight = null;
+            }
+            else if (IsInspectTarget(highlight))
             {
                 shouldShowInspectCursor = true;
                 var oc = highlight.gameObject.GetComponent<OutlineComponent>();
@@ -161,6 +166,17 @@ public class OutlineAction : MonoBehaviour
         }
 
         UpdateCursor(shouldShowMalfunctionCursor, shouldShowInspectCursor, shouldShowHandCursor);
+    }
+
+    private bool IsChallengeObject(Transform t) =>
+        t.GetComponent<MapPinClick>()            != null ||
+        t.GetComponent<PersonCardImage>()        != null ||
+        t.GetComponent<PersonDescriptionClick>() != null;
+
+    private bool IsMyTurn()
+    {
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        return local != null && local.GetYourTurn();
     }
 
     private bool IsInspectTarget(Transform t) =>

@@ -1,4 +1,6 @@
 using UnityEngine;
+using TimeCrax.Core;
+using TimeCrax.Managers;
 
 public class TimelineColliderArea : MonoBehaviour
 {
@@ -16,6 +18,23 @@ public class TimelineColliderArea : MonoBehaviour
 
         _selfCollider = GetComponent<Collider>();
         _prevColliderEnabled = _selfCollider != null && _selfCollider.enabled;
+
+        GameStateManager.OnPhaseChanged += OnPhaseChanged;
+    }
+
+    private void OnDestroy()
+    {
+        GameStateManager.OnPhaseChanged -= OnPhaseChanged;
+    }
+
+    private void OnPhaseChanged(GamePhase previous, GamePhase next)
+    {
+        if (_selfCollider == null) return;
+
+        if (next == GamePhase.IM_UnlockBonusDeck || next == GamePhase.IM_DrewBonusCard)
+            _selfCollider.enabled = false;
+        else if (next == GamePhase.Menu)
+            _selfCollider.enabled = false;
     }
 
     private void LateUpdate()
@@ -37,6 +56,7 @@ public class TimelineColliderArea : MonoBehaviour
     private void OnMouseEnter()
     {
         if (InputBlocker.IsBlocked) return;
+        if (!IsMyTurn()) return;
         if (parentOutline != null)
             parentOutline.enabled = true;
     }
@@ -45,6 +65,12 @@ public class TimelineColliderArea : MonoBehaviour
     {
         if (parentOutline != null)
             parentOutline.enabled = false;
+    }
+
+    private bool IsMyTurn()
+    {
+        var local = PlayerManager.Instance?.GetLocalPlayer();
+        return local != null && local.GetYourTurn();
     }
 
     public void SetUpTimelineCollider(bool activate)
