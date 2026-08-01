@@ -10,6 +10,7 @@ public class HoverMaterialAdder : MonoBehaviour
     private Material[] originalMaterials;
     private bool hoverActive = false;
     private bool requiresTurn = false;
+    private bool _locked = false;
 
     public void SetRequiresTurn(bool value) => requiresTurn = value;
 
@@ -61,8 +62,21 @@ public class HoverMaterialAdder : MonoBehaviour
         hoverActive = true;
     }
 
+    public void LockHover()
+    {
+        _locked = true;
+        ShowHover();
+    }
+
+    public void UnlockHover()
+    {
+        _locked = false;
+        HideHover();
+    }
+
     public void HideHover()
     {
+        if (_locked) return;
         if (!hoverActive || targetRenderer == null) return;
 
         targetRenderer.materials = originalMaterials;

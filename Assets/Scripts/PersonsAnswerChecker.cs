@@ -33,6 +33,7 @@ public class PersonsAnswerChecker : MonoBehaviour
     [SerializeField] private GameObject incorrectIcon01;
     [SerializeField] private GameObject incorrectIcon02;
     [SerializeField] private GameObject incorrectIcon03;
+     [SerializeField] private SoundEffects soundEffects;
 
     [Header("ResetPersonsFrame()")]
     [SerializeField] private TMP_Text personText01;
@@ -122,19 +123,23 @@ public class PersonsAnswerChecker : MonoBehaviour
 
         bool allCorrect = !anyWrong;
         if (allCorrect)
+        {
+            soundEffects.PlayRightSlotSound();
             SlotLinkManager.Instance?.CheckAndActivateLinks(GameManager.CurrentPersonsSlotCount);
+        }
 
         var local = PlayerManager.Instance?.GetLocalPlayer();
         if (local != null)
         {
             if (gameManager != null && PhotonNetwork.InRoom)
                 gameManager.photonView.RPC("RPC_TrackPersonsChallenge", RpcTarget.All, allCorrect, local.actorNumber, local.nickname);
-            else if (allCorrect) MatchStats.AddChallengeCorrect(local.actorNumber, local.nickname);
+            else if (allCorrect) MatchStats.AddPersonsChallengeCorrect(local.actorNumber, local.nickname);
             else MatchStats.AddPersonsError(local.actorNumber, local.nickname);
         }
 
         if (anyWrong)
         {
+            soundEffects.PlayWrongSlotSound();
             if (gameManager != null && PhotonNetwork.InRoom)
                 gameManager.photonView.RPC("RPC_HandlePersonsWrong", RpcTarget.All);
             else
@@ -206,7 +211,14 @@ public class PersonsAnswerChecker : MonoBehaviour
 
         bool allCorrect = s0 && s1 && s2;
         if (allCorrect)
+        {
+            soundEffects?.PlayRightSlotSound();
             SlotLinkManager.Instance?.CheckAndActivateLinks(GameManager.CurrentPersonsSlotCount);
+        }
+        else
+        {
+            soundEffects?.PlayWrongSlotSound();
+        }
 
         var gameManager = FindFirstObjectByType<GameManager>();
         gameManager?.CloseNewTimeline();

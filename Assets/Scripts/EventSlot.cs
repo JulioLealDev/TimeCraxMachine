@@ -303,7 +303,11 @@ public class EventSlot : MonoBehaviourPunCallbacks
     {
         if (endMatchScreen != null)
         {
-            endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
+            var endMatchTransform = endMatchScreen.transform;
+            var background = endMatchTransform.Find("EndMatchScreenBackground");
+            var image      = endMatchTransform.Find("EndMatchScreenImage");
+            if (background != null) background.gameObject.SetActive(true);
+            if (image      != null) image.gameObject.SetActive(true);
             endMatchScreen.UpdateTitle();
             gameManager.ResetAllSlotLinks();
         }

@@ -14,7 +14,8 @@ public static class MatchStats
         public int    slotErrors;
         public int    mapErrors;
         public int    personsErrors;
-        public int    challengesCorrect;
+        public int    mapChallengesCorrect;
+        public int    personsChallengesCorrect;
         public int    slotsCorrect;
         public int    bonusCardsObtained;
         public int    bonusCardsUsed;
@@ -64,8 +65,11 @@ public static class MatchStats
     public static void AddPersonsError(int actorNumber, string nickname = "")
         => GetOrCreate(actorNumber, nickname).personsErrors++;
 
-    public static void AddChallengeCorrect(int actorNumber, string nickname = "")
-        => GetOrCreate(actorNumber, nickname).challengesCorrect++;
+    public static void AddMapChallengeCorrect(int actorNumber, string nickname = "")
+        => GetOrCreate(actorNumber, nickname).mapChallengesCorrect++;
+
+    public static void AddPersonsChallengeCorrect(int actorNumber, string nickname = "")
+        => GetOrCreate(actorNumber, nickname).personsChallengesCorrect++;
 
     public static void AddSlotCorrect(int actorNumber, string nickname = "")
         => GetOrCreate(actorNumber, nickname).slotsCorrect++;

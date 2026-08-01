@@ -359,10 +359,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                 if (t.name == plateNameStr)
                 {
                     t.gameObject.SetActive(true);
-                    var mr = t.GetComponent<MeshRenderer>();
-                    if (mr != null) mr.enabled = true;
-                    var mc = t.GetComponent<MeshCollider>();
-                    if (mc != null) mc.enabled = true;
+                    foreach (var mr in t.GetComponentsInChildren<MeshRenderer>())
+                        mr.enabled = true;
+                    var metal = t.Find("NewPlateMetal");
+                    if (metal != null)
+                    {
+                        var mc = metal.GetComponent<MeshCollider>();
+                        if (mc != null) mc.enabled = true;
+                    }
                 }
                 else if (t.name == plateNameTextStr)
                 {
@@ -638,14 +642,26 @@ public class GameManager : MonoBehaviourPunCallbacks
                 var plate = GameObject.Find(GameObjectNames.GetPlateName(i + 1));
                 if (plate != null)
                 {
-                    plate.GetComponent<MeshCollider>().enabled = true;
-                    plate.tag = "Selectable";
+                    var metal = plate.transform.Find("NewPlateMetal");
+                    if (metal != null)
+                    {
+                        var mc = metal.GetComponent<MeshCollider>();
+                        if (mc != null) mc.enabled = true;
+                        metal.tag = "Selectable";
+                    }
                 }
             }
 
             var ownPlate = GameObject.Find(GameObjectNames.GetPlateName(time + 1));
             if (ownPlate != null)
-                ownPlate.GetComponent<MeshCollider>().enabled = false;
+            {
+                var metal = ownPlate.transform.Find("NewPlateMetal");
+                if (metal != null)
+                {
+                    var mc = metal.GetComponent<MeshCollider>();
+                    if (mc != null) mc.enabled = false;
+                }
+            }
         }
         else
         {
@@ -660,7 +676,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 var plate = GameObject.Find(GameObjectNames.GetPlateName(i + 1));
                 if (plate != null)
-                    plate.GetComponent<MeshCollider>().enabled = false;
+                {
+                    var metal = plate.transform.Find("NewPlateMetal");
+                    if (metal != null)
+                    {
+                        var mc = metal.GetComponent<MeshCollider>();
+                        if (mc != null) mc.enabled = false;
+                    }
+                }
             }
 
             foreach (var timeCraxComponent in timeCraxComponents)
@@ -671,6 +694,17 @@ public class GameManager : MonoBehaviourPunCallbacks
                     if (col != null) col.enabled = false;
                 }
             }
+        }
+
+        for (int i = 1; i <= 4; i++)
+        {
+            var plate = GameObject.Find(GameObjectNames.GetPlateName(i));
+            if (plate == null) continue;
+            var gear = plate.transform.Find("NewPlateGear");
+            if (gear == null) continue;
+            var anim = gear.GetComponent<Animator>();
+            if (anim != null)
+                anim.SetBool("inTurn", i - 1 == time);
         }
     }
 
@@ -1534,14 +1568,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_TrackMapChallenge(bool isCorrect, int actorNumber, string nickname)
     {
-        if (isCorrect) MatchStats.AddChallengeCorrect(actorNumber, nickname);
+        if (isCorrect) MatchStats.AddMapChallengeCorrect(actorNumber, nickname);
         else MatchStats.AddMapError(actorNumber, nickname);
     }
 
     [PunRPC]
     public void RPC_TrackPersonsChallenge(bool isCorrect, int actorNumber, string nickname)
     {
-        if (isCorrect) MatchStats.AddChallengeCorrect(actorNumber, nickname);
+        if (isCorrect) MatchStats.AddPersonsChallengeCorrect(actorNumber, nickname);
         else MatchStats.AddPersonsError(actorNumber, nickname);
     }
 
@@ -1590,7 +1624,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (bgMusic != null) bgMusic.PlayGameOverSound();
 
         endMatchScreen.UpdateTitle();
-        endMatchScreen.transform.GetChild(0).gameObject.SetActive(true);
+        var endMatchTransform = endMatchScreen.transform;
+        var background = endMatchTransform.Find("EndMatchScreenBackground");
+        var image      = endMatchTransform.Find("EndMatchScreenImage");
+        if (background != null) background.gameObject.SetActive(true);
+        if (image      != null) image.gameObject.SetActive(true);
+        endMatchScreen.UpdateTitle();
 
         if (hud != null) hud.SetActive(false);
         if (rightCompartmentAnimator != null) rightCompartmentAnimator.SetBool("open", false);
@@ -1648,8 +1687,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         foreach (GiveCards plateName in plateNames)
         {
             if (plateName == null) continue;
-            plateName.GetComponent<MeshRenderer>().material =
-                plateName.name == plateNameText ? plateNameMaterial2 : plateNameMaterial;
+            var mr = plateName.GetComponent<MeshRenderer>();
+            if (mr == null) continue;
+            string parentName = plateName.transform.parent != null ? plateName.transform.parent.name : string.Empty;
+            mr.material = parentName == plateNameText ? plateNameMaterial2 : plateNameMaterial;
         }
     }
 

@@ -5,30 +5,24 @@ public class MapPinClick : MonoBehaviour
 {
     public int PinIndex { get; set; }
 
-    private OutlineComponent outline;
+    private HoverMaterialAdder _hover;
 
     private void Awake()
     {
-        outline = GetComponent<OutlineComponent>();
-    }
-
-    private void OnMouseEnter()
-    {
-        if (InputBlocker.IsBlocked) return;
-        if (!IsMyTurn()) return;
-        if (outline != null) outline.enabled = true;
-    }
-
-    private void OnMouseExit()
-    {
-        if (outline != null) outline.enabled = false;
+        _hover = GetComponent<HoverMaterialAdder>();
     }
 
     private void OnMouseDown()
     {
         if (InputBlocker.IsBlocked) return;
         if (!IsMyTurn()) return;
+        _hover?.LockHover();
         MapAnswerChecker.Instance?.OnPinClicked(PinIndex);
+    }
+
+    public void ResetHoverLock()
+    {
+        _hover?.UnlockHover();
     }
 
     private bool IsMyTurn()

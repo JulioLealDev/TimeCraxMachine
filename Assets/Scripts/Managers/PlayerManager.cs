@@ -176,8 +176,14 @@ namespace TimeCrax.Managers
             var plate = GameObject.Find(GameObjectNames.GetPlateName(playerNum));
             if (plate != null)
             {
-                plate.GetComponent<MeshRenderer>().enabled = false;
-                plate.GetComponent<MeshCollider>().enabled = false;
+                foreach (var mr in plate.GetComponentsInChildren<MeshRenderer>())
+                    mr.enabled = false;
+                var metal = plate.transform.Find("NewPlateMetal");
+                if (metal != null)
+                {
+                    var mc = metal.GetComponent<MeshCollider>();
+                    if (mc != null) mc.enabled = false;
+                }
             }
 
             var bonusSymbol = GameObject.Find(GameObjectNames.GetBonusCardSymbol(playerNum));

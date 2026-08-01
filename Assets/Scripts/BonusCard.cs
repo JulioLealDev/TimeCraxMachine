@@ -444,7 +444,7 @@ public class BonusCard : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 
         // Posicionar dentro do HUD em TODOS os clientes para que a animação de compra
         // apareça no lugar correto independentemente de quem é o dono da carta.
-        var hud = GameObject.Find("Camera/HUD");
+        var hud = GameObject.Find("Camera/NewHUD");
         if (hud != null)
         {
             transform.SetParent(hud.transform, false);

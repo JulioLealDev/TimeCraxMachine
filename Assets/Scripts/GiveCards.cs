@@ -68,7 +68,7 @@ public class GiveCards : MonoBehaviour
 
     private int GetPlayerNumberFromPlateName()
     {
-        string name = gameObject.name;
+        string name = transform.parent != null ? transform.parent.name : gameObject.name;
         if (name.StartsWith("plateName") && name.Length == 11)
         {
             if (int.TryParse(name.Substring(9, 2), out int num))

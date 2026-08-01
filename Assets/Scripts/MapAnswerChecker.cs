@@ -27,6 +27,7 @@ public class MapAnswerChecker : MonoBehaviour
     [Header("Ícones de resultado")]
     [SerializeField] private GameObject correctIcon;
     [SerializeField] private GameObject incorrectIcon;
+    [SerializeField] private SoundEffects soundEffects;
 
     private int correctPinIndex;
     private int currentSlotCount;
@@ -198,6 +199,9 @@ public class MapAnswerChecker : MonoBehaviour
             }
         }
 
+        if (pinIndex >= 0 && pinIndex < pins.Length && pins[pinIndex] != null)
+            pins[pinIndex].GetComponent<HoverMaterialAdder>()?.LockHover();
+
         StartCoroutine(ObserverMapFeedbackSequence(pinIndex));
     }
 
@@ -210,7 +214,14 @@ public class MapAnswerChecker : MonoBehaviour
         incorrectIcon?.SetActive(!isCorrect);
 
         if (isCorrect)
+        {
+            soundEffects?.PlayRightSlotSound();
             SlotLinkManager.Instance?.CheckAndActivateLinks(currentSlotCount);
+        }
+        else
+        {
+            soundEffects?.PlayWrongSlotSound();
+        }
 
         yield return new WaitForSeconds(2f);
 
@@ -234,7 +245,10 @@ public class MapAnswerChecker : MonoBehaviour
         incorrectIcon?.SetActive(!isCorrect);
 
         if (isCorrect)
+        {
+            soundEffects?.PlayRightSlotSound();
             SlotLinkManager.Instance?.CheckAndActivateLinks(currentSlotCount);
+        }
 
         yield return new WaitForSeconds(2f);
 
@@ -246,12 +260,13 @@ public class MapAnswerChecker : MonoBehaviour
         {
             if (gameManager != null && PhotonNetwork.InRoom)
                 gameManager.photonView.RPC("RPC_TrackMapChallenge", RpcTarget.All, isCorrect, local.actorNumber, local.nickname);
-            else if (isCorrect) MatchStats.AddChallengeCorrect(local.actorNumber, local.nickname);
+            else if (isCorrect) MatchStats.AddMapChallengeCorrect(local.actorNumber, local.nickname);
             else MatchStats.AddMapError(local.actorNumber, local.nickname);
         }
 
         if (!isCorrect)
         {
+            soundEffects.PlayWrongSlotSound();
             if (gameManager != null && PhotonNetwork.InRoom)
             {
                 Debug.Log($"[MapAnswerChecker] Enviando RPC_HandleMapWrong para slotCount={currentSlotCount}");
@@ -283,6 +298,7 @@ public class MapAnswerChecker : MonoBehaviour
             if (pin == null) continue;
             var col = pin.GetComponent<Collider>();
             if (col != null) col.enabled = false;
+            pin.GetComponent<MapPinClick>()?.ResetHoverLock();
         }
 
         if (map != null) map.SetActive(false);

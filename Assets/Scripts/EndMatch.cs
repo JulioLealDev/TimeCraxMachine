@@ -15,8 +15,6 @@ public class EndMatch : MonoBehaviour
     public Sprite victorySprite;
     public Sprite gameOverSprite;
 
-    [Header("Estatísticas")]
-    [SerializeField] private TMP_Text statsText;
 
     public void UpdateTitle()
     {
@@ -24,13 +22,13 @@ public class EndMatch : MonoBehaviour
         if (GameStateManager.Is(GamePhase.Victory))
         {
             Debug.Log("[EndMatch] GameState Victory");
-            endMatchScreenTitle.text = "YOU WIN";
+            endMatchScreenTitle.text = "VICTORY";
             //if (endMatchScreenImage != null) endMatchScreenImage.sprite = victorySprite;
         }
         else if (GameStateManager.Is(GamePhase.GameOver))
         {
             Debug.Log("[EndMatch] GameState GameOver");
-            endMatchScreenTitle.text = "YOU LOSE";
+            endMatchScreenTitle.text = "GAMEOVER";
             //if (endMatchScreenImage != null) endMatchScreenImage.sprite = gameOverSprite;
         }
 
@@ -39,7 +37,6 @@ public class EndMatch : MonoBehaviour
 
     private void ShowStats()
     {
-        if (statsText == null) return;
 
         var sb = new System.Text.StringBuilder();
 
@@ -53,14 +50,62 @@ public class EndMatch : MonoBehaviour
         {
             string name = string.IsNullOrEmpty(p.nickname) ? $"Jogador {p.actorNumber}" : p.nickname;
             sb.AppendLine($"— {name} —");
-            sb.AppendLine($"  Acertos:  Slots {p.slotsCorrect} | Desafios {p.challengesCorrect}");
-            sb.AppendLine($"  Erros:    Slot {p.slotErrors} | Mapa {p.mapErrors} | Pessoas {p.personsErrors}");
-            sb.AppendLine($"  Cartas Bônus:  {p.bonusCardsObtained} obtidas | {p.bonusCardsUsed} usadas");
+            sb.AppendLine($"  Slots: {p.slotsCorrect} acertos | {p.slotErrors} erros");
+            sb.AppendLine($"  Mapa: {p.mapChallengesCorrect} acertos | {p.mapErrors} erros");
+            sb.AppendLine($"  Pessoas: {p.personsChallengesCorrect} acertos | {p.personsErrors} erros");
+            sb.AppendLine($"  Cartas Bônus: {p.bonusCardsObtained} obtidas | {p.bonusCardsUsed} usadas");
             sb.AppendLine($"  Malfunctions: {p.malfunctionsTriggered} | Consertos: {p.componentsRepaired}");
             sb.AppendLine();
         }
 
-        statsText.text = sb.ToString();
+
+        PopulatePlayerStatsUI();
+    }
+
+    private void PopulatePlayerStatsUI()
+    {
+        if (endMatchScreenImage == null) return;
+
+        var root = endMatchScreenImage.transform;
+        var statsValues = root.Find("StatsValues");
+
+        var localPlayer = Photon.Pun.PhotonNetwork.IsConnected
+            ? Photon.Pun.PhotonNetwork.LocalPlayer
+            : null;
+
+        MatchStats.PlayerData data = null;
+        foreach (var p in MatchStats.AllPlayers)
+        {
+            if (localPlayer == null || p.actorNumber == localPlayer.ActorNumber)
+            {
+                data = p;
+                break;
+            }
+        }
+
+        if (data == null) return;
+
+        string playerName = string.IsNullOrEmpty(data.nickname) ? $"Jogador {data.actorNumber}" : data.nickname;
+        SetText(root.Find("PlayerName"), playerName);
+
+        if (statsValues != null)
+        {
+            SetText(statsValues.Find("SlotCorrectValue"),            data.slotsCorrect.ToString());
+            SetText(statsValues.Find("SlotsIncorrectValue"),         data.slotErrors.ToString());
+            SetText(statsValues.Find("PersonsCorrectValue"),         data.personsChallengesCorrect.ToString());
+            SetText(statsValues.Find("PersonsIncorrectValue"),       data.personsErrors.ToString());
+            SetText(statsValues.Find("MapsCorrectValue"),            data.mapChallengesCorrect.ToString());
+            SetText(statsValues.Find("MapsIncorrectValue"),          data.mapErrors.ToString());
+            SetText(statsValues.Find("ComponentsRepairedValue"),     data.componentsRepaired.ToString());
+            SetText(statsValues.Find("ComponentsMalfunctionedValue"),data.malfunctionsTriggered.ToString());
+        }
+    }
+
+    private void SetText(Transform t, string value)
+    {
+        if (t == null) return;
+        var tmp = t.GetComponent<TMP_Text>();
+        if (tmp != null) tmp.text = value;
     }
 
     public void QuitGame()
