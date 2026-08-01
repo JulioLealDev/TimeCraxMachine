@@ -452,12 +452,15 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        int numberOfPlayers = 4;
+        int numberOfPlayers = orderedPlayers != null ? orderedPlayers.Length : 4;
         if (time < numberOfPlayers)
         {
+            PlayerScript turnPlayer = (orderedPlayers != null && time >= 0 && time < orderedPlayers.Length)
+                ? orderedPlayers[time] : null;
             foreach (var player in players)
             {
-                if (player.index == time)
+                bool isTurn = turnPlayer != null && player.photonView.OwnerActorNr == turnPlayer.photonView.OwnerActorNr;
+                if (isTurn)
                 {
                     player.SetYourTurn(true);
                     ChangeBonusCardsView(player);
@@ -496,7 +499,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         time++;
 
-        if (time >= 4)
+        int playerCount = orderedPlayers != null ? orderedPlayers.Length : 4;
+        if (time >= playerCount)
             return true;
 
         return false;
@@ -614,7 +618,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (player.photonView.IsMine) localPlayer = player;
         }
 
-        bool isMyTurn = localPlayer != null && localPlayer.index == time;
+         bool isMyTurn = localPlayer != null && currentOrderedPlayer != null && localPlayer.photonView.OwnerActorNr == currentOrderedPlayer.photonView.OwnerActorNr;
 
         if (isMyTurn)
         {
@@ -768,23 +772,38 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void WaitForFinishTurn()
     {
-        if (!GameStateManager.Is(GamePhase.GameOver))
-        {
-            if (PhotonNetwork.IsMasterClient && ThermometerManager.Instance != null)
-            {
-                float waitTime = ThermometerManager.Instance.GetErrorProcessingTime();
-                ThermometerManager.Instance.OnPlayerError();
+        if (GameStateManager.Is(GamePhase.GameOver)) return;
 
-                this.DelayedCall(waitTime, () =>
-                {
-                    if (!GameStateManager.Is(GamePhase.GameOver))
-                        photonView.RPC("FinishTurn", RpcTarget.All);
-                });
-            }
-            else
+        if (PhotonNetwork.IsMasterClient)
+        {
+            RPC_RequestFinishTurn();
+        }
+        else
+        {
+            photonView.RPC("RPC_RequestFinishTurn", RpcTarget.MasterClient);
+        }
+    }
+
+    [PunRPC]
+    public void RPC_RequestFinishTurn()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        if (GameStateManager.Is(GamePhase.GameOver)) return;
+
+        if (ThermometerManager.Instance != null)
+        {
+            float waitTime = ThermometerManager.Instance.GetErrorProcessingTime();
+            ThermometerManager.Instance.OnPlayerError();
+
+            this.DelayedCall(waitTime, () =>
             {
-                photonView.RPC("FinishTurn", RpcTarget.All);
-            }
+                if (!GameStateManager.Is(GamePhase.GameOver))
+                    photonView.RPC("FinishTurn", RpcTarget.All);
+            });
+        }
+        else
+        {
+            photonView.RPC("FinishTurn", RpcTarget.All);
         }
     }
 
@@ -1548,9 +1567,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient) return;
 
         // Apenas o MasterClient envia o RPC para aplicar o malfunction no componente sorteado
-        var malfPlayer = PlayerManager.Instance?.GetCurrentTurnPlayer();
-        if (malfPlayer != null)
-            MatchStats.AddMalfunction(malfPlayer.actorNumber, malfPlayer.nickname);
+        photonView.RPC("RPC_TrackMalfunctionForAll", RpcTarget.All);
 
         foreach (var component in timeCraxComponents)
         {
@@ -1563,6 +1580,18 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (ThermometerManager.Instance != null)
             ThermometerManager.Instance.ResetTemperatureToFirstLevel();
+    }
+
+    [PunRPC]
+    public void RPC_TrackMalfunctionForAll()
+    {
+        var allPlayers = PlayerManager.Instance?.Players;
+        if (allPlayers == null) return;
+        foreach (var p in allPlayers)
+        {
+            if (p != null)
+                MatchStats.AddMalfunction(p.actorNumber, p.nickname);
+        }
     }
 
     [PunRPC]
@@ -1919,7 +1948,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         bool shouldEnable = false;
         foreach (var player in players)
         {
-            if (player.index == time && player.photonView.IsMine)
+            if (player.photonView.IsMine && player.GetYourTurn())
             {
                 shouldEnable = true;
                 break;

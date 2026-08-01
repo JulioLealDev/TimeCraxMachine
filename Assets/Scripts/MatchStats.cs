@@ -21,6 +21,7 @@ public static class MatchStats
         public int    bonusCardsUsed;
         public int    malfunctionsTriggered;
         public int    componentsRepaired;
+        public int    score;
     }
 
     private static readonly Dictionary<int, PlayerData> _players = new();
@@ -85,4 +86,12 @@ public static class MatchStats
 
     public static void AddRepair(int actorNumber, string nickname = "")
         => GetOrCreate(actorNumber, nickname).componentsRepaired++;
+
+    public static void CalculateScores()
+    {
+        foreach (var d in _players.Values)
+        {
+            d.score = (50 + d.slotsCorrect + 2 * d.mapChallengesCorrect + 3 * d.personsChallengesCorrect) - (d.slotErrors  + d.mapErrors  + d.personsErrors);
+        }
+    }
 }

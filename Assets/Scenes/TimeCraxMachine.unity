@@ -14066,16 +14066,16 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311115661}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.2}
+  m_LocalPosition: {x: 0, y: 0, z: -1.1999412}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 420101564}
+  m_Father: {fileID: 935310307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 224.10004, y: 175.79999}
-  m_SizeDelta: {x: -839.4431, y: -946.9}
+  m_AnchoredPosition: {x: 224.10004, y: 185.79993}
+  m_SizeDelta: {x: 509.5569, y: 39.099976}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &311115663
 MonoBehaviour:
@@ -17218,8 +17218,6 @@ RectTransform:
   m_Children:
   - {fileID: 776650677}
   - {fileID: 985243734}
-  - {fileID: 311115662}
-  - {fileID: 552234595}
   - {fileID: 1782973205}
   - {fileID: 724959263}
   - {fileID: 676309348}
@@ -21338,16 +21336,16 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 552234594}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.2}
+  m_LocalPosition: {x: 0, y: 0, z: -1.1999412}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 420101564}
+  m_Father: {fileID: 935310307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 437.4, y: 175.79999}
-  m_SizeDelta: {x: -839.4431, y: -946.9}
+  m_AnchoredPosition: {x: 437.4, y: 185.79993}
+  m_SizeDelta: {x: 509.5569, y: 39.099976}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &552234596
 MonoBehaviour:
@@ -36394,6 +36392,7 @@ MonoBehaviour:
   gameManager: {fileID: 1891373290}
   endMatchScreenTitle: {fileID: 776650678}
   endMatchScreenImage: {fileID: 420101562}
+  endMatchScreenBackground: {fileID: 839670569}
   victorySprite: {fileID: 0}
   gameOverSprite: {fileID: 0}
 --- !u!1 &839670567
@@ -40060,6 +40059,8 @@ RectTransform:
   - {fileID: 1665306207}
   - {fileID: 1900008998}
   - {fileID: 1806955274}
+  - {fileID: 311115662}
+  - {fileID: 552234595}
   m_Father: {fileID: 420101564}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -98261,6 +98262,10 @@ PrefabInstance:
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f470c22c95605874b98ce37ffe3ff6bc, type: 3}
+      propertyPath: m_TagString
+      value: SlotLink
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f470c22c95605874b98ce37ffe3ff6bc, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
@@ -106894,8 +106899,8 @@ MonoBehaviour:
   inputName: {fileID: 919132149612338040}
   suitTop: {fileID: 160144172}
   hud: {fileID: 1300063032}
-  endButton: {fileID: 3469287837066109500}
-  quitButton: {fileID: 919132147989585493}
+  endButton: {fileID: 939022956}
+  quitButton: {fileID: 1282975993}
   endMatchScreen: {fileID: 833035825}
   map: {fileID: 985315329}
   personsFrame: {fileID: 760126877}

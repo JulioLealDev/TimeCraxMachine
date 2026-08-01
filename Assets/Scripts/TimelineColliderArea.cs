@@ -31,10 +31,20 @@ public class TimelineColliderArea : MonoBehaviour
     {
         if (_selfCollider == null) return;
 
-        if (next == GamePhase.IM_UnlockBonusDeck || next == GamePhase.IM_DrewBonusCard)
+        if (next == GamePhase.IM_UnlockBonusDeck || next == GamePhase.IM_DrewBonusCard || next == GamePhase.Menu)
+        {
             _selfCollider.enabled = false;
-        else if (next == GamePhase.Menu)
-            _selfCollider.enabled = false;
+        }
+        else if (next == GamePhase.IM_Turn || next == GamePhase.IM_FirstTurn)
+        {
+            // Re-enable only for the turn player when returning from bonus-deck phases
+            if (!GameManager.IsMalfunctionPending)
+            {
+                var local = PlayerManager.Instance?.GetLocalPlayer();
+                if (local != null && local.GetYourTurn())
+                    _selfCollider.enabled = true;
+            }
+        }
     }
 
     private void LateUpdate()

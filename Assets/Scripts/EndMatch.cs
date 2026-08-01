@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TimeCrax.Core;
 using TMPro;
+using System.Reflection;
 
 public class EndMatch : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class EndMatch : MonoBehaviour
     public GameManager gameManager;
     public TMP_Text endMatchScreenTitle;
     public Image endMatchScreenImage;
+    public Image endMatchScreenBackground;
     public Sprite victorySprite;
     public Sprite gameOverSprite;
 
@@ -59,6 +61,7 @@ public class EndMatch : MonoBehaviour
         }
 
 
+        MatchStats.CalculateScores();
         PopulatePlayerStatsUI();
     }
 
@@ -91,13 +94,14 @@ public class EndMatch : MonoBehaviour
         if (statsValues != null)
         {
             SetText(statsValues.Find("SlotCorrectValue"),            data.slotsCorrect.ToString());
-            SetText(statsValues.Find("SlotsIncorrectValue"),         data.slotErrors.ToString());
+            SetText(statsValues.Find("SlotIncorrectValue"),          data.slotErrors.ToString());
             SetText(statsValues.Find("PersonsCorrectValue"),         data.personsChallengesCorrect.ToString());
             SetText(statsValues.Find("PersonsIncorrectValue"),       data.personsErrors.ToString());
             SetText(statsValues.Find("MapsCorrectValue"),            data.mapChallengesCorrect.ToString());
             SetText(statsValues.Find("MapsIncorrectValue"),          data.mapErrors.ToString());
             SetText(statsValues.Find("ComponentsRepairedValue"),     data.componentsRepaired.ToString());
             SetText(statsValues.Find("ComponentsMalfunctionedValue"),data.malfunctionsTriggered.ToString());
+            SetText(statsValues.Find("ScorePoints"),                 data.score.ToString());
         }
     }
 
@@ -116,9 +120,19 @@ public class EndMatch : MonoBehaviour
 
     public void BackToMenu()
     {
-        if (endMatchScreenImage != null) endMatchScreenImage.gameObject.SetActive(false);
+        if (endMatchScreenImage != null)
+        {
+            endMatchScreenImage.gameObject.SetActive(false);
+            endMatchScreenBackground.gameObject.SetActive(false);
+        }
 
         soundEffects.PressHudButtonSound();
+
+        if (GameStateManager.Is(GamePhase.ExitingGame))
+        {
+            Debug.Log(" ------------------------> Chamando Application.Quit ");
+            this.DelayedCall(5f, Application.Quit);
+        }
 
         GameStateManager.TransitionTo(GamePhase.Menu);
         gameManager.BackToMenu();
