@@ -290,12 +290,7 @@ public class EventSlot : MonoBehaviourPunCallbacks
         }
         if (slotsFilled == 6 && gameManager != null)
         {
-            MatchStats.StopTimer();
-            GameStateManager.TransitionTo(GamePhase.Victory);
-            gameManager.DeactivateAll();
-            gameManager.ResetAllComponents();
-            gameManager.ResetAllPlatenames();
-            this.DelayedCall(2.5f, ShowVictoryScreen);
+            gameManager.photonView.RPC("RPC_TriggerVictory", RpcTarget.All);
         }
     }
 

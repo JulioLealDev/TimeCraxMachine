@@ -31,6 +31,7 @@ namespace TimeCrax.Managers
         [SerializeField] private Animator thermometerAnimator;
         [SerializeField] private ParticleSystem smokeParticle01;
         [SerializeField] private ParticleSystem smokeParticle02;
+        [SerializeField] private SoundEffects soundEffects;
 
         [Header("Configuração")]
         [SerializeField] private int[] temperatureLevels = { 0, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
@@ -275,34 +276,51 @@ namespace TimeCrax.Managers
         private Coroutine smokeSpeedTransitionCoroutine;
         private float currentSmokeSpeed = 1f;
 
+        // Controle de ativação das partículas e do nível de steam atual
+        private bool _smokeActivated = false;
+        private int _currentSteamLevel = -1; // -1=nenhum, 0=low, 1=medium, 2=high
+
         /// <summary>
-        /// Atualiza a velocidade das partículas de fumaça baseado na temperatura
+        /// Atualiza a velocidade das partículas de fumaça baseado na temperatura.
+        /// Só executa se as partículas já foram ativadas. Troca o som apenas quando o nível muda.
         /// </summary>
         private void UpdateSmokeParticlesSpeed()
         {
+            if (!_smokeActivated) return;
+
             float targetSpeed;
+            int targetLevel;
 
             if (currentTemperature >= 80)
             {
+                targetLevel = 2;
                 targetSpeed = 5f;
             }
             else if (currentTemperature >= 50)
             {
+                targetLevel = 1;
                 targetSpeed = 3f;
             }
             else
             {
+                targetLevel = 0;
                 targetSpeed = 1f;
             }
 
-            // Se a velocidade alvo é diferente da atual, iniciar transição
+            // Trocar som apenas quando o nível muda (Low/Medium/High)
+            if (targetLevel != _currentSteamLevel)
+            {
+                _currentSteamLevel = targetLevel;
+                if (targetLevel == 2)      soundEffects?.PlaySteamValveHigh();
+                else if (targetLevel == 1) soundEffects?.PlaySteamValveMedium();
+                else                       soundEffects?.PlaySteamValveLow();
+            }
+
+            // Transição suave da velocidade das partículas
             if (!Mathf.Approximately(targetSpeed, currentSmokeSpeed))
             {
-                // Cancelar transição anterior se existir
                 if (smokeSpeedTransitionCoroutine != null)
-                {
                     StopCoroutine(smokeSpeedTransitionCoroutine);
-                }
 
                 smokeSpeedTransitionCoroutine = StartCoroutine(TransitionSmokeSpeed(targetSpeed, 2f));
             }
@@ -354,33 +372,28 @@ namespace TimeCrax.Managers
         }
 
         /// <summary>
-        /// Ativa as partículas de fumaça
+        /// Ativa as partículas de fumaça. Inicia PlaySteamValveLow na primeira vez.
         /// </summary>
         public void ActivateSmokeParticles()
         {
-            if (smokeParticle01 != null)
-            {
-                smokeParticle01.gameObject.SetActive(true);
-            }
-            if (smokeParticle02 != null)
-            {
-                smokeParticle02.gameObject.SetActive(true);
-            }
+            if (smokeParticle01 != null) smokeParticle01.gameObject.SetActive(true);
+            if (smokeParticle02 != null) smokeParticle02.gameObject.SetActive(true);
+
+            _smokeActivated = true;
+            UpdateSmokeParticlesSpeed();
         }
 
         /// <summary>
-        /// Desativa as partículas de fumaça
+        /// Desativa as partículas de fumaça e para o loop de steam.
         /// </summary>
         public void DeactivateSmokeParticles()
         {
-            if (smokeParticle01 != null)
-            {
-                smokeParticle01.gameObject.SetActive(false);
-            }
-            if (smokeParticle02 != null)
-            {
-                smokeParticle02.gameObject.SetActive(false);
-            }
+            if (smokeParticle01 != null) smokeParticle01.gameObject.SetActive(false);
+            if (smokeParticle02 != null) smokeParticle02.gameObject.SetActive(false);
+
+            _smokeActivated = false;
+            _currentSteamLevel = -1;
+            soundEffects?.StopSteamValve();
         }
 
         /// <summary>
@@ -415,11 +428,12 @@ namespace TimeCrax.Managers
         /// </summary>
         public void ResetThermometer()
         {
-
             currentProgressionIndex = 0;
-
-            // Resetar progressões para valores base
             ResetProgressions();
+
+            // Para o som e reseta flags ANTES de setar temperatura,
+            // para que UpdateSmokeParticlesSpeed() não dispare sons durante o reset.
+            DeactivateSmokeParticles();
 
             if (PhotonNetwork.IsMasterClient)
             {
@@ -430,14 +444,8 @@ namespace TimeCrax.Managers
                 SetTemperature(0);
             }
 
-            // Desabilitar animator após reset
             if (thermometerAnimator != null)
-            {
                 thermometerAnimator.enabled = false;
-            }
-
-            // Desativar partículas de fumaça
-            DeactivateSmokeParticles();
         }
 
         /// <summary>

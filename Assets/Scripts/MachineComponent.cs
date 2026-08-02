@@ -31,7 +31,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
         Thermometer
     }
 
-    private SoundEffects soundEffects;
+    [SerializeField] private SoundEffects soundEffects;
     private EndMatch endMatchScreen;
     private GameManager cachedGameManager;
     private BackgroundMusic cachedBackgroundMusic;
@@ -88,7 +88,7 @@ public class MachineComponent : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        soundEffects = FindFirstObjectByType<SoundEffects>();
+        //soundEffects = FindFirstObjectByType<SoundEffects>();
         endMatchScreen = FindFirstObjectByType<EndMatch>();
         cachedGameManager = FindFirstObjectByType<GameManager>();
         cachedBackgroundMusic = FindFirstObjectByType<BackgroundMusic>();

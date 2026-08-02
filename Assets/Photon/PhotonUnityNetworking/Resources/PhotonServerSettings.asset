@@ -159,6 +159,7 @@ MonoBehaviour:
   - RPC_UpdatePersonsCarouselImage
   - RPC_TrackMalfunctionForAll
   - RPC_RequestFinishTurn
+  - RPC_TriggerVictory
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -33,7 +33,7 @@ public class PersonsAnswerChecker : MonoBehaviour
     [SerializeField] private GameObject incorrectIcon01;
     [SerializeField] private GameObject incorrectIcon02;
     [SerializeField] private GameObject incorrectIcon03;
-     [SerializeField] private SoundEffects soundEffects;
+    [SerializeField] private SoundEffects soundEffects;
 
     [Header("ResetPersonsFrame()")]
     [SerializeField] private TMP_Text personText01;
@@ -293,7 +293,6 @@ public class PersonsAnswerChecker : MonoBehaviour
 
     private IEnumerator KillPersonSlotRoulette(List<int> candidates, OutlineComponent[] outlines, int targetSlot)
     {
-        var sound = FindFirstObjectByType<SoundEffects>();
         int lastIdx = -1;
         float interval = 0.3f;
 
@@ -318,7 +317,7 @@ public class PersonsAnswerChecker : MonoBehaviour
 
             var outline = outlines[candidates[idx]];
             if (outline != null) outline.enabled = true;
-            sound?.PlayRouletteSound();
+            soundEffects?.PlayRouletteSound();
             yield return new WaitForSeconds(interval);
             if (outline != null) outline.enabled = false;
 
@@ -330,7 +329,7 @@ public class PersonsAnswerChecker : MonoBehaviour
         if (finalOutline != null)
         {
             finalOutline.enabled = true;
-            sound?.PlayRouletteSound();
+            soundEffects?.PlayRouletteSound();
             yield return new WaitForSeconds(interval);
             finalOutline.enabled = false;
         }
@@ -352,16 +351,19 @@ public class PersonsAnswerChecker : MonoBehaviour
         if (names[targetSlot] != null)
             names[targetSlot].text = entry.name;
 
-        // Desativar interação permanente no slot sorteado — PersonCardImage
+        // Bloquear apenas PersonCardImage do slot sorteado
         if (cards[targetSlot] != null)
         {
             cards[targetSlot].gameObject.tag = "Untagged";
+            var col = cards[targetSlot].GetComponent<Collider>();
+            if (col != null) col.enabled = false;
         }
 
-        // Desativar interação permanente no slot sorteado — PersonDescriptionClick
+        // PersonDescriptionClick do slot sorteado permanece interativo
         if (descOutlines[targetSlot] != null)
         {
-            descOutlines[targetSlot].gameObject.tag = "Untagged";
+            var col = descOutlines[targetSlot].GetComponent<Collider>();
+            if (col != null) col.enabled = true;
         }
 
         // Reativar colliders dos slots restantes (não sorteados)

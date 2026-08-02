@@ -459,6 +459,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 ? orderedPlayers[time] : null;
             foreach (var player in players)
             {
+                if (player == null) continue;
                 bool isTurn = turnPlayer != null && player.photonView.OwnerActorNr == turnPlayer.photonView.OwnerActorNr;
                 if (isTurn)
                 {
@@ -553,6 +554,29 @@ public class GameManager : MonoBehaviourPunCallbacks
         this.DelayedCall(0.5f, DisableGameInfo);
     }
 
+    private void ShowTimeOutInfo()
+    {
+        gameInfo.gameObject.SetActive(true);
+        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+        foreach (var info in infos)
+        {
+            if (info.gameObject.name == "TimeOutInfoBackground")
+                info.GetComponent<CanvasGroup>().LeanAlpha(1f, 0.5f);
+        }
+        this.DelayedCall(1.5f, HideTimeOutInfo);
+    }
+
+    private void HideTimeOutInfo()
+    {
+        Transform[] infos = gameInfo.GetComponentsInChildren<Transform>();
+        foreach (var info in infos)
+        {
+            if (info.gameObject.name == "TimeOutInfoBackground")
+                info.GetComponent<CanvasGroup>().LeanAlpha(0f, 0.5f);
+        }
+        this.DelayedCall(0.5f, DisableOnlyGameInfo);
+    }
+
     public void DisableGameInfo()
     {
         gameInfo.gameObject.SetActive(false);
@@ -615,6 +639,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         PlayerScript localPlayer = null;
         foreach (var player in players)
         {
+            if (player == null) continue;
             if (player.photonView.IsMine) localPlayer = player;
         }
 
@@ -845,6 +870,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_HandleTimeoutCleanup()
     {
+        ShowTimeOutInfo();
+
         // Fechar painéis abertos antes de bloquear input
         PersonsCarousel.Instance?.Close();
         PersonDescriptionPopup.Instance?.Close();
@@ -1666,6 +1693,19 @@ public class GameManager : MonoBehaviourPunCallbacks
         InputBlocker.Unblock();
     }
 
+    [PunRPC]
+    public void RPC_TriggerVictory()
+    {
+        MatchStats.StopTimer();
+        GameStateManager.TransitionTo(GamePhase.Victory);
+        DeactivateAll();
+        ResetAllComponents();
+        ResetAllPlatenames();
+        var eventSlot = FindFirstObjectByType<EventSlot>();
+        if (eventSlot != null)
+            this.DelayedCall(2.5f, eventSlot.ShowVictoryScreen);
+    }
+
     public void SetUpComponents()
     {
         var local = PlayerManager.Instance?.GetLocalPlayer();
@@ -1690,7 +1730,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         players = PlayerManager.Instance?.Players ?? players;
         foreach (var player in players)
+        {
+            if (player == null) continue;
             player.UpdateIndex();
+        }
     }
 
     [PunRPC]
@@ -1806,7 +1849,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.LocalPlayer.ActorNumber == player.photonView.OwnerActorNr && !GameStateManager.Is(GamePhase.GameOver))
             {
                 if (PhotonNetwork.IsConnected && photonView != null)
+                {
                     photonView.RPC("ShowLeftPlayerInfo", RpcTarget.Others, player.nickname);
+                    photonView.RPC("RemovePlayersPlatenames", RpcTarget.All, player.plateNameIndex);
+                }
 
                 if (player.GetYourTurn() && PhotonNetwork.PlayerList.Length > 1 && PhotonNetwork.IsConnected && photonView != null)
                     photonView.RPC("FinishTurn", RpcTarget.Others);
@@ -1948,6 +1994,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         bool shouldEnable = false;
         foreach (var player in players)
         {
+            if (player == null) continue;
             if (player.photonView.IsMine && player.GetYourTurn())
             {
                 shouldEnable = true;

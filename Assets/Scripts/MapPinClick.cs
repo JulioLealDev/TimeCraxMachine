@@ -1,11 +1,13 @@
 using UnityEngine;
 using TimeCrax.Managers;
 
+
 public class MapPinClick : MonoBehaviour
 {
     public int PinIndex { get; set; }
 
     private HoverMaterialAdder _hover;
+    [SerializeField] private SoundEffects soundEffects;
 
     private void Awake()
     {
@@ -16,6 +18,7 @@ public class MapPinClick : MonoBehaviour
     {
         if (InputBlocker.IsBlocked) return;
         if (!IsMyTurn()) return;
+        soundEffects.PlayClickSlotSound();
         _hover?.LockHover();
         MapAnswerChecker.Instance?.OnPinClicked(PinIndex);
     }

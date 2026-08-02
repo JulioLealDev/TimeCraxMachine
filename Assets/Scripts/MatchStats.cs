@@ -91,7 +91,7 @@ public static class MatchStats
     {
         foreach (var d in _players.Values)
         {
-            d.score = (50 + d.slotsCorrect + 2 * d.mapChallengesCorrect + 3 * d.personsChallengesCorrect) - (d.slotErrors  + d.mapErrors  + d.personsErrors);
+            d.score = (50 + d.slotsCorrect + 2 * d.mapChallengesCorrect + 3 * d.personsChallengesCorrect) - (d.slotErrors  + d.mapErrors  + d.personsErrors + d.malfunctionsTriggered);
         }
     }
 }

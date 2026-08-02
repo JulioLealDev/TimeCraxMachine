@@ -22,6 +22,8 @@ namespace TimeCrax.Managers
                 return _instance;
             }
         }
+        [Header("SoundEffects")]
+        [SerializeField] private SoundEffects soundEffects;
 
         [Header("UI de Ativação")]
         [SerializeField] private GameObject activationPanel;
@@ -274,7 +276,7 @@ namespace TimeCrax.Managers
         {
             if (selectedCard == null) return;
 
-
+            soundEffects.PressButtonSound();
             // Guardar referência antes de esconder painel
             var card = selectedCard;
             var cardType = selectedCard.CardType;
